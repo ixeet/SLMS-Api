@@ -6,10 +6,17 @@ package com.scolere.lms.application.rest.controller;
 
 import com.scolere.lms.application.rest.bus.iface.UserBusIface;
 import com.scolere.lms.application.rest.bus.impl.UserBusImpl;
+import com.scolere.lms.application.rest.constants.SLMSRestConstants;
 import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.application.rest.vo.request.UserRequest;
 import com.scolere.lms.application.rest.vo.response.UserResponse;
 import com.scolere.lms.common.utils.StringEncrypter;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -64,6 +71,101 @@ public class UserController {
         
         return userResponse;
     }
+
+    /**
+     * Update Profile service.
+     * 
+     * @param UserRequest
+     * @param HttpServletRequest
+     * @return UserResponse
+     */
+    @POST
+    @Path("/updateProfile")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)      
+    public UserResponse updateProfile(UserRequest req,@Context HttpServletRequest request) {
+        System.out.println("Start updateProfile >>"+req);
+        UserResponse userResponse = null;
+        
+        try {
+            userResponse = restService.updateProfile(req);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # updateProfile - "+ex);
+        }
+        
+        System.out.println("<< End updateProfile "+userResponse); 
+        
+        return userResponse;
+    }
+    
+    
+    /**
+     * Upload profile image
+     * @param vin
+     * @param customerId
+     * @param uploadedInputStream
+     * @param fileDetail
+     * @return 
+     */
+    @POST
+    @Path("/uploadProfileImage")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)          
+    public UserResponse uploadProfileImage(
+            @FormDataParam("userName") String userName,
+            @FormDataParam("profilePhoto") InputStream uploadedInputStream,
+            @FormDataParam("profilePhoto") FormDataContentDisposition fileDetail) {
+
+        System.out.println("Start uploadProfileImage >>"+userName);
+        UserResponse resp = new UserResponse();
+        
+        try {
+        //Update PROFILE_IMG to database
+        String profileImgName = userName+SLMSRestConstants.image_extension;
+        boolean updateStatus =  restService.updateProfilePhoto(profileImgName);
+        System.out.println("Image name saved into db ? "+updateStatus);
+        
+        String uploadedFileLocation = SLMSRestConstants.location_userprofile+profileImgName;
+        System.out.println("Uploading file @: "+uploadedFileLocation);
+        writeToFile(uploadedInputStream, uploadedFileLocation);
+        System.out.println("Profile image successfully uploaded..");
+        
+        resp.setUploadLocation(uploadedFileLocation);
+        
+        resp.setStatus(SLMSRestConstants.status_success);
+        resp.setStatusMessage(SLMSRestConstants.message_success);          
+        } catch (Exception ex) {
+            System.out.println("Exception # uploadProfileImage - "+ex);
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(ex.getMessage());            
+        }
+        System.out.println("<< End uploadProfileImage "+resp); 
+        
+        return resp;        
+    }
+
+    // save uploaded file to new location
+    private void writeToFile(InputStream uploadedInputStream,
+            String uploadedFileLocation) {
+
+        try {
+            OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
+            int read = 0;
+            byte[] bytes = new byte[1024];
+
+            out = new FileOutputStream(new File(uploadedFileLocation));
+            while ((read = uploadedInputStream.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            System.out.println("File upload exception #2 "+e.getMessage());
+        }
+
+    }
+    
     
     
     /**

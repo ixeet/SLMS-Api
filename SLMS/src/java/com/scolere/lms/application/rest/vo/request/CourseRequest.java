@@ -12,12 +12,38 @@ public class CourseRequest {
     
     private String userName;
     private int userId;
-    private String courseId;
-    private String moduleId;
-    
+    private int commentId;
+    private int resourceId;
+    private int courseId;
+    private int moduleId;
     private String searchText;
-    
+    private String commentText;
 
+    
+    public int getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(int resourceId) {
+        this.resourceId = resourceId;
+    }
+    
+    public int getCommentId() {
+        return commentId;
+    }
+
+    public void setCommentId(int commentId) {
+        this.commentId = commentId;
+    }
+
+    public String getCommentText() {
+        return commentText;
+    }
+
+    public void setCommentText(String commentText) {
+        this.commentText = commentText;
+    }
+       
     public String getUserName() {
         return userName;
     }
@@ -34,19 +60,19 @@ public class CourseRequest {
         this.userId = userId;
     }
 
-    public String getCourseId() {
+    public int getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(String courseId) {
+    public void setCourseId(int courseId) {
         this.courseId = courseId;
     }
 
-    public String getModuleId() {
+    public int getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(String moduleId) {
+    public void setModuleId(int moduleId) {
         this.moduleId = moduleId;
     }
 

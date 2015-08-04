@@ -37,4 +37,6 @@ public interface ClassMasterDao {
     ClassMasterVo  getClassDetail(int id);
 
     List<ClassMasterVo > getClassMasterVoList(); 
+
+    List<ClassMasterVo > getClassMasterVoList(int schoolId); 
 }

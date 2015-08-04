@@ -51,6 +51,7 @@ public class StudentDetailDaoImpl extends LmsDaoAbstract implements StudentDetai
                 userDtls.setProfile(rs.getString("PROFILE"));
                 userDtls.setSocialProfile(rs.getString("SOCIAL_PROFILE"));
                 userDtls.setAddress(rs.getString("ADDRESS"));
+                userDtls.setAdminEmailId(rs.getString("ADMIN_EMAIL_ID"));
 
                 userDtls.setLastUserIdCd(rs.getString("LAST_USERID_CD"));
                 userDtls.setLastUpdtTm(rs.getString("LAST_UPDT_TM"));
@@ -74,9 +75,10 @@ public class StudentDetailDaoImpl extends LmsDaoAbstract implements StudentDetai
         return userDtls;
     }
 
+    
     public boolean updateStudentDetail(StudentDetailVo vo) throws LmsDaoException {
-        System.out.println("id =" + vo.getStudentDetailId());
-        boolean status = true;
+        System.out.println("updateStudentDetail id =" + vo.getStudentDetailId());
+        boolean status = false;
 
         //Database connection start
         Connection conn = null;
@@ -84,40 +86,67 @@ public class StudentDetailDaoImpl extends LmsDaoAbstract implements StudentDetai
         try {
 
             conn = getConnection();
-            String sql = "UPDATE student_dtls set  USER_ID=?, FNAME=?, LNAME=?, EMAIL_ID=?, CONTACT_NO=?, BIRTH_DT=?, JOINING_DATE=?, PROFILE_IMG=?, SOCIAL_PROFILE=?, ADDRESS=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
-                    + "    WHERE STUDENT_DTLS_ID=?";
+            String sql = "UPDATE student_dtls set TITLE=?,FNAME=?, LNAME=?, EMAIL_ID=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+                    + " WHERE USER_ID=?";
             stmt = conn.prepareStatement(sql);
 
-            stmt.setInt(1, vo.getUserId());
+            stmt.setString(1, vo.getTitle());
             stmt.setString(2, vo.getfName());
             stmt.setString(3, vo.getlName());
             stmt.setString(4, vo.getEmailId());
-            stmt.setString(5, vo.getContactNo());
-            stmt.setString(6, vo.getBirthDt());
-            stmt.setString(7, vo.getJoiningDt());
-            stmt.setString(8, vo.getProfile());
-            stmt.setString(9, vo.getSocialProfile());
-            stmt.setString(10, vo.getAddress());
-            stmt.setString(11, vo.getLastUserIdCd());
-            stmt.setInt(12, vo.getStudentDetailId());
-            stmt.executeUpdate();
-            System.out.println("updated records into the table...");
+            stmt.setString(5, vo.getLastUserIdCd());
 
+            stmt.setInt(6, vo.getUserId());
+            
+            stmt.executeUpdate();
+            System.out.println("student profile updated..");
+            status = true;
         } catch (SQLException e) {
-            System.out.println("getUserLoginDetail 1# " + e);
+            System.out.println("updateStudentDetail 1# " + e);
             throw new LmsDaoException(e.getMessage());
         } catch (Exception e) {
-            System.out.println("getUserLoginDetail 2# " + e);
+            System.out.println("updateStudentDetail 2# " + e);
             throw new LmsDaoException(e.getMessage());
         } finally {
             closeResources(conn, stmt, null);
         }
 
-        System.out.println("Successfully updated....");
         return status;
-        //End writting code to save into database   
     }
-    //save method
+
+    
+    @Override
+    public boolean updateProfilePhoto(String photoPath) throws LmsDaoException {
+        System.out.println("updateProfilePhoto id =" + photoPath);
+        boolean status = false;
+
+        //Database connection start
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+            String sql = "UPDATE student_dtls SET PROFILE_IMG=? WHERE USER_ID=(SELECT USER_ID FROM user_login where USER_NM = ?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setString(1, photoPath);
+            stmt.setString(2, photoPath.substring(0, photoPath.lastIndexOf(".")));
+            
+            stmt.executeUpdate();
+            System.out.println("student profile updated..");
+            status = true;
+        } catch (SQLException e) {
+            System.out.println("updateProfilePhoto 1# " + e);
+            throw new LmsDaoException(e.getMessage());
+        } catch (Exception e) {
+            System.out.println("updateProfilePhoto 2# " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+
+        return status;
+    }
+        
+    
 
     public boolean saveStudentDetail(StudentDetailVo vo) throws LmsDaoException {
         boolean status = false;
@@ -126,7 +155,7 @@ public class StudentDetailDaoImpl extends LmsDaoAbstract implements StudentDetai
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO student_dtls(USER_ID, FNAME, LNAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE, PROFILE_IMG, SOCIAL_PROFILE, ADDRESS, LAST_USERID_CD,TITLE, LAST_UPDT_TM) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, current_timestamp)";
+            String sql = "INSERT INTO student_dtls(USER_ID, FNAME, LNAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE, PROFILE_IMG, SOCIAL_PROFILE, ADDRESS, LAST_USERID_CD,TITLE, LAST_UPDT_TM,ADMIN_EMAIL_ID) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, current_timestamp,?)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getUserId());
             stmt.setString(2, vo.getfName());
@@ -140,7 +169,8 @@ public class StudentDetailDaoImpl extends LmsDaoAbstract implements StudentDetai
             stmt.setString(10, vo.getAddress());
             stmt.setString(11, vo.getLastUserIdCd());
             stmt.setString(12, vo.getTitle());
-
+            stmt.setString(13, vo.getAdminEmailId());
+            
             stmt.executeUpdate();
             status = true;
 
@@ -242,6 +272,7 @@ public class StudentDetailDaoImpl extends LmsDaoAbstract implements StudentDetai
         return distList;
 
     }
-    
+
+
 }//End of class
 

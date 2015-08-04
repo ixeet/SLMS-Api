@@ -14,6 +14,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
 public class ResourceRespTO extends CountsTO{
     private String resourceId;
+    private String resourceName;
     private String resourceUrl;
     private String resourceDesc;
     private String startedOn;
@@ -21,10 +22,37 @@ public class ResourceRespTO extends CountsTO{
     private String uploadedBy;
     private String uploadedDate;
     private String authorName;
+    private String authorImg;
+    private String thumbImg;
     private List<CommentRespTO> commentList;
     private List<ResourceRespTO> relatedVideoList;
 
     
+    
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
+    }
+
+    public String getAuthorImg() {
+        return authorImg;
+    }
+
+    public void setAuthorImg(String authorImg) {
+        this.authorImg = authorImg;
+    }
+
+    public String getThumbImg() {
+        return thumbImg;
+    }
+
+    public void setThumbImg(String thumbImg) {
+        this.thumbImg = thumbImg;
+    }
+
     public String getAuthorName() {
         return authorName;
     }

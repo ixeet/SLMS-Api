@@ -15,10 +15,28 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 public class CourseRespTO extends CompletedStatusTO{
     private String courseId;
     private String courseName;
+    private String authorName;
+    private String authorImg;
     private List<ModuleRespTO> moduleList;
 
     
     
+    public String getAuthorName() {
+        return authorName;
+    }
+
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public String getAuthorImg() {
+        return authorImg;
+    }
+
+    public void setAuthorImg(String authorImg) {
+        this.authorImg = authorImg;
+    }
+
     public String getCourseId() {
         return courseId;
     }

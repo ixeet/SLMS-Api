@@ -57,10 +57,10 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
 
         } catch (SQLException se) {
             System.out.println("getClassDetail # " + se);
-            se.printStackTrace();
+            
         } catch (Exception e) {
             System.out.println("getClassDetail # " + e);
-            e.printStackTrace();
+            
         } finally {
             closeResources(conn, stmt, null);
         }
@@ -94,14 +94,13 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
             stmt.setInt(9, vo.getClassId());
 
             stmt.executeUpdate();
-            System.out.println("updated records into the table...");
-
+            
         } catch (SQLException e) {
-            System.out.println("getClassDetail # " + e);
-            e.printStackTrace();
+            System.out.println("updateClassDetail # " + e);
+            
         } catch (Exception e) {
-            System.out.println("getClassDetail # " + e);
-            e.printStackTrace();
+            System.out.println("updateClassDetail # " + e);
+            
         } finally {
             closeResources(conn, stmt, null);
         }
@@ -136,15 +135,14 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
 
         } catch (SQLException se) {
             System.out.println("getClassDetail # " + se);
-            se.printStackTrace();
+            
         } catch (Exception e) {
             System.out.println("getClassDetail # " + e);
-            e.printStackTrace();
+            
         } finally {
             closeResources(conn, stmt, null);
         }
 
-        System.out.println("Successfully saved....");
     }
 
     //delete method
@@ -166,18 +164,17 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
 
         } catch (SQLException se) {
             System.out.println("getClassDetail # " + se);
-            se.printStackTrace();
+            
         } catch (Exception e) {
             System.out.println("getClassDetail # " + e);
-            e.printStackTrace();
         } finally {
             closeResources(conn, stmt, null);
         }
-
-        System.out.println("Successfully deleted....");
         return status;
+        
     }
 
+    
     public List< ClassMasterVo> getClassMasterVoList() {
         List< ClassMasterVo> distList = new ArrayList<ClassMasterVo>();
 
@@ -190,10 +187,12 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
             String sql = "SELECT * FROM class_mstr ";
             stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
+            
+            ClassMasterVo userDtls =null;
             while (rs.next()) {
 
                 //3. Set db data to object
-                ClassMasterVo userDtls = new ClassMasterVo();
+                userDtls = new ClassMasterVo();
                 userDtls.setClassId(rs.getInt("CLASS_ID"));
                 userDtls.setClassName(rs.getString("CLASS_NAME"));
                 userDtls.setDescTxt(rs.getString("DESC_TXT"));
@@ -210,14 +209,61 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
                 distList.add(userDtls);
             }
 
-            System.out.println("get records into the table...");
+        } catch (SQLException se) {
+            System.out.println("getClassMasterVoList(schoolId) # " + se);
+        } catch (Exception e) {
+            System.out.println("getClassMasterVoList(schoolId) # " + e);
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+        //1 . jdbc code endd
+
+        //4 Return as required by method
+        return distList;
+    }
+    
+
+    @Override
+    public List<ClassMasterVo> getClassMasterVoList(int schoolId) {
+        List< ClassMasterVo> distList = new ArrayList<ClassMasterVo>();
+
+        //1 . jdbc code start
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+
+            String sql = "SELECT * FROM class_mstr where CLASS_ID in (SELECT CLASS_ID FROM school_cls_map where SCHOOL_ID = ?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, schoolId);
+            
+            ResultSet rs = stmt.executeQuery();
+            
+            ClassMasterVo userDtls =null;
+            while (rs.next()) {
+
+                //3. Set db data to object
+                userDtls = new ClassMasterVo();
+                userDtls.setClassId(rs.getInt("CLASS_ID"));
+                userDtls.setClassName(rs.getString("CLASS_NAME"));
+                userDtls.setDescTxt(rs.getString("DESC_TXT"));
+                userDtls.setMetadata(rs.getString("METEDATA"));
+                userDtls.setDeletedFl(rs.getString("DELETED_FL"));
+                userDtls.setDisplayNo(rs.getInt("DISPLAY_NO"));
+                userDtls.setEnableFl(rs.getString("ENABLE_FL"));
+                userDtls.setCreatedBy(rs.getString("CREATED_BY"));
+
+                userDtls.setLastuserIdCd(rs.getString("LAST_USERID_CD"));
+                userDtls.setLastUpdtTm(rs.getString("LAST_UPDT_TM"));
+
+                //Add into list
+                distList.add(userDtls);
+            }
 
         } catch (SQLException se) {
-            System.out.println("getClassDetail # " + se);
-            se.printStackTrace();
+            System.out.println("getClassMasterVoList(schoolId) # " + se);
         } catch (Exception e) {
-            System.out.println("getClassDetail # " + e);
-            e.printStackTrace();
+            System.out.println("getClassMasterVoList(schoolId) # " + e);
         } finally {
             closeResources(conn, stmt, null);
         }
@@ -227,4 +273,6 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
         return distList;
 
     }
-}
+    
+    
+}//End of class

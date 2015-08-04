@@ -170,9 +170,8 @@ public class UserRequest {
 
     @Override
     public String toString() {
-        return "UserRequest{" + "userid=" + userid + ", userFbId=" + userFbId + ", userName=" + userName + ", firstName=" + firstName + ", lastName=" + lastName + ", emailId=" + emailId + ", adminEmailId=" + adminEmailId + ", schoolId=" + schoolId + ", schoolName=" + schoolName + ", address=" + address + ", classId=" + classId + ", className=" + className + ", homeRoomId=" + homeRoomId + ", homeRoomName=" + homeRoomName + ", userPassword=" + userPassword + ", userNewPassword=" + userNewPassword + '}';
+        return "UserRequest{" + "userid=" + userid + ", userFbId=" + userFbId + ", userName=" + userName + ", firstName=" + firstName + ", lastName=" + lastName + ", emailId=" + emailId + ", adminEmailId=" + adminEmailId + ", schoolId=" + schoolId + ", schoolName=" + schoolName + ", address=" + address + ", classId=" + classId + ", className=" + className + ", homeRoomId=" + homeRoomId + ", homeRoomName=" + homeRoomName + ", userPassword=" + userPassword + ", userNewPassword=" + userNewPassword + ", title=" + title + '}';
     }
-        
 
     
 }

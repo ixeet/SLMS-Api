@@ -12,7 +12,16 @@ public class CountsTO {
     private int likeCounts;
     private int shareCounts;
     private int commentCounts;
+    private boolean isLiked;
 
+
+    public boolean isIsLiked() {
+        return isLiked;
+    }
+
+    public void setIsLiked(boolean isLiked) {
+        this.isLiked = isLiked;
+    }
     
     public int getLikeCounts() {
         return likeCounts;

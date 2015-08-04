@@ -14,6 +14,9 @@ import java.util.List;
  * @author admin
  */
 public interface StudentDetailDao {
+    
+    boolean updateProfilePhoto(String photoPath) throws LmsDaoException;
+    
     boolean updateStudentDetail(StudentDetailVo  vo) throws LmsDaoException;
     /**
      * This method is used for save  detail

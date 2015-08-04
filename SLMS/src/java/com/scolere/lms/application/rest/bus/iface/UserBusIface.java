@@ -15,6 +15,8 @@ import com.scolere.lms.application.rest.vo.response.UserResponse;
 public interface UserBusIface {
     
     UserResponse registration(UserRequest req) throws RestBusException;
+    UserResponse updateProfile(UserRequest req) throws RestBusException;
+    boolean updateProfilePhoto(String photoName) throws RestBusException;
     UserResponse login(UserRequest req) throws RestBusException;
     UserResponse setFBId(String userId,String fbId) throws RestBusException;
     UserResponse getByFBId(String fbId) throws RestBusException;

@@ -12,9 +12,18 @@ public class CommentRespTO extends CountsTO{
     private int commentId;
     private int parentCommentId;
     private String commentBy;
+    private String commentByImage;
     private String commentTxt;
     private String commentDate;
 
+    
+    public String getCommentByImage() {
+        return commentByImage;
+    }
+
+    public void setCommentByImage(String commentByImage) {
+        this.commentByImage = commentByImage;
+    }
     
     public int getCommentId() {
         return commentId;

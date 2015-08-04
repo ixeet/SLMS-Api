@@ -16,6 +16,7 @@ public class StudentDetailVo {
     private String fName;
     private String lName;
     private String emailId;
+    private String adminEmailId;
     private String contactNo;
     private String birthDt;
     private String joiningDt;
@@ -27,7 +28,16 @@ public class StudentDetailVo {
 
     public StudentDetailVo() {
     }
+    
 
+    public String getAdminEmailId() {
+        return adminEmailId;
+    }
+
+    public void setAdminEmailId(String adminEmailId) {
+        this.adminEmailId = adminEmailId;
+    }
+    
     public String getTitle() {
         return title;
     }
@@ -140,6 +150,13 @@ public class StudentDetailVo {
     public void setLastUpdtTm(String lastUpdtTm) {
         this.lastUpdtTm = lastUpdtTm;
     }
+
+    
+    @Override
+    public String toString() {
+        return "StudentDetailVo{" + "studentDetailId=" + studentDetailId + ", userId=" + userId + ", title=" + title + ", fName=" + fName + ", lName=" + lName + ", emailId=" + emailId + ", adminEmailId=" + adminEmailId + ", contactNo=" + contactNo + ", birthDt=" + birthDt + ", joiningDt=" + joiningDt + ", profile=" + profile + ", socialProfile=" + socialProfile + ", address=" + address + ", lastUserIdCd=" + lastUserIdCd + ", lastUpdtTm=" + lastUpdtTm + '}';
+    }
+    
     
     
 }

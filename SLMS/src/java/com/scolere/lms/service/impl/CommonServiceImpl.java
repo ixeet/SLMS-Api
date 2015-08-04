@@ -166,6 +166,22 @@ public class CommonServiceImpl implements CommonServiceIface{
        
        return list;        
     }
+    
+    
+    @Override
+    public List<ClassMasterVo> getClassVoList(int mstrId) throws LmsServiceException {
+       List<ClassMasterVo> list = null; 
+
+        try {
+            ClassMasterDao dao = (ClassMasterDao) LmsDaoFactory.getDAO(ClassMasterDao.class);
+            list = dao.getClassMasterVoList(mstrId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getClassVoList = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }       
+       
+       return list;        
+    }
 
     /*HRM RELATED METHODS*/
     @Override
@@ -231,6 +247,20 @@ public class CommonServiceImpl implements CommonServiceIface{
             list = dao.getHomeRoomMasterVoList();
         } catch (Exception ex) {
             System.out.println("LmsServiceException # getHomeRoomMasterVoList = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }
+
+    @Override
+    public List<HomeRoomMasterVo> getHomeRoomMasterVoList(int clsId) throws LmsServiceException {
+        List<HomeRoomMasterVo> list =null; 
+        try {
+            HomeRoomMasterDao dao = (HomeRoomMasterDao) LmsDaoFactory.getDAO(HomeRoomMasterDao.class);
+            list = dao.getHomeRoomMasterVoList(clsId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getHomeRoomMasterVoList(clsId) = "+ex);
             throw new LmsServiceException(ex.getMessage());
         }
         

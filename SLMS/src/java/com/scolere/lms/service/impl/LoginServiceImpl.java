@@ -81,6 +81,8 @@ public class LoginServiceImpl implements LoginServiceIface{
         
         return status;
     }      
+    
+    
     @Override
     public boolean updateUserLoginDetail(UserLoginVo vo) throws LmsServiceException {
         
@@ -95,6 +97,7 @@ public class LoginServiceImpl implements LoginServiceIface{
         
         return status;
     }
+    
 
     @Override
     public UserLoginVo saveUserLoginDetail(UserLoginVo vo) throws LmsServiceException {
@@ -109,6 +112,7 @@ public class LoginServiceImpl implements LoginServiceIface{
         
         return userLoginVo;
     }
+    
 
     @Override
     public boolean deleteUserLoginDetail(UserLoginVo vo) throws LmsServiceException {
@@ -123,6 +127,7 @@ public class LoginServiceImpl implements LoginServiceIface{
         
         return status;
     }
+    
 
     @Override
     public UserLoginVo getUserLoginDetail(int id) throws LmsServiceException {
@@ -194,6 +199,21 @@ public class LoginServiceImpl implements LoginServiceIface{
         
         return status;
     }
+    
+    @Override
+    public boolean updateProfilePhoto(String photoPath) throws LmsServiceException {
+        boolean status = false;
+        try {
+            StudentDetailDao dao = (StudentDetailDao) LmsDaoFactory.getDAO(StudentDetailDao.class);
+            status = dao.updateProfilePhoto(photoPath);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # updateProfilePhoto = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return status;
+    }
+    
 
     @Override
     public boolean saveStudentDetail(StudentDetailVo vo) throws LmsServiceException {
