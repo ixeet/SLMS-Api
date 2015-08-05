@@ -4,6 +4,8 @@
  */
 package com.scolere.lms.application.rest.vo.response;
 
+import java.util.List;
+
 /**
  *
  * @author dell
@@ -11,7 +13,9 @@ package com.scolere.lms.application.rest.vo.response;
 public class ModuleRespTO extends CompletedStatusTO{
     private String moduleId;
     private String moduleName;
+    List<ResourceRespTO> resourceList;
 
+    
     public ModuleRespTO(String moduleId, String moduleName) {
         this.moduleId = moduleId;
         this.moduleName = moduleName;
@@ -19,9 +23,15 @@ public class ModuleRespTO extends CompletedStatusTO{
 
     public ModuleRespTO() {
     }
+
+    public List<ResourceRespTO> getResourceList() {
+        return resourceList;
+    }
+
+    public void setResourceList(List<ResourceRespTO> resourceList) {
+        this.resourceList = resourceList;
+    }
    
-    
-    
     public String getModuleId() {
         return moduleId;
     }

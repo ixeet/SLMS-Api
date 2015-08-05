@@ -19,6 +19,7 @@ public class UserResponse extends CommonRespTO{
     private String firstName;
     private String lastName;
     private String emailId;
+    private String adminEmailId;
     private String schoolId;
     private String schoolName;
     private String address;
@@ -27,8 +28,26 @@ public class UserResponse extends CommonRespTO{
     private String homeRoomId;
     private String homeRoomName;
     private String title;
+    private String uploadLocation;
 
     
+    
+    public String getUploadLocation() {
+        return uploadLocation;
+    }
+
+    public void setUploadLocation(String uploadLocation) {
+        this.uploadLocation = uploadLocation;
+    }
+    
+    public String getAdminEmailId() {
+        return adminEmailId;
+    }
+
+    public void setAdminEmailId(String adminEmailId) {
+        this.adminEmailId = adminEmailId;
+    }
+  
     public String getTitle() {
         return title;
     }

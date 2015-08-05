@@ -17,9 +17,53 @@ public class Emailer
             throws MessagingException {
 
             System.out.println("Sending message with from = "+from+" to= "+to+" subject= "+subject+" message= "+message);
-            sendHtmlMail(from,to,subject,message);
+            sendMail(from,to,subject,message);
             
     }   
+    
+   
+   /**
+    * Use to send HTML email.
+    * @param fromEmailId
+    * @param toEmailId
+    * @param subject
+    * @param message 
+    */
+    public static void sendMail(String fromEmailId, String toEmailId, String subject, String emailMessage) {
+        final String host = "md-in-5.webhostbox.net";//change accordingly
+        final String port = "587";//change accordingly
+        final String user = "anil.sharma@ixeet.com";//change accordingly
+        final String password = "Asharma@ixeet.s";//change accordingly
+
+
+        Properties properties = System.getProperties();
+        properties.put("mail.smtp.host", host);
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.port", port);
+
+        Session session = Session.getDefaultInstance(properties,
+                new javax.mail.Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(user, password);
+                    }
+                });
+
+        try {
+            MimeMessage message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(user));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmailId));
+
+            message.setSubject(subject);
+            message.setContent(emailMessage, "text/html");
+
+            Transport.send(message);
+            System.out.println("message sent....");
+        } catch (Exception ex) {
+            System.out.println("Exception : " + ex);
+            ex.printStackTrace();
+        }
+
+    }
     
     
    private void sendHtmlMail(String fromEmail,String toEmail,String subject,String emailMeggage)

@@ -21,6 +21,8 @@ public interface CourseBusIface {
      * @throws RestBusException 
      */
     CourseResponse getUserCourses(CourseRequest req) throws RestBusException;
+
+    CourseResponse getUserCoursesWeb(CourseRequest req) throws RestBusException;
     
     /**
      * Returns all the resources associated with a module.
@@ -29,6 +31,13 @@ public interface CourseBusIface {
      * @throws RestBusException 
      */
     CourseResponse getModuleResources(CourseRequest req) throws RestBusException;
+
+    
+    CourseResponse commentOnComment(CourseRequest req) throws RestBusException;
+    CourseResponse commentOnResource(CourseRequest req) throws RestBusException;
+    
+    CourseResponse likeOnComment(String userName,int commentId) throws RestBusException;
+    CourseResponse likeOnResource(String userName,int resourceId) throws RestBusException;
     
     
 }

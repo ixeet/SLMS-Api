@@ -29,6 +29,7 @@ public interface CommonServiceIface {
     boolean deleteClassDetail(ClassMasterVo   vo) throws LmsServiceException;
     ClassMasterVo  getClassDetail(int id) throws LmsServiceException;
     List<ClassMasterVo > getClassVoList() throws LmsServiceException; 
+    List<ClassMasterVo > getClassVoList(int mstrId) throws LmsServiceException; 
     
     /*HRM RELATED METHODS*/
     boolean updateHomeRoomMasterDetail(HomeRoomMasterVo  vo) throws LmsServiceException;
@@ -36,6 +37,7 @@ public interface CommonServiceIface {
     boolean deleteHomeRoomMasterDetail(HomeRoomMasterVo   vo) throws LmsServiceException;
     HomeRoomMasterVo  getHomeRoomMasterDetail(int id) throws LmsServiceException;
     List<HomeRoomMasterVo > getHomeRoomMasterVoList() throws LmsServiceException;    
+    List<HomeRoomMasterVo > getHomeRoomMasterVoList(int clsId) throws LmsServiceException;    
         
     
 }

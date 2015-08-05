@@ -41,14 +41,15 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
         try {
             conn = getConnection();
 
-            String sql = "SELECT ul.USER_ID,ul.USER_NM,ul.USER_FB_ID,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADDRESS,ucm.SCHOOL_ID,ucm.CLASS_ID,ucm.HRM_ID FROM user_login ul inner join student_dtls sdtl on ul.user_id = sdtl.user_id inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID where ul.USER_NM=? and ul.USER_PWD=?";
+            //String sql = "SELECT ul.USER_ID,ul.USER_NM,ul.USER_FB_ID,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADDRESS,ucm.SCHOOL_ID,ucm.CLASS_ID,ucm.HRM_ID FROM user_login ul inner join student_dtls sdtl on ul.user_id = sdtl.user_id inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID where ul.USER_NM=? and ul.USER_PWD=?";
+            String sql = "SELECT ul.USER_ID,ul.USER_NM,ul.USER_FB_ID,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADDRESS,ucm.SCHOOL_ID,ucm.CLASS_ID,ucm.HRM_ID,schol.SCHOOL_NAME,clas.CLASS_NAME,hrm.HRM_NAME,sdtl.TITLE FROM user_login ul inner join student_dtls sdtl on ul.user_id = sdtl.user_id inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID inner join school_mstr schol on schol.SCHOOL_ID=ucm.SCHOOL_ID inner join class_mstr clas on clas.CLASS_ID=ucm.CLASS_ID inner join homeroom_mstr hrm on hrm.HRM_ID=ucm.HRM_ID where ul.USER_NM=? and ul.USER_PWD=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, userName);
             stmt.setString(2, userPwd);
             
             rs = stmt.executeQuery();
             if (rs.next()) {
-            // USER_ID     USER_NM     USER_FB_ID     FNAME     LNAME     EMAIL_ID     ADDRESS     SCHOOL_ID     CLASS_ID     HRM_ID    
+            // USER_ID     USER_NM     USER_FB_ID     FNAME     LNAME     EMAIL_ID     ADDRESS     SCHOOL_ID     CLASS_ID     HRM_ID  schol.SCHOOL_NAME clas.CLASS_NAME hrm.HRM_NAME sdtl.TITLE  
                 user = new UserVO();
                 user.setUserId(rs.getInt(1));
                 user.setUserName(rs.getString(2));
@@ -60,6 +61,11 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
                 user.setSchoolId(rs.getString(8));
                 user.setClassId(rs.getString(9));
                 user.setHomeRoomId(rs.getString(10));
+                
+                user.setSchoolName(rs.getString(11));
+                user.setClassName(rs.getString(12));
+                user.setHomeRoomName(rs.getString(13));
+                user.setTitle(rs.getString(14));
             }
 
         } catch (SQLException se) {
@@ -86,7 +92,7 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
         try {
             conn = getConnection();
 
-            String sql = "SELECT ul.USER_ID,ul.USER_NM,ul.USER_FB_ID,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADDRESS,ucm.SCHOOL_ID,ucm.CLASS_ID,ucm.HRM_ID FROM user_login ul inner join student_dtls sdtl on ul.user_id = sdtl.user_id inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID where ul.USER_FB_ID=?";
+            String sql = "SELECT ul.USER_ID,ul.USER_NM,ul.USER_FB_ID,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADDRESS,ucm.SCHOOL_ID,ucm.CLASS_ID,ucm.HRM_ID,schol.SCHOOL_NAME,clas.CLASS_NAME,hrm.HRM_NAME,sdtl.TITLE FROM user_login ul inner join student_dtls sdtl on ul.user_id = sdtl.user_id inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID inner join school_mstr schol on schol.SCHOOL_ID=ucm.SCHOOL_ID inner join class_mstr clas on clas.CLASS_ID=ucm.CLASS_ID inner join homeroom_mstr hrm on hrm.HRM_ID=ucm.HRM_ID where ul.USER_FB_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, facebookId);
             
@@ -104,6 +110,12 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
                 user.setSchoolId(rs.getString(8));
                 user.setClassId(rs.getString(9));
                 user.setHomeRoomId(rs.getString(10));
+                
+                user.setSchoolName(rs.getString(11));
+                user.setClassName(rs.getString(12));
+                user.setHomeRoomName(rs.getString(13));
+                user.setTitle(rs.getString(14));
+                
             }
 
         } catch (SQLException se) {

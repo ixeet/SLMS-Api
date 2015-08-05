@@ -67,8 +67,9 @@ public class UserBusImpl implements UserBusIface{
                 studentVo.setBirthDt(null);
                 studentVo.setContactNo("");
                 studentVo.setEmailId(req.getEmailId());
+                studentVo.setAdminEmailId(req.getAdminEmailId());
                 studentVo.setJoiningDt(null);
-                studentVo.setLastUserIdCd("");
+                studentVo.setLastUserIdCd(req.getUserName());
                 studentVo.setProfile(null);
                 studentVo.setSocialProfile(null);
                 studentVo.setfName(req.getFirstName());
@@ -123,6 +124,76 @@ public class UserBusImpl implements UserBusIface{
        return resp;        
     }
 
+    
+    @Override
+    public UserResponse updateProfile(UserRequest req) throws RestBusException {
+
+        UserResponse resp = new UserResponse();
+        
+        try {
+            LoginServiceIface loginService = new LoginServiceImpl();
+
+            if(req.getUserid() != null && !req.getUserid().isEmpty())
+            {
+                //update student details into Student_dtls table 
+                StudentDetailVo studentVo=new StudentDetailVo();
+                studentVo.setUserId(Integer.parseInt(req.getUserid()));
+                
+                studentVo.setEmailId(req.getEmailId());
+                studentVo.setLastUserIdCd(req.getUserName());
+                studentVo.setfName(req.getFirstName());
+                studentVo.setlName(req.getLastName());
+                studentVo.setTitle(req.getTitle());
+                
+                loginService.updateStudentDetail(studentVo);
+
+                //setting success into response
+                resp.setStatus(SLMSRestConstants.status_success);
+                resp.setStatusMessage(SLMSRestConstants.message_success);  
+            }else{
+                resp.setStatus(SLMSRestConstants.status_badrequest);
+                resp.setStatusMessage(SLMSRestConstants.message_badrequest);              
+            }
+
+        } catch (LmsServiceException ex) {
+            System.out.println("LmsServiceException # updateProfile "+ex.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("Exception # updateProfile "+ex.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(ex.getMessage());
+        }
+        
+       return resp;        
+    }
+
+    @Override
+    public boolean updateProfilePhoto(String photoPath) throws RestBusException {
+
+        boolean status = false;
+        
+        try {
+            LoginServiceIface loginService = new LoginServiceImpl();
+
+            if(photoPath != null && !photoPath.isEmpty())
+            {
+                status = loginService.updateProfilePhoto(photoPath);
+                
+            }
+
+        } catch (Exception ex) {
+            System.out.println("Exception # updateProfilePhoto "+ex.getMessage());
+            throw new RestBusException("Exception # updateProfilePhoto "+ex.getMessage());
+        }
+        
+       return status;        
+    }
+
+    
+    
     /**
      * Login > 
      * 1) verify if user name exists
@@ -164,6 +235,7 @@ public class UserBusImpl implements UserBusIface{
                    resp.setSchoolName(userFromDb.getSchoolName());
                    resp.setTitle(userFromDb.getTitle());
                    resp.setUserFbId(userFromDb.getUserFbId());
+                   resp.setAdminEmailId(userFromDb.getAdminEmailId());
                    
                 //setting success into response
                 resp.setStatus(SLMSRestConstants.status_success);
@@ -263,6 +335,7 @@ public class UserBusImpl implements UserBusIface{
                    resp.setSchoolName(userFromDb.getSchoolName());
                    resp.setTitle(userFromDb.getTitle());
                    resp.setUserFbId(userFromDb.getUserFbId());
+                   resp.setAdminEmailId(userFromDb.getAdminEmailId());
                    
                 //setting success into response
                 resp.setStatus(SLMSRestConstants.status_success);
@@ -320,6 +393,9 @@ public class UserBusImpl implements UserBusIface{
                 //setting success into response
                 resp.setStatus(SLMSRestConstants.status_success);
                 resp.setStatusMessage(SLMSRestConstants.message_success);                   
+               }else{
+                resp.setStatus(SLMSRestConstants.status_userNotExist);
+                resp.setStatusMessage(SLMSRestConstants.message_userNotExist);                 
                }
 
         } catch (LmsServiceException ex) {

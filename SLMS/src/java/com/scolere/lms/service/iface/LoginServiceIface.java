@@ -61,17 +61,18 @@ public interface LoginServiceIface {
 
     UserLoginVo getUserLoginDetail(String userName,String userPwd) throws LmsServiceException;
     
-    
     List<UserLoginVo> getUserLoginVoList() throws LmsServiceException;
-
+    
     boolean updateStudentDetail(StudentDetailVo vo) throws LmsServiceException;
-
+    
+    boolean updateProfilePhoto(String photoName) throws LmsServiceException; 
     /**
      * This method is used for save detail
      *
      * @param vo
      */
     boolean saveStudentDetail(StudentDetailVo vo) throws LmsServiceException;
+
 
     /**
      * This method used for delete detail

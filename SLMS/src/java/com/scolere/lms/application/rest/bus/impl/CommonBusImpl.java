@@ -5,13 +5,20 @@
 package com.scolere.lms.application.rest.bus.impl;
 
 import com.scolere.lms.application.rest.bus.iface.CommonBusIface;
+import com.scolere.lms.application.rest.constants.SLMSRestConstants;
 import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.application.rest.vo.response.ClassRespTO;
 import com.scolere.lms.application.rest.vo.response.CommonResponse;
 import com.scolere.lms.application.rest.vo.response.HomeRoomRespTO;
 import com.scolere.lms.application.rest.vo.response.SchoolRespTO;
+import com.scolere.lms.domain.vo.ClassMasterVo;
+import com.scolere.lms.domain.vo.SchoolMasterVo;
+import com.scolere.lms.service.iface.CommonServiceIface;
+import com.scolere.lms.service.impl.CommonServiceImpl;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
+import my.java.interfac.HomeRoomMasterVo;
 
 /**
  *
@@ -19,37 +26,62 @@ import java.util.List;
  */
 public class CommonBusImpl implements CommonBusIface{
 
+    /*
+     * Get School,Class & homeroom master table data and display in given hirarchy.
+     * 
+     */
+    
     @Override
     public CommonResponse getSchoolMasterData() throws RestBusException {
         CommonResponse resp = new CommonResponse();
-    
-        List<SchoolRespTO> schoolList = new ArrayList<SchoolRespTO>();
-        SchoolRespTO school = new SchoolRespTO("1", "Wilkinson boys school");
-        SchoolRespTO school2 = new SchoolRespTO("2", "Lovely public school");
+        CommonServiceIface service = new CommonServiceImpl();
         
-        List<ClassRespTO> classList = new ArrayList<ClassRespTO>(); 
-        ClassRespTO claz = new ClassRespTO("01", "Class 01");
+        try{
         
-        List<HomeRoomRespTO> HomeRoomList = new ArrayList<HomeRoomRespTO>();
-        HomeRoomRespTO hrm1 = new HomeRoomRespTO("01", "HRM1");
-        HomeRoomList.add(hrm1);
-        HomeRoomRespTO hrm2 = new HomeRoomRespTO("02", "HRM2");
-        HomeRoomList.add(hrm2);
-        claz.setHomeRoomList(HomeRoomList);
-        classList.add(claz);
-        
-        school.setClassList(classList);
-        school2.setClassList(classList);
+        List<SchoolMasterVo> schoolListFromDB = service.getSchoolMasterVoList();
+        List<SchoolRespTO> schoolList = new ArrayList<SchoolRespTO>(schoolListFromDB.size());
 
-        schoolList.add(school);
-        schoolList.add(school2);
+        SchoolRespTO schoolRespTO = null;
+        for(SchoolMasterVo vo : schoolListFromDB)
+        {
+        schoolRespTO = new SchoolRespTO(String.valueOf(vo.getSchoolId()), vo.getSchoolName());
+        //Class master data
+        List<ClassMasterVo> clsMstrListDB = service.getClassVoList(vo.getSchoolId());
+        List<ClassRespTO> classList = new ArrayList<ClassRespTO>(clsMstrListDB.size());
+        ClassRespTO classRespTO = null;
+        for(ClassMasterVo clsvo : clsMstrListDB)
+        {
+        classRespTO = new ClassRespTO(String.valueOf(clsvo.getClassId()), clsvo.getClassName());
+        //Homeroom data
+        List<HomeRoomMasterVo> hrmListDB = service.getHomeRoomMasterVoList(clsvo.getClassId());
+        List<HomeRoomRespTO> homeRoomList = new ArrayList<HomeRoomRespTO>(hrmListDB.size());
+        HomeRoomRespTO homeRoomRespTO = null;
+        for(HomeRoomMasterVo hrmvo  : hrmListDB)
+        {
+        homeRoomRespTO = new HomeRoomRespTO(String.valueOf(hrmvo.getHomeRoomMstrId()), hrmvo.getHomeRoomMstrName());
+        homeRoomList.add(homeRoomRespTO);
+        }//hrm loop
         
+        classRespTO.setHomeRoomList(homeRoomList);
+        classList.add(classRespTO);
+        }//cls loop
+        
+        schoolRespTO.setClassList(classList);
+        schoolList.add(schoolRespTO);
+        } //school loop
         resp.setSchoolList(schoolList);
-        resp.setStatus(1001);
-        resp.setStatusMessage("Success");
+
+        resp.setStatus(SLMSRestConstants.status_success);
+        resp.setStatusMessage(SLMSRestConstants.message_success); 
+        }catch(Exception e){
+            System.out.println("Exception # getSchoolMasterData "+e.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(e.getMessage());            
+        }
         
         return resp;
-    }
+  }
     
     
     

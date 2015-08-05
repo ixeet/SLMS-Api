@@ -15,6 +15,7 @@ public class UserVO {
     private String firstName;
     private String lastName;
     private String emailId;
+    private String adminEmailId;
     private String schoolId;
     private String schoolName;
     private String address;
@@ -24,7 +25,14 @@ public class UserVO {
     private String homeRoomName;
     private String title;
 
-        
+    
+    public String getAdminEmailId() {
+        return adminEmailId;
+    }
+
+    public void setAdminEmailId(String adminEmailId) {
+        this.adminEmailId = adminEmailId;
+    }
     
     public int getUserId() {
         return userId;
