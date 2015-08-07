@@ -39,5 +39,7 @@ public interface CourseBusIface {
     CourseResponse likeOnComment(String userName,int commentId) throws RestBusException;
     CourseResponse likeOnResource(String userName,int resourceId) throws RestBusException;
     
+    /*****Assignment services*****/
+    CourseResponse getAssignments(CourseRequest req) throws RestBusException;
     
 }

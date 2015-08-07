@@ -30,6 +30,86 @@ import java.util.List;
  */
 public class CourseBusImpl implements CourseBusIface{
 
+   
+    @Override
+    public CourseResponse getAssignments(CourseRequest req) throws RestBusException {
+            CourseResponse resp = new CourseResponse();
+            CourseServiceIface service = new CourseServiceImpl();
+    
+            try {
+            //Courses list
+             List<CourseVO> courseListFromDB = service.getStudentCourses(req.getUserId(), req.getSearchText());
+            // List<CourseVO> courseListFromDB = service.getStudentCourses(req.getUserName(), req.getSearchText());
+             ArrayList<CourseRespTO> courses = new ArrayList<CourseRespTO>(courseListFromDB.size());
+             
+             CourseRespTO courseResp = null;
+             ModuleRespTO modResp = null;
+             for(CourseVO vo : courseListFromDB)
+             {
+             courseResp = new CourseRespTO();
+             courseResp.setCompletedOn(vo.getCompletedOn());
+             courseResp.setCompletedStatus(vo.getCompletedStatus());
+             courseResp.setCourseId(vo.getCourseId());
+             courseResp.setCourseName(vo.getCourseName());
+             courseResp.setAuthorImg(vo.getAuthorImg());
+             courseResp.setAuthorName(vo.getAuthorName());
+             courseResp.setStartedOn(vo.getStartedOn());
+             
+             //Modules list
+             
+                double temp=0;
+                List<CourseVO> moduleListFromDB = service.getStudentCoursesModules(vo.getCourseSessionId());
+                List<ModuleRespTO> moduleList = new ArrayList<ModuleRespTO>(moduleListFromDB.size());
+                for(CourseVO mod:moduleListFromDB)
+                {
+                modResp = new ModuleRespTO();
+                modResp.setModuleId(mod.getModuleId());
+                modResp.setModuleName(mod.getModuleName());
+                modResp.setStartedOn(mod.getStartedOn());
+                modResp.setCompletedStatus(mod.getCompletedStatus());
+                modResp.setCompletedPercentStatus(mod.getCompletedPercentStatus());
+                
+                if(mod.getCompletedStatus().equalsIgnoreCase("y") || mod.getCompletedStatus().equals("1"))
+                {
+                temp=temp+1;
+                }
+                
+                //Assignment start
+                
+                
+                
+                //Assignment end
+                
+                
+                moduleList.add(modResp);
+                }
+             
+             double completedCoursePercent=0;
+             if(moduleListFromDB.size()>0){
+             completedCoursePercent = temp/(double)moduleList.size();
+             }
+             
+             courseResp.setCompletedPercentStatus(String.valueOf(completedCoursePercent*100));   
+
+             courseResp.setModuleList(moduleList);
+             courses.add(courseResp);
+             }
+
+             resp.setCourseList(courses);
+
+            resp.setStatus(SLMSRestConstants.status_success);
+            resp.setStatusMessage(SLMSRestConstants.message_success); 
+        }catch(Exception e){
+            System.out.println("Exception # getAssignments "+e.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(e.getMessage());            
+        }
+            
+        return resp;
+    }
+
+        
     /**
      * 
      * @param req (UserId,TextSearch)
@@ -643,6 +723,7 @@ public class CourseBusImpl implements CourseBusIface{
        
        return resp;
     }
-    
+
+
     
 }//end of class

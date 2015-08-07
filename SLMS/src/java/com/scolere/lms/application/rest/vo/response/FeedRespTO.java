@@ -11,10 +11,20 @@ import java.util.List;
  * @author dell
  */
 public class FeedRespTO extends CountsTO{
+    private int feedId;
     private String feedText;
     private List<CommentRespTO> feedCommentsList;
 
     
+    
+    public int getFeedId() {
+        return feedId;
+    }
+
+    public void setFeedId(int feedId) {
+        this.feedId = feedId;
+    }
+
     public String getFeedText() {
         return feedText;
     }

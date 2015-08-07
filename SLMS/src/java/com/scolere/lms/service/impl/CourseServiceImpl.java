@@ -146,6 +146,21 @@ public class CourseServiceImpl implements CourseServiceIface{
     }
 
     @Override
+    public List<AssignmentVO> getStudentAssignments(int courseId,int moduleId,int userId) throws LmsServiceException {
+        
+        List<AssignmentVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getStudentAssignments(userId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getStudentAssignments = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }
+    
+    @Override
     public List<AssignmentVO> getStudentAssignments(int userId) throws LmsServiceException {
         
         List<AssignmentVO> list =null;

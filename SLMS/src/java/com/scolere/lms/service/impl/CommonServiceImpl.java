@@ -7,7 +7,14 @@ package com.scolere.lms.service.impl;
 import com.scolere.lms.domain.exception.LmsServiceException;
 import com.scolere.lms.domain.vo.ClassMasterVo;
 import com.scolere.lms.domain.vo.SchoolMasterVo;
+import com.scolere.lms.domain.vo.cross.AssignmentVO;
+import com.scolere.lms.domain.vo.cross.CommentVO;
+import com.scolere.lms.domain.vo.cross.CourseVO;
+import com.scolere.lms.domain.vo.cross.FeedVO;
+import com.scolere.lms.domain.vo.cross.ResourseVO;
+import com.scolere.lms.domain.vo.cross.UserVO;
 import com.scolere.lms.persistance.dao.iface.ClassMasterDao;
+import com.scolere.lms.persistance.dao.iface.FeedDao;
 import com.scolere.lms.persistance.dao.iface.HomeRoomMasterDao;
 import com.scolere.lms.persistance.dao.iface.SchoolMasterDao;
 import com.scolere.lms.persistance.factory.LmsDaoFactory;
@@ -265,6 +272,121 @@ public class CommonServiceImpl implements CommonServiceIface{
         }
         
         return list;
+    }
+
+    @Override
+    public List<FeedVO> getFeedsList(int userId, String searchTxt) throws LmsServiceException {
+        
+        List<FeedVO>  list=null;
+        try {
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            list = dao.getFeedsList(userId, searchTxt);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getFeedsList(x,y) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }
+
+
+    @Override
+    public List<CommentVO> getFeedCommentsList(int feedId) throws LmsServiceException {
+       List<CommentVO>  list=null;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            list = dao.getFeedCommentsList(feedId);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getFeedCommentsList(x) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }
+
+    
+    
+    @Override
+    public UserVO getUserDetail(int userId) throws LmsServiceException {
+        
+        UserVO vo =null;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            vo = dao.getUserDetail(userId);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getUserDetail(x) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        return vo;
+    }
+
+    @Override
+    public CourseVO getCourseDetail(int courseId) throws LmsServiceException {
+        
+        CourseVO vo =null;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            vo = dao.getCourseDetail(courseId);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getCourseDetail(x) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        return vo;
+    }
+
+
+    @Override
+    public CourseVO getModuleDetail(int moduleId) throws LmsServiceException {
+        CourseVO vo =null;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            vo = dao.getModuleDetail(moduleId);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getModuleDetail(x) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        return vo;
+    }
+
+
+    @Override
+    public ResourseVO getResourseDetail(int resourseId) throws LmsServiceException {
+        
+        ResourseVO vo = null;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            vo = dao.getResourseDetail(resourseId);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getResourseDetail(x) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        return vo;
+    }
+
+    @Override
+    public AssignmentVO getAssignmentDetail(int assignmentId) throws LmsServiceException {
+        
+        AssignmentVO vo = null;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            vo = dao.getAssignmentDetail(assignmentId);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # AssignmentVO(x) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        return vo;
     }
     
     

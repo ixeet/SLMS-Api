@@ -168,6 +168,30 @@ public class CourseController {
         return resp;
     }    
    
+    /***ASSIGNMENT SERVICES***/    
+    
+    @POST
+    @Path("/getAssignments")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)  
+    public CourseResponse getAssignments(CourseRequest course) {
+        System.out.println("Start getAssignments >> "+course);
+        CourseResponse resp = null;
         
+//        try {
+//            resp = restService.likeOnResource(userName, resourceId);
+//        } catch (RestBusException ex) {
+//            System.out.println("Exception # getAssignments - "+ex);
+//        }
+//        
+        System.out.println("<< End getAssignments # "+resp); 
+        
+        return resp;
+    }   
+    
+    
+    
+    
+    
     
 }//End of class

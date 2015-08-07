@@ -81,5 +81,6 @@ public class CommonResponse extends CommonRespTO{
     public void setSchoolList(List<SchoolRespTO> schoolList) {
         this.schoolList = schoolList;
     }
+
     
 }//End of class
