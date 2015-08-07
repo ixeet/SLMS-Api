@@ -82,6 +82,11 @@ public class CommonRequest {
     public void setCommentText(String commentText) {
         this.commentText = commentText;
     }
+
+    @Override
+    public String toString() {
+        return "CommonRequest{" + "userName=" + userName + ", userId=" + userId + ", commentId=" + commentId + ", resourceId=" + resourceId + ", courseId=" + courseId + ", moduleId=" + moduleId + ", searchText=" + searchText + ", commentText=" + commentText + '}';
+    }
     
     
     

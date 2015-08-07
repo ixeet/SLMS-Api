@@ -37,10 +37,9 @@ public interface CourseServiceIface {
     List<CommentVO> getResourceComments(int resourceId) throws LmsServiceException;
     List<ResourseVO> getRelatedResources(int resourceId) throws LmsServiceException;
     //Get assignments service -Resources & Comments
+    List<AssignmentVO> getStudentAssignments(int courseId,int moduleId,int userId) throws LmsServiceException;
     List<AssignmentVO> getStudentAssignments(int userId) throws LmsServiceException;
     List<ResourseVO> getAssignmentsResources(int userId,int assignmentDtlId) throws LmsServiceException;
-    
-    
     
     boolean updateTeacherCourseSession(TeacherCourseSessionVO vo) throws LmsServiceException;
 

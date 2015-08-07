@@ -14,7 +14,8 @@ public class ModuleRespTO extends CompletedStatusTO{
     private String moduleId;
     private String moduleName;
     List<ResourceRespTO> resourceList;
-
+    private List<AssignmentRespTO> assignmentList;
+    
     
     public ModuleRespTO(String moduleId, String moduleName) {
         this.moduleId = moduleId;
@@ -24,6 +25,16 @@ public class ModuleRespTO extends CompletedStatusTO{
     public ModuleRespTO() {
     }
 
+    
+    public List<AssignmentRespTO> getAssignmentList() {
+        return assignmentList;
+    }
+
+    public void setAssignmentList(List<AssignmentRespTO> assignmentList) {
+        this.assignmentList = assignmentList;
+    }
+
+    
     public List<ResourceRespTO> getResourceList() {
         return resourceList;
     }
@@ -49,4 +60,4 @@ public class ModuleRespTO extends CompletedStatusTO{
     }
     
     
-}
+}//End of class

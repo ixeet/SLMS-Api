@@ -144,6 +144,7 @@ public class UserBusImpl implements UserBusIface{
                 studentVo.setfName(req.getFirstName());
                 studentVo.setlName(req.getLastName());
                 studentVo.setTitle(req.getTitle());
+                studentVo.setProfile(req.getUserPassword());
                 
                 loginService.updateStudentDetail(studentVo);
 

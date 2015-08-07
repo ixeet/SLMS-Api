@@ -1,7 +1,6 @@
 package com.scolere.lms.persistance.dao.iface;
 
 import com.scolere.lms.domain.exception.LmsDaoException;
-import com.scolere.lms.domain.exception.LmsServiceException;
 import com.scolere.lms.domain.vo.TeacherCourseSessionVO;
 import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
@@ -28,6 +27,7 @@ public interface TeacherCourseSessionDao
     List<CommentVO> getResourceComments(int resourceId) throws LmsDaoException;
     List<ResourseVO> getRelatedResources(int resourceId) throws LmsDaoException;
     //Get assignments service -Resources & Comments
+    List<AssignmentVO> getStudentAssignments(int courseId,int moduleId,int userId) throws LmsDaoException;
     List<AssignmentVO> getStudentAssignments(int userId) throws LmsDaoException;
     List<ResourseVO> getAssignmentsResources(int userId,int assignmentDtlId) throws LmsDaoException;
 

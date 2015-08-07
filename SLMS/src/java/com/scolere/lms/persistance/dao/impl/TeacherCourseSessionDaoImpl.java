@@ -726,6 +726,52 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
 
         return list;
     }
+    
+    @Override
+    public List<AssignmentVO> getStudentAssignments(int courseId,int moduleId,int userId) throws LmsDaoException {
+        List<AssignmentVO> list = new ArrayList<AssignmentVO>();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs =null;
+        try {
+            conn = getConnection();
+
+            /**
+             * ASSIGNMENT_ID | ASSIGNMENT_NAME | ASSIGNMENT_STATUS | ASSIGNMENT_SUBMITTED_BY | ASSIGNMENT_SUBMITTED_DATE
+             */
+            
+            String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,txn.UPLOADED_ON FROM assignment_resource_txn txn INNER JOIN assignment asgnmnt ON txn.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID where txn.STUDENT_ID = (SELECT USER_NM FROM user_login where USER_ID=?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            
+            rs = stmt.executeQuery();
+            AssignmentVO vo = null;
+            while (rs.next()) {
+                vo = new AssignmentVO();
+                vo.setAssignmentId(rs.getInt(1));
+                vo.setAssignmentName(rs.getString(2));
+                vo.setAssignmentStatus(rs.getString(3));
+                vo.setAssignmentSubmittedBy(rs.getString(4));
+                vo.setAssignmentSubmittedDate(rs.getString(5));
+
+                list.add(vo);
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getStudentAssignments (?,?,?)# " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getStudentAssignments (?,?,?)# " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return list;
+    }
+
+    
 
     @Override
     public List<AssignmentVO> getStudentAssignments(int userId) throws LmsDaoException {

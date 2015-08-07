@@ -19,10 +19,19 @@ public class AssignmentRespTO {
     private String assignmentStatus;
     private String assignmentSubmittedDate;
     private String assignmentSubmittedBy;
+    private String assignmentDueDate;
 
     private List<ResourceRespTO> attachedResources;
     
 
+    public String getAssignmentDueDate() {
+        return assignmentDueDate;
+    }
+
+    public void setAssignmentDueDate(String assignmentDueDate) {
+        this.assignmentDueDate = assignmentDueDate;
+    }
+    
     public int getAssignmentId() {
         return assignmentId;
     }
