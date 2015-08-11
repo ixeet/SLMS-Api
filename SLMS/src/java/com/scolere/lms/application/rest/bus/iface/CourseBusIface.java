@@ -20,6 +20,8 @@ public interface CourseBusIface {
      * @return CourseResponse (Array of Courses {CoursesId,,CoursesName,PercentageOfCources,ArrayofModules(ModuleId,ModuleName,Status,PercentOfModule)}Status,StatusMessage)
      * @throws RestBusException 
      */
+    CourseResponse getCourseDetailsByFeedId(int feedId) throws RestBusException;
+
     CourseResponse getUserCourses(CourseRequest req) throws RestBusException;
 
     CourseResponse getUserCoursesWeb(CourseRequest req) throws RestBusException;
@@ -30,8 +32,9 @@ public interface CourseBusIface {
      * @return CourseResponse
      * @throws RestBusException 
      */
+    CourseResponse getModuleDetailsByFeedId(int feedId) throws RestBusException;
+    
     CourseResponse getModuleResources(CourseRequest req) throws RestBusException;
-
     
     CourseResponse commentOnComment(CourseRequest req) throws RestBusException;
     CourseResponse commentOnResource(CourseRequest req) throws RestBusException;
@@ -41,5 +44,9 @@ public interface CourseBusIface {
     
     /*****Assignment services*****/
     CourseResponse getAssignments(CourseRequest req) throws RestBusException;
-    
+
+    int saveResourceProfile(String resourceprofileImgName,
+            String resourceAuthor, String resourceImage,
+            String lastUserIdCd, String descTxt, String resourceName, String upLoadUrl, String resoUrl) throws RestBusException;
+
 }

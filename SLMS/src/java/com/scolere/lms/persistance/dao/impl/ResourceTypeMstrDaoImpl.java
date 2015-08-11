@@ -6,15 +6,17 @@
 package com.scolere.lms.persistance.dao.impl;
 
 import com.scolere.lms.domain.exception.LmsDaoException;
+import com.scolere.lms.domain.vo.ResourceTypeMstrVo;
+
 import com.scolere.lms.persistance.dao.iface.ResourceTypeMstrDao;
 import com.scolere.lms.persistance.factory.LmsDaoAbstract;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import my.java.interfac.ResourceTypeMstrVo;
 
 /**
  *
@@ -200,4 +202,74 @@ public class ResourceTypeMstrDaoImpl extends LmsDaoAbstract implements ResourceT
 
     }
 
+	 
+	@Override
+	public int saveResourceProfile(String resourceprofileImgName,
+			String resourceAuthor, String resourceImage,
+			String lastUserIdCd, String descTxt ,String resourceName,String upLoadUrl, String resoUrl) throws LmsDaoException {
+		Connection conn = null;
+		   Statement stmt = null;
+		   int status=0;
+	        try {
+	            conn = getConnection();
+	            stmt = conn.createStatement();
+	            String sql="";
+	            
+	            if(!resoUrl.equals("") && !upLoadUrl.equals("")){
+	            	 sql = "INSERT INTO resourse_mstr(RESOURSE_ID, RESOURSE_NAME, RESOURCE_AUTHOR, RESOURCE_DURATION, DESC_TXT, RESOURCE_TYP_ID, METADATA, DELETED_FL, " +
+	 	            		"DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD,  RESOURCE_URL, AUTHOR_IMG, THUMB_IMG) VALUES " +
+	 	            		"((SELECT MAX( RESOURSE_ID ) FROM resourse_mstr r) +1, '"+resourceName+"', '"+resourceAuthor+"', 1, '"+descTxt+"',1, '', 0, 0, " +
+	 	            				"'', '', '"+lastUserIdCd+"', '"+upLoadUrl+"', '', '')";
+	            	 stmt.executeUpdate(sql);
+	            	
+		            	 sql = "INSERT INTO resourse_mstr(RESOURSE_ID, RESOURSE_NAME, RESOURCE_AUTHOR, RESOURCE_DURATION, DESC_TXT, RESOURCE_TYP_ID, METADATA, DELETED_FL, " +
+		 	            		"DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD,  RESOURCE_URL, AUTHOR_IMG, THUMB_IMG) VALUES " +
+		 	            		"((SELECT MAX( RESOURSE_ID ) FROM resourse_mstr r) +1, '"+resourceName+"', '"+resourceAuthor+"', 1, '"+descTxt+"',1, '', 0, 0, " +
+		 	            				"'', '', '"+lastUserIdCd+"', '', '"+resourceprofileImgName+"', '')";
+		            	 stmt.executeUpdate(sql);
+	            }
+	            
+	            else if(resoUrl!="" && upLoadUrl.equals("")){
+	            	 sql = "INSERT INTO resourse_mstr(RESOURSE_ID, RESOURSE_NAME, RESOURCE_AUTHOR, RESOURCE_DURATION, DESC_TXT, RESOURCE_TYP_ID, METADATA, DELETED_FL, " +
+	 	            		"DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD,  RESOURCE_URL, AUTHOR_IMG, THUMB_IMG) VALUES " +
+	 	            		"((SELECT MAX( RESOURSE_ID ) FROM resourse_mstr r) +1, '"+resourceName+"', '"+resourceAuthor+"', 1, '"+descTxt+"',1, '', 0, 0, " +
+	 	            				"'', '', '"+lastUserIdCd+"', '', '"+resourceprofileImgName+"', '')";
+	            	 stmt.executeUpdate(sql);
+	            }
+	            
+	            else if(resoUrl.equals("") && upLoadUrl!= ""){
+	            	 sql = "INSERT INTO resourse_mstr(RESOURSE_ID, RESOURSE_NAME, RESOURCE_AUTHOR, RESOURCE_DURATION, DESC_TXT, RESOURCE_TYP_ID, METADATA, DELETED_FL, " +
+	 	            		"DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD,  RESOURCE_URL, AUTHOR_IMG, THUMB_IMG) VALUES " +
+	 	            		"((SELECT MAX( RESOURSE_ID ) FROM resourse_mstr r) +1, '"+resourceName+"', '"+resourceAuthor+"', 1, '"+descTxt+"',1, '', 0, 0, " +
+	 	            				"'', '', '"+lastUserIdCd+"', '"+upLoadUrl+"', '"+resourceprofileImgName+"', '')";
+	            	 stmt.executeUpdate(sql);
+	            }
+	            
+	           
+	            
+	            sql="SELECT MAX(RESOURSE_ID) FROM resourse_mstr";
+	            
+	            ResultSet re=stmt.executeQuery(sql);
+	            re.last();
+	             status  = re.getInt("MAX(RESOURSE_ID)");
+	            
+	            
+	        } catch (SQLException se) {
+	            System.out.println("getResourceTypeMstrDetail # " + se);
+	            se.printStackTrace();
+	        } catch (Exception e) {
+	            System.out.println("getResourceTypeMstrDetail # " + e);
+	            e.printStackTrace();
+	        } finally {
+	            closeResources(conn, stmt, null);
+	        }
+
+	        System.out.println("Successfully saved....");
+	        
+	        return status;
+	}
+
+ 
+
+	 
 }

@@ -16,15 +16,24 @@ public class UserVO {
     private String lastName;
     private String emailId;
     private String adminEmailId;
-    private String schoolId;
+    private int schoolId;
     private String schoolName;
     private String address;
-    private String classId;
+    private int classId;
     private String className;
-    private String homeRoomId;
+    private int homeRoomId;
     private String homeRoomName;
     private String title;
+    private String profileImage;
 
+    
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
     
     public String getAdminEmailId() {
         return adminEmailId;
@@ -82,11 +91,11 @@ public class UserVO {
         this.emailId = emailId;
     }
 
-    public String getSchoolId() {
+    public int getSchoolId() {
         return schoolId;
     }
 
-    public void setSchoolId(String schoolId) {
+    public void setSchoolId(int schoolId) {
         this.schoolId = schoolId;
     }
 
@@ -106,11 +115,11 @@ public class UserVO {
         this.address = address;
     }
 
-    public String getClassId() {
+    public int getClassId() {
         return classId;
     }
 
-    public void setClassId(String classId) {
+    public void setClassId(int classId) {
         this.classId = classId;
     }
 
@@ -122,11 +131,11 @@ public class UserVO {
         this.className = className;
     }
 
-    public String getHomeRoomId() {
+    public int getHomeRoomId() {
         return homeRoomId;
     }
 
-    public void setHomeRoomId(String homeRoomId) {
+    public void setHomeRoomId(int homeRoomId) {
         this.homeRoomId = homeRoomId;
     }
 

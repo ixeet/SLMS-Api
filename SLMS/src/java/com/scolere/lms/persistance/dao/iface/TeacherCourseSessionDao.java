@@ -18,10 +18,14 @@ public interface TeacherCourseSessionDao
     boolean saveResourceLike(String commentBy,int resourceId) throws LmsDaoException;
     
     //New methods for students details >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
+    CourseVO getStudentCourseDetail(int courseID) throws LmsDaoException;
     List<CourseVO> getStudentCourses(int userId,String searchText) throws LmsDaoException;
     List<CourseVO> getStudentCourses(String userNm,String searchText) throws LmsDaoException;
+    CourseVO getStudentModuleDetail(int moduleId) throws LmsDaoException;
     List<CourseVO> getStudentCoursesModules(int courseSessionId) throws LmsDaoException;
     //Get module details service -Resources & Comments
+    List<ResourseVO> getStudentResources(int moduleId) throws LmsDaoException;
+    List<ResourseVO> getStudentResources(int courseId,int moduleId) throws LmsDaoException;
     List<ResourseVO> getStudentResources(int userId,int courseId,int moduleId,String searchText) throws LmsDaoException;
     List<ResourseVO> getStudentResourcesWeb(int userId,String courseId,String moduleId,String searchText) throws LmsDaoException;
     List<CommentVO> getResourceComments(int resourceId) throws LmsDaoException;

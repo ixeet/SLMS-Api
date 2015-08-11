@@ -58,9 +58,9 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
                 user.setLastName(rs.getString(5));
                 user.setEmailId(rs.getString(6));
                 user.setAddress(rs.getString(7));    
-                user.setSchoolId(rs.getString(8));
-                user.setClassId(rs.getString(9));
-                user.setHomeRoomId(rs.getString(10));
+                user.setSchoolId(rs.getInt(8));
+                user.setClassId(rs.getInt(9));
+                user.setHomeRoomId(rs.getInt(10));
                 
                 user.setSchoolName(rs.getString(11));
                 user.setClassName(rs.getString(12));
@@ -107,9 +107,9 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
                 user.setLastName(rs.getString(5));
                 user.setEmailId(rs.getString(6));
                 user.setAddress(rs.getString(7));    
-                user.setSchoolId(rs.getString(8));
-                user.setClassId(rs.getString(9));
-                user.setHomeRoomId(rs.getString(10));
+                user.setSchoolId(rs.getInt(8));
+                user.setClassId(rs.getInt(9));
+                user.setHomeRoomId(rs.getInt(10));
                 
                 user.setSchoolName(rs.getString(11));
                 user.setClassName(rs.getString(12));

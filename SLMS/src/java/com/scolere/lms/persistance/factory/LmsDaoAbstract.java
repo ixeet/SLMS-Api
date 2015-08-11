@@ -190,7 +190,7 @@ public abstract class LmsDaoAbstract extends JDBCDAOAbstract{
      
      public String getQueryConcatedResult(String query) throws LmsDaoException {
      
-         String result = null;
+         String result = "?";
 
          Connection conn = null;
          PreparedStatement cstmt = null;

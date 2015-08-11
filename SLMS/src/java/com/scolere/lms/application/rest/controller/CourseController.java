@@ -4,11 +4,20 @@
  */
 package com.scolere.lms.application.rest.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import com.scolere.lms.application.rest.bus.iface.CourseBusIface;
 import com.scolere.lms.application.rest.bus.impl.CourseBusImpl;
+import com.scolere.lms.application.rest.constants.SLMSRestConstants;
 import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.application.rest.vo.request.CourseRequest;
 import com.scolere.lms.application.rest.vo.response.CourseResponse;
+import com.sun.jersey.core.header.FormDataContentDisposition;
+import com.sun.jersey.multipart.FormDataParam;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -16,6 +25,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 
 /**
  *
@@ -35,7 +45,25 @@ public class CourseController {
         String message = "Welcome to SLMS course webservices....";
         return message;
     }
+    
    
+    @GET
+    @Path("/getCourse/feedId/{feedId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CourseResponse getCourseDetail(@PathParam("feedId") int feedId) {
+        System.out.println("Start getCourseDetail for feedId >> "+feedId);
+        CourseResponse resp = null;
+
+        try {
+            resp = restService.getCourseDetailsByFeedId(feedId);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # getCourseDetail - " + ex);
+        }
+
+        System.out.println("<< End getCourseDetail # " + resp);
+        return resp;
+    }    
+    
     
     @POST
     @Path("/getCourses")
@@ -72,6 +100,26 @@ public class CourseController {
          System.out.println("<< getCourses "+resp);
         return resp;
     }  
+    
+    
+    
+    @GET
+    @Path("/getModule/feedId/{feedId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CourseResponse getModuleDetail(@PathParam("feedId") int feedId) {
+        System.out.println("Start getModuleDetail for feedId >> "+feedId);
+        CourseResponse resp = null;
+
+        try {
+            resp = restService.getCourseDetailsByFeedId(feedId);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # getModuleDetail - " + ex);
+        }
+
+        System.out.println("<< End getModuleDetail # " + resp);
+        return resp;
+    }  
+    
     
     
     @POST
@@ -178,20 +226,88 @@ public class CourseController {
         System.out.println("Start getAssignments >> "+course);
         CourseResponse resp = null;
         
-//        try {
-//            resp = restService.likeOnResource(userName, resourceId);
-//        } catch (RestBusException ex) {
-//            System.out.println("Exception # getAssignments - "+ex);
-//        }
-//        
+        try {
+            resp = restService.getAssignments(course);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # getAssignments - "+ex);
+        }
         System.out.println("<< End getAssignments # "+resp); 
         
         return resp;
     }   
     
+   @POST
+    @Path("/uploadResourceDetail")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)          
+    public CourseResponse uploadImageDetail(
+            @FormDataParam("resourceName") String resourceName,
+            @FormDataParam("resourceUrl") InputStream uploadedInputStream,
+            @FormDataParam("resourceUrl") FormDataContentDisposition fileDetail,
+            @FormDataParam("resourceAuthor") String resourceAuthor,
+            @FormDataParam("resourceImage") String resourceImage,
+            @FormDataParam("lastUserIdCd") String lastUserIdCd,
+            @FormDataParam("descTxt") String descTxt,
+            @FormDataParam("upLoadUrl") String upLoadUrl
+    		) {
+
+    	 CourseResponse resp = new CourseResponse();
+         
+         try {
+         //Update PROFILE_IMG to database
+        	 String resourceprofileImgName="";
+        	 String resoUrl;
+        	 if(fileDetail.getFileName().equals("")){
+        		 resourceprofileImgName = resourceImage;
+        		 resoUrl=fileDetail.getFileName();
+        	 }
+        	 else{
+        		 resourceprofileImgName = resourceImage+SLMSRestConstants.image_extension;
+        		 resoUrl=fileDetail.getFileName();
+        	 }
+        	 
+         int updateStatus =  restService.saveResourceProfile(resourceprofileImgName,resourceAuthor,resourceImage,lastUserIdCd,descTxt,resourceName,upLoadUrl,resoUrl);
+         System.out.println("Image name saved into db ? "+updateStatus);
+         
+         if(!fileDetail.getFileName().equals("")){
+         String uploadedFileLocation = SLMSRestConstants.location_userprofile+updateStatus+resourceprofileImgName;
+         System.out.println("Uploading file @: "+uploadedFileLocation);
+         writeToFile(uploadedInputStream, uploadedFileLocation);
+         }
+         System.out.println("Profile image successfully uploaded..");
+         
+         
+         resp.setStatus(SLMSRestConstants.status_success);
+         resp.setStatusMessage(SLMSRestConstants.message_success);  
+         
+         
+        }
+        catch (Exception e) {
+			e.printStackTrace();
+		}
+        /*return resp;*/
+        return resp;
+    }
     
-    
-    
+    private void writeToFile(InputStream uploadedInputStream,
+            String uploadedFileLocation) {
+
+        try {
+            OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
+            int read = 0;
+            byte[] bytes = new byte[1024];
+
+            out = new FileOutputStream(new File(uploadedFileLocation));
+            while ((read = uploadedInputStream.read(bytes)) != -1) {
+                out.write(bytes, 0, read);
+            }
+            out.flush();
+            out.close();
+        } catch (Exception e) {
+            System.out.println("File upload exception #2 "+e.getMessage());
+        }
+
+    }
     
     
 }//End of class

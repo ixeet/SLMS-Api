@@ -4,6 +4,7 @@
  */
 package com.scolere.lms.service.impl;
 
+import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.domain.exception.LmsServiceException;
 import com.scolere.lms.domain.vo.TeacherCourseSessionDtlsVO;
 import com.scolere.lms.domain.vo.TeacherCourseSessionVO;
@@ -12,6 +13,8 @@ import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
 import com.scolere.lms.domain.vo.cross.CourseVO;
 import com.scolere.lms.domain.vo.cross.ResourseVO;
+import com.scolere.lms.persistance.dao.iface.ResourceTypeMstrDao;
+import com.scolere.lms.persistance.dao.iface.StudentDetailDao;
 import com.scolere.lms.persistance.dao.iface.TeacherCourseDao;
 import com.scolere.lms.persistance.dao.iface.TeacherCourseSessionDao;
 import com.scolere.lms.persistance.dao.iface.TeacherCourseSessionDtlsDao;
@@ -84,6 +87,35 @@ public class CourseServiceImpl implements CourseServiceIface{
         
         return status;
     }
+
+        
+    @Override
+    public List<ResourseVO> getStudentResources(int moduleId) throws LmsServiceException {
+        List<ResourseVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getStudentResources(moduleId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getStudentResources = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }
+    
+    @Override
+    public List<ResourseVO> getStudentResources(int courseId, int moduleId) throws LmsServiceException {
+        List<ResourseVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getStudentResources(courseId, moduleId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getStudentResources = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }    
     
     
     @Override
@@ -208,6 +240,23 @@ public class CourseServiceImpl implements CourseServiceIface{
 
     }
     
+    
+    @Override
+    public CourseVO getStudentCourseDetail(int courseId) throws LmsServiceException {
+        CourseVO vo =null;
+
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            vo = dao.getStudentCourseDetail(courseId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getStudentCourseDetail = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return vo;
+    }
+    
+    
     @Override
     public List<CourseVO> getStudentCourses(int userId, String searchText) throws LmsServiceException {
         
@@ -224,6 +273,23 @@ public class CourseServiceImpl implements CourseServiceIface{
 
     }    
 
+
+    @Override
+    public CourseVO getStudentModuleDetail(int moduleId) throws LmsServiceException {
+        CourseVO vo = null;
+        
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            vo = dao.getStudentModuleDetail(moduleId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getStudentModuleDetail = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return vo;
+    }    
+    
+    
     @Override
     public List<CourseVO> getStudentCoursesModules(int courseSessionId) throws LmsServiceException {
         List<CourseVO> list =null;
@@ -463,6 +529,25 @@ public class CourseServiceImpl implements CourseServiceIface{
     
     }
 
+    @Override
+    public int saveResourceProfile(String resourceprofileImgName,
+			String resourceAuthor, String resourceImage,
+			String lastUserIdCd, String descTxt, String resourceName,String upLoadUrl,String resoUrl)
+			throws LmsServiceException {
+		
+    		int status = 0;
+        try {
+        	 ResourceTypeMstrDao  dao = (ResourceTypeMstrDao) LmsDaoFactory.getDAO(ResourceTypeMstrDao.class);
+             status = dao.saveResourceProfile(resourceprofileImgName, resourceAuthor, resourceImage, lastUserIdCd, descTxt ,resourceName,upLoadUrl,resoUrl);
+        	 
+
+        } catch (Exception ex) {
+            System.out.println("Exception #  "+ex.getMessage());
+            throw new LmsServiceException("Exception # "+ex.getMessage());
+        }
+        
+       return status; 
+	}
 
 
     

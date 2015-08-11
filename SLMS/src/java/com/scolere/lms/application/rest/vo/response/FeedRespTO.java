@@ -5,17 +5,66 @@
 package com.scolere.lms.application.rest.vo.response;
 
 import java.util.List;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  *
  * @author dell
  */
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
 public class FeedRespTO extends CountsTO{
     private int feedId;
     private String feedText;
+    private List<KeyValTypeVO> feedTextArray;
+    UserResponse user;
+    ResourceRespTO resource;
+    CommentRespTO comment;
+    CourseRespTO course;
     private List<CommentRespTO> feedCommentsList;
 
     
+    public List<KeyValTypeVO> getFeedTextArray() {
+        return feedTextArray;
+    }
+
+    public void setFeedTextArray(List<KeyValTypeVO> feedTextArray) {
+        this.feedTextArray = feedTextArray;
+    }
+
+    public CommentRespTO getComment() {
+        return comment;
+    }
+
+    public void setComment(CommentRespTO comment) {
+        this.comment = comment;
+    }
+
+    public CourseRespTO getCourse() {
+        return course;
+    }
+
+    public void setCourse(CourseRespTO course) {
+        this.course = course;
+    }
+
+    
+    
+    public UserResponse getUser() {
+        return user;
+    }
+
+    public void setUser(UserResponse user) {
+        this.user = user;
+    }
+
+    public ResourceRespTO getResource() {
+        return resource;
+    }
+
+    public void setResource(ResourceRespTO resource) {
+        this.resource = resource;
+    }
+
     
     public int getFeedId() {
         return feedId;
@@ -42,4 +91,4 @@ public class FeedRespTO extends CountsTO{
     }
     
     
-}
+}//End of class

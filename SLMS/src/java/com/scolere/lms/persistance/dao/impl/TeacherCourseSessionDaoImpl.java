@@ -438,6 +438,53 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
     }
 
     
+
+    @Override
+    public CourseVO getStudentCourseDetail(int courseID) throws LmsDaoException {
+        CourseVO vo =null;
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+
+            /**
+             * Student Courses - > user_cls_map + clas_course_map 
+             * 
+             * Query = SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN clas_course_map cc_map ON cc_map.CLASS_ID=ucmap.CLASS_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where cmstr.COURSE_ID = ?
+             */
+            
+            String sql = "SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN clas_course_map cc_map ON cc_map.CLASS_ID=ucmap.CLASS_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where cmstr.COURSE_ID = ?";
+            
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, courseID);
+                        
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                vo = new CourseVO();
+                vo.setCourseId(rs.getString(1));
+                vo.setCourseName(rs.getString(2));
+                vo.setStartedOn(rs.getString(3));
+                vo.setCompletedStatus(rs.getString(4));
+                vo.setCourseSessionId(rs.getInt(5));
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getStudentCourseDetail # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getStudentCourseDetail # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+    return vo;        
+    }    
+    
+    
+    
     @Override
     public List<CourseVO> getStudentCourses(int userId, String searchText) throws LmsDaoException {
         List<CourseVO> list = new ArrayList<CourseVO>();
@@ -486,6 +533,48 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         return list;
     }
     
+
+
+    
+    @Override
+    public CourseVO getStudentModuleDetail(int moduleId) throws LmsDaoException {
+        CourseVO vo = null;
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+
+            String sql = "SELECT modul.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent FROM module_mstr modul INNER JOIN teacher_course_session_dtls tcs_dtl ON modul.MODULE_ID=tcs_dtl.MODULE_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tcs_dtl.MODULE_ID = ?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, moduleId);
+            
+            rs = stmt.executeQuery();
+           
+            if(rs.next()) {
+                vo = new CourseVO();
+                vo.setModuleId(rs.getString(1));
+                vo.setModuleName(rs.getString(2));
+                vo.setStartedOn(rs.getString(3));
+                vo.setCompletedStatus(rs.getString(4));
+                vo.setCompletedPercentStatus(String.valueOf(rs.getDouble(5)*100));
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getStudentModuleDetail # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getStudentModuleDetail # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return vo;
+    }
+    
+    
     
     @Override
     public List<CourseVO> getStudentCoursesModules(int courseSessionId) throws LmsDaoException {
@@ -527,6 +616,63 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         return list;
     }
 
+
+    
+    @Override
+    public List<ResourseVO> getStudentResources(int moduleId) throws LmsDaoException {
+        List<ResourseVO> list = new ArrayList<ResourseVO>();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs =null;
+        try {
+            conn = getConnection();
+            
+            /**
+             * SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID INNER JOIN clas_course_map ccm on ccm.CLASS_ID=ucm.CLASS_ID AND tc.COURSE_ID=ccm.COURSE_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID AND tc_sess_dtl.MODULE_ID=mrm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE tc_sess_dtl.MODULE_ID=?
+             */
+            String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID INNER JOIN clas_course_map ccm on ccm.CLASS_ID=ucm.CLASS_ID AND tc.COURSE_ID=ccm.COURSE_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID AND tc_sess_dtl.MODULE_ID=mrm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE tc_sess_dtl.MODULE_ID=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1,moduleId);
+;
+            
+            rs = stmt.executeQuery();
+            ResourseVO vo = null;
+            while (rs.next()) {
+                vo = new ResourseVO();
+                vo.setResourceId(rs.getInt(1));
+                vo.setResourceName(rs.getString(2));
+                vo.setResourceDesc(rs.getString(3));
+                vo.setAuthorName(rs.getString(4));
+                vo.setThumbUrl(rs.getString(5));
+                vo.setResourceUrl(rs.getString(6));
+                vo.setAuthorImg(rs.getString(7));
+                
+                vo.setStartedOn(rs.getString(8));
+                vo.setCompletedOn(rs.getString(9));
+                
+                vo.setCommentCounts(rs.getInt(10));
+                vo.setLikeCounts(rs.getInt(11));
+                vo.setShareCounts(0);
+                vo.setIsLiked(false); //Need to update further to make it dynamic
+                
+                list.add(vo);
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getStudentResources (?)# " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getStudentResources # (?)" + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return list;
+    }
+
+    
     @Override
     public List<ResourseVO> getStudentResources(int userId, int courseId, int moduleId, String searchText) throws LmsDaoException {
         List<ResourseVO> list = new ArrayList<ResourseVO>();
@@ -546,6 +692,61 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             stmt.setInt(2,courseId);
             stmt.setInt(3,moduleId);
             stmt.setString(4,"%"+searchText+"%");
+            
+            rs = stmt.executeQuery();
+            ResourseVO vo = null;
+            while (rs.next()) {
+                vo = new ResourseVO();
+                vo.setResourceId(rs.getInt(1));
+                vo.setResourceName(rs.getString(2));
+                vo.setResourceDesc(rs.getString(3));
+                vo.setAuthorName(rs.getString(4));
+                vo.setThumbUrl(rs.getString(5));
+                vo.setResourceUrl(rs.getString(6));
+                vo.setAuthorImg(rs.getString(7));
+                
+                vo.setStartedOn(rs.getString(8));
+                vo.setCompletedOn(rs.getString(9));
+                
+                vo.setCommentCounts(rs.getInt(10));
+                vo.setLikeCounts(rs.getInt(11));
+                vo.setShareCounts(0);
+                vo.setIsLiked(false); //Need to update further to make it dynamic
+                
+                list.add(vo);
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getStudentResources # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getStudentResources # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return list;
+    }
+    
+    
+    @Override
+    public List<ResourseVO> getStudentResources(int courseId, int moduleId) throws LmsDaoException {
+        List<ResourseVO> list = new ArrayList<ResourseVO>();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs =null;
+        try {
+            conn = getConnection();
+            
+            /**
+             * SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID INNER JOIN clas_course_map ccm on ccm.CLASS_ID=ucm.CLASS_ID AND tc.COURSE_ID=ccm.COURSE_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID AND tc_sess_dtl.MODULE_ID=mrm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE ucm.USER_ID =? AND ccm.COURSE_ID = ? AND tc_sess_dtl.MODULE_ID=? AND rc_mstr.METADATA like ?
+             */
+            String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID INNER JOIN clas_course_map ccm on ccm.CLASS_ID=ucm.CLASS_ID AND tc.COURSE_ID=ccm.COURSE_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID AND tc_sess_dtl.MODULE_ID=mrm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE ccm.COURSE_ID = ? AND tc_sess_dtl.MODULE_ID=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1,courseId);
+            stmt.setInt(2,moduleId);
             
             rs = stmt.executeQuery();
             ResourseVO vo = null;
@@ -863,7 +1064,6 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
 
         return list;
     }
-
 
     
 }//end of class
