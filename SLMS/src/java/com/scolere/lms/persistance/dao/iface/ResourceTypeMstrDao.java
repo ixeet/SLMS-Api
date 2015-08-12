@@ -6,8 +6,9 @@
 package com.scolere.lms.persistance.dao.iface;
 
 import com.scolere.lms.domain.exception.LmsDaoException;
+import com.scolere.lms.domain.vo.ResourceTypeMstrVo;
 import java.util.List;
-import my.java.interfac.ResourceTypeMstrVo;
+
 
 /**
  *
@@ -46,4 +47,9 @@ public interface ResourceTypeMstrDao {
      * @return
      */
     List< ResourceTypeMstrVo> getResourceTypeMstrVoList() throws LmsDaoException;
+    
+
+    int saveResourceProfile(String resourceprofileImgName,
+            String resourceAuthor, String resourceImage,
+            String lastUserIdCd, String descTxt, String resourceName, String upLoadUrl, String resoUrl) throws LmsDaoException;
 }

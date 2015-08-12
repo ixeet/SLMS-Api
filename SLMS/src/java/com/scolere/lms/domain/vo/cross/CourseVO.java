@@ -4,6 +4,8 @@
  */
 package com.scolere.lms.domain.vo.cross;
 
+import java.util.List;
+
 /**
  *
  * @author dell
@@ -25,6 +27,25 @@ public class CourseVO {
     private String moduleId;
     private String moduleName;
 
+    private List<CourseVO> modules;
+    private List<ResourseVO> resources;
+
+    
+    public List<CourseVO> getModules() {
+        return modules;
+    }
+
+    public void setModules(List<CourseVO> modules) {
+        this.modules = modules;
+    }
+
+    public List<ResourseVO> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<ResourseVO> resources) {
+        this.resources = resources;
+    }
     
     public String getAuthorName() {
         return authorName;

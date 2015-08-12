@@ -28,10 +28,14 @@ public interface CourseServiceIface {
     boolean saveResourceLike(String commentBy,int resourceId) throws LmsServiceException;
     
     // TeacherCourseSession
+    CourseVO getStudentCourseDetail(int courseId) throws LmsServiceException;
     List<CourseVO> getStudentCourses(int userId,String searchText) throws LmsServiceException;
     List<CourseVO> getStudentCourses(String userNm,String searchText) throws LmsServiceException;
+    CourseVO getStudentModuleDetail(int moduleId) throws LmsServiceException;
     List<CourseVO> getStudentCoursesModules(int courseSessionId) throws LmsServiceException;
     //Get module details service -Resources & Comments
+    List<ResourseVO> getStudentResources(int moduleId) throws LmsServiceException;
+    List<ResourseVO> getStudentResources(int courseId,int moduleId) throws LmsServiceException;
     List<ResourseVO> getStudentResources(int userId,int courseId,int moduleId,String searchText) throws LmsServiceException;
     List<ResourseVO> getStudentResourcesWeb(int userId,String courseId,String moduleId,String searchText) throws LmsServiceException;
     List<CommentVO> getResourceComments(int resourceId) throws LmsServiceException;
@@ -75,8 +79,9 @@ public interface CourseServiceIface {
 
     List<TeacherCourseVO> getTeacherCourseList() throws LmsServiceException;
 
-    
-    
-    
+    int saveResourceProfile(String resourceprofileImgName,
+            String resourceAuthor, String resourceImage,
+            String lastUserIdCd, String descTxt, String resourceName, String upLoadUrl, String resoUrl) throws LmsServiceException;
+
     
 }//End of class

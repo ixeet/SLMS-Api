@@ -29,8 +29,16 @@ public class UserResponse extends CommonRespTO{
     private String homeRoomName;
     private String title;
     private String uploadLocation;
+    private String profileImage;
 
     
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
     
     public String getUploadLocation() {
         return uploadLocation;

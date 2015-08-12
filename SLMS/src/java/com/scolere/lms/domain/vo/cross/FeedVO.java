@@ -5,11 +5,18 @@
 package com.scolere.lms.domain.vo.cross;
 
 /**
- *
+ * lms_feed_type & lms_feed_txn parameters
+ * 
  * @author dell
  */
 public class FeedVO {
-    private String messageTemplate;
+    
+    private String feedTemplate;
+    private String tempParam;
+    private int feedID;
+    private int feedTypeID;
+    private String feedRefName;
+
     
     private int schoolId;
     private String schoolName;
@@ -28,6 +35,9 @@ public class FeedVO {
     
     private int resourseId;
     private String resourseName;
+
+    private int assignmentId;
+    private String assignmentName;
     
     private int userId;
     private String userName;
@@ -40,11 +50,36 @@ public class FeedVO {
     private int shareCounts;
     private int commentCounts;
     private boolean isLiked;
+
+    public int getAssignmentId() {
+        return assignmentId;
+    }
+
+    public void setAssignmentId(int assignmentId) {
+        this.assignmentId = assignmentId;
+    }
+
+    public String getAssignmentName() {
+        return assignmentName;
+    }
+
+    public void setAssignmentName(String assignmentName) {
+        this.assignmentName = assignmentName;
+    }
+
     
     
     
     //setter-getters
 
+    public int getFeedID() {
+        return feedID;
+    }
+
+    public void setFeedID(int feedID) {
+        this.feedID = feedID;
+    }
+    
     public int getLikeCounts() {
         return likeCounts;
     }
@@ -76,16 +111,39 @@ public class FeedVO {
     public void setIsLiked(boolean isLiked) {
         this.isLiked = isLiked;
     }
-    
-    
-    
-    public String getMessageTemplate() {
-        return messageTemplate;
+
+    public String getFeedTemplate() {
+        return feedTemplate;
     }
 
-    public void setMessageTemplate(String messageTemplate) {
-        this.messageTemplate = messageTemplate;
+    public void setFeedTemplate(String feedTemplate) {
+        this.feedTemplate = feedTemplate;
     }
+
+    public String getTempParam() {
+        return tempParam;
+    }
+
+    public void setTempParam(String tempParam) {
+        this.tempParam = tempParam;
+    }
+
+    public int getFeedTypeID() {
+        return feedTypeID;
+    }
+
+    public void setFeedTypeID(int feedTypeID) {
+        this.feedTypeID = feedTypeID;
+    }
+
+    public String getFeedRefName() {
+        return feedRefName;
+    }
+
+    public void setFeedRefName(String feedRefName) {
+        this.feedRefName = feedRefName;
+    }
+    
 
     public int getSchoolId() {
         return schoolId;
@@ -221,6 +279,11 @@ public class FeedVO {
 
     public void setEndActivityDate(String endActivityDate) {
         this.endActivityDate = endActivityDate;
+    }
+
+    @Override
+    public String toString() {
+        return "FeedVO{" + "feedTemplate=" + feedTemplate + ", tempParam=" + tempParam + ", feedID=" + feedID + ", feedTypeID=" + feedTypeID + ", feedRefName=" + feedRefName + ", schoolId=" + schoolId + ", schoolName=" + schoolName + ", classId=" + classId + ", className=" + className + ", hrmId=" + hrmId + ", hrmName=" + hrmName + ", courseId=" + courseId + ", courseName=" + courseName + ", moduleId=" + moduleId + ", moduleName=" + moduleName + ", resourseId=" + resourseId + ", resourseName=" + resourseName + ", assignmentId=" + assignmentId + ", assignmentName=" + assignmentName + ", userId=" + userId + ", userName=" + userName + ", startActivityDate=" + startActivityDate + ", activityOn=" + activityOn + ", endActivityDate=" + endActivityDate + ", likeCounts=" + likeCounts + ", shareCounts=" + shareCounts + ", commentCounts=" + commentCounts + ", isLiked=" + isLiked + '}';
     }
 
     

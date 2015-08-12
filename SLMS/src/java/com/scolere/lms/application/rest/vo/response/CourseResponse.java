@@ -13,12 +13,28 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
 public class CourseResponse extends CommonRespTO{
+    private CourseRespTO courseDetail;
+    private ModuleRespTO moduleDetail;
     private List<CourseRespTO> courseList;
     private List<ResourceRespTO> resourceList;
     private List<AssignmentRespTO> assignmentList;
 
     
+    public ModuleRespTO getModuleDetail() {
+        return moduleDetail;
+    }
+
+    public void setModuleDetail(ModuleRespTO moduleDetail) {
+        this.moduleDetail = moduleDetail;
+    }
     
+    public CourseRespTO getCourseDetail() {
+        return courseDetail;
+    }
+
+    public void setCourseDetail(CourseRespTO courseDetail) {
+        this.courseDetail = courseDetail;
+    }
     public List<CourseRespTO> getCourseList() {
         return courseList;
     }
