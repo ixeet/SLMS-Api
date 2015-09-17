@@ -10,6 +10,7 @@ import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.application.rest.vo.request.UserRequest;
 import com.scolere.lms.application.rest.vo.response.UserResponse;
 import com.scolere.lms.common.mail.Emailer;
+import com.scolere.lms.common.utils.PropertyManager;
 import com.scolere.lms.domain.exception.LmsServiceException;
 import com.scolere.lms.domain.vo.StudentDetailVo;
 import com.scolere.lms.domain.vo.UserClassMapVo;
@@ -70,7 +71,7 @@ public class UserBusImpl implements UserBusIface{
                 studentVo.setAdminEmailId(req.getAdminEmailId());
                 studentVo.setJoiningDt(null);
                 studentVo.setLastUserIdCd(req.getUserName());
-                studentVo.setProfile(null);
+                studentVo.setProfile(SLMSRestConstants.default_userprofile);
                 studentVo.setSocialProfile(null);
                 studentVo.setfName(req.getFirstName());
                 studentVo.setlName(req.getLastName());
@@ -79,13 +80,20 @@ public class UserBusImpl implements UserBusIface{
                 loginService.saveStudentDetail(studentVo);//saved Student_dtls
                 
                 //Save into user_cls_map
+                int classId=Integer.parseInt(req.getClassId());
+                int schoolId=Integer.parseInt(req.getSchoolId());
+                int hrmId=Integer.parseInt(req.getHomeRoomId());
+                
                 UserClassMapVo userClassMapVo = new UserClassMapVo();
-                userClassMapVo.setClassId(Integer.parseInt(req.getClassId()));
-                userClassMapVo.setSchoolId(Integer.parseInt(req.getSchoolId()));
+                userClassMapVo.setClassId(classId);
+                userClassMapVo.setSchoolId(schoolId);
                 userClassMapVo.setUserId(loginVo.getUserId());
-                userClassMapVo.setHomeRoomMasterId(Integer.parseInt(req.getHomeRoomId()));
+                userClassMapVo.setHomeRoomMasterId(hrmId);
                 System.out.println("Saving into user_cls_map ....");
                 loginService.saveUserClassMapDetail(userClassMapVo);
+                
+                //Default assignments
+                loginService.defaultUserAssignment(req.getUserName(), schoolId, classId, hrmId);
                 
                 //Email to admin
                 Emailer emailer = new Emailer();
@@ -172,7 +180,7 @@ public class UserBusImpl implements UserBusIface{
     }
 
     @Override
-    public boolean updateProfilePhoto(String photoPath) throws RestBusException {
+    public boolean updateProfilePhoto(String photoPath,String userName) throws RestBusException {
 
         boolean status = false;
         
@@ -181,7 +189,7 @@ public class UserBusImpl implements UserBusIface{
 
             if(photoPath != null && !photoPath.isEmpty())
             {
-                status = loginService.updateProfilePhoto(photoPath);
+                status = loginService.updateProfilePhoto(photoPath,userName);
                 
             }
 
@@ -227,7 +235,7 @@ public class UserBusImpl implements UserBusIface{
                    resp.setUserType(String.valueOf(loginVo.getUserTypeId()));
             	   
             	   resp.setAddress(userFromDb.getAddress());
-                   resp.setProfileImage(userFromDb.getProfileImage());
+                   resp.setProfileImage(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+userFromDb.getProfileImage());
                    resp.setClassId(String.valueOf(userFromDb.getClassId()));
                    resp.setClassName(userFromDb.getClassName());
                    resp.setEmailId(userFromDb.getEmailId());
@@ -282,12 +290,12 @@ public class UserBusImpl implements UserBusIface{
      * @throws RestBusException 
      */
     @Override
-    public UserResponse setFBId(String userId, String fbId) throws RestBusException {
+    public UserResponse setFBId(String userName, String fbId) throws RestBusException {
         UserResponse resp = new UserResponse();
         
         try {
                 LoginServiceIface loginService = new LoginServiceImpl();
-                loginService.updateUserFBId(userId, fbId);
+                loginService.updateUserFBId(userName, fbId);
                 
                 //setting success into response
                 resp.setStatus(SLMSRestConstants.status_success);
@@ -328,7 +336,7 @@ public class UserBusImpl implements UserBusIface{
                    resp.setUserId(String.valueOf(userFromDb.getUserId()));
                    resp.setUserName(userFromDb.getUserName());
                    resp.setAddress(userFromDb.getAddress());
-                   resp.setProfileImage(userFromDb.getProfileImage());
+                   resp.setProfileImage(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+userFromDb.getProfileImage());
                    resp.setClassId(String.valueOf(userFromDb.getClassId()));
                    resp.setClassName(userFromDb.getClassName());
                    resp.setEmailId(userFromDb.getEmailId());

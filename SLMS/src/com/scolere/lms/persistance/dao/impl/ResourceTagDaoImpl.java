@@ -78,7 +78,7 @@ public class ResourceTagDaoImpl extends LmsDaoAbstract implements ResourceTagDao
         try {
 
             conn = getConnection();
-            String sql = "UPDATE resourse_tag set  RESOURCE_ID=?,  TAG_NM=?, TAG_WT_ADMIN=?, TAG_WT_USER=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            String sql = "UPDATE resourse_tag set  RESOURCE_ID=?,  TAG_NM=?, TAG_WT_ADMIN=?, TAG_WT_USER=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE RESOURCE_TAG_ID=?";
             stmt = conn.prepareStatement(sql);
 
@@ -115,7 +115,7 @@ public class ResourceTagDaoImpl extends LmsDaoAbstract implements ResourceTagDao
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO resourse_tag(RESOURCE_TAG_ID, RESOURCE_ID, TAG_NM, TAG_WT_ADMIN, TAG_WT_USER, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?,  current_timestamp)";
+            String sql = "INSERT INTO resourse_tag(RESOURCE_TAG_ID, RESOURCE_ID, TAG_NM, TAG_WT_ADMIN, TAG_WT_USER, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?,  utc_timestamp)";
             stmt = conn.prepareStatement(sql);
 
             stmt.setInt(1, vo.getTagId());

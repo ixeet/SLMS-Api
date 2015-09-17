@@ -13,6 +13,13 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
 public class CourseRespTO extends CompletedStatusTO{
+    private int courseSessionId;
+	private int schoolId;
+    private String schoolName;
+    private int classId;
+    private String classeName;
+    private int hrmId;
+    private String hrmName;
     private String courseId;
     private String courseName;
     private String authorName;
@@ -21,7 +28,63 @@ public class CourseRespTO extends CompletedStatusTO{
 
     
     
-    public String getAuthorName() {
+    public int getCourseSessionId() {
+		return courseSessionId;
+	}
+
+	public void setCourseSessionId(int courseSessionId) {
+		this.courseSessionId = courseSessionId;
+	}
+
+	public int getSchoolId() {
+		return schoolId;
+	}
+
+	public void setSchoolId(int schoolId) {
+		this.schoolId = schoolId;
+	}
+
+	public String getSchoolName() {
+		return schoolName;
+	}
+
+	public void setSchoolName(String schoolName) {
+		this.schoolName = schoolName;
+	}
+
+	public int getClassId() {
+		return classId;
+	}
+
+	public void setClassId(int classId) {
+		this.classId = classId;
+	}
+
+	public String getClasseName() {
+		return classeName;
+	}
+
+	public void setClasseName(String classeName) {
+		this.classeName = classeName;
+	}
+
+	public int getHrmId() {
+		return hrmId;
+	}
+
+	public void setHrmId(int hrmId) {
+		this.hrmId = hrmId;
+	}
+
+	public String getHrmName() {
+		return hrmName;
+	}
+
+	public void setHrmName(String hrmName) {
+		this.hrmName = hrmName;
+	}
+
+	public String getAuthorName() {
         return authorName;
     }
 

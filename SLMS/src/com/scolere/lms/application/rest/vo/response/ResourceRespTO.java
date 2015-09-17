@@ -11,8 +11,9 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  *
  * @author dell
  */
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class ResourceRespTO extends CountsTO{
+    private int resourceSessionId;
     private String resourceId;
     private String resourceName;
     private String resourceUrl;
@@ -26,10 +27,27 @@ public class ResourceRespTO extends CountsTO{
     private String thumbImg;
     private List<CommentRespTO> commentList;
     private List<ResourceRespTO> relatedVideoList;
+    private String completedStatus;
+    
+    
+    
+    public int getResourceSessionId() {
+		return resourceSessionId;
+	}
 
-    
-    
-    public String getResourceName() {
+	public void setResourceSessionId(int resourceSessionId) {
+		this.resourceSessionId = resourceSessionId;
+	}
+
+	public String getCompletedStatus() {
+		return completedStatus;
+	}
+
+	public void setCompletedStatus(String completedStatus) {
+		this.completedStatus = completedStatus;
+	}
+
+	public String getResourceName() {
         return resourceName;
     }
 

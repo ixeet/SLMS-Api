@@ -16,7 +16,7 @@ public interface UserBusIface {
     
     UserResponse registration(UserRequest req) throws RestBusException;
     UserResponse updateProfile(UserRequest req) throws RestBusException;
-    boolean updateProfilePhoto(String photoName) throws RestBusException;
+    boolean updateProfilePhoto(String photoName,String userName) throws RestBusException;
     UserResponse login(UserRequest req) throws RestBusException;
     UserResponse setFBId(String userId,String fbId) throws RestBusException;
     UserResponse getByFBId(String fbId) throws RestBusException;

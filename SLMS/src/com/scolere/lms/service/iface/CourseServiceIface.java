@@ -29,15 +29,21 @@ public interface CourseServiceIface {
     
     // TeacherCourseSession
     CourseVO getStudentCourseDetail(int courseId) throws LmsServiceException;
+    List<CourseVO> getTeacherCourses(int userId,int schoolId,int classId,int hrmId,int courseId,int moduleId) throws LmsServiceException;
+    List<CourseVO> getTeacherCourses(int userId,int schoolId,int classId,int hrmId,int courseId) throws LmsServiceException;
     List<CourseVO> getStudentCourses(int userId,String searchText) throws LmsServiceException;
     List<CourseVO> getStudentCourses(String userNm,String searchText) throws LmsServiceException;
     CourseVO getStudentModuleDetail(int moduleId) throws LmsServiceException;
     List<CourseVO> getStudentCoursesModules(int courseSessionId) throws LmsServiceException;
+    List<CourseVO> getTeacherCoursesModules(int courseSessionId) throws LmsServiceException;
+    List<CourseVO> getTeacherCoursesModules(int courseSessionId,int moduleId) throws LmsServiceException;
     //Get module details service -Resources & Comments
     List<ResourseVO> getStudentResources(int moduleId) throws LmsServiceException;
     List<ResourseVO> getStudentResources(int courseId,int moduleId) throws LmsServiceException;
     List<ResourseVO> getStudentResources(int userId,int courseId,int moduleId,String searchText) throws LmsServiceException;
     List<ResourseVO> getStudentResourcesWeb(int userId,String courseId,String moduleId,String searchText) throws LmsServiceException;
+    List<ResourseVO> getTeacherModuleResources(int moduleSessionId) throws LmsServiceException;
+    
     List<CommentVO> getResourceComments(int userId,int resourceId) throws LmsServiceException;
     List<CommentVO> getResourceComments(int resourceId) throws LmsServiceException;
 	List<CommentVO> getResourceChildComments(int commentId)throws LmsServiceException;
@@ -47,6 +53,8 @@ public interface CourseServiceIface {
     //Get assignments service -Resources & Comments
     List<AssignmentVO> getStudentAssignments(int courseId,int moduleId,int userId) throws LmsServiceException;
     List<AssignmentVO> getStudentAssignmentsByModuleId(int moduleId) throws LmsServiceException;
+    List<AssignmentVO> getStudentAssignmentsByModuleId(String userName,int moduleId) throws LmsServiceException;
+    
     List<AssignmentVO> getStudentAssignments(int userId) throws LmsServiceException;
 
     List<AssignmentVO> getStudentAssignments(int userId,String searchText) throws LmsServiceException;

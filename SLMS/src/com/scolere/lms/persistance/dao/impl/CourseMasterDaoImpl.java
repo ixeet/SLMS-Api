@@ -83,7 +83,7 @@ public class CourseMasterDaoImpl extends LmsDaoAbstract implements CourseMasterD
         try {
 
             conn = getConnection();
-            String sql = "UPDATE course_mstr set  COURSE_NAME=?, COURSE_AUTHOR=?, COURSE_DURATION=?, CREATED_DT=?, DESC_TXT=?, METADATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT=current_timestamp\n"
+            String sql = "UPDATE course_mstr set  COURSE_NAME=?, COURSE_AUTHOR=?, COURSE_DURATION=?, CREATED_DT=?, DESC_TXT=?, METADATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT=utc_timestamp\n"
                     + "    WHERE COURSE_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, vo.getCourseName());
@@ -125,7 +125,7 @@ public class CourseMasterDaoImpl extends LmsDaoAbstract implements CourseMasterD
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO course_mstr(COURSE_ID, COURSE_NAME, COURSE_AUTHOR, COURSE_DURATION, CREATED_DT, DESC_TXT, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT)    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ? ,current_timestamp)";
+            String sql = "INSERT INTO course_mstr(COURSE_ID, COURSE_NAME, COURSE_AUTHOR, COURSE_DURATION, CREATED_DT, DESC_TXT, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT)    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ? ,utc_timestamp)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getCourseId());
             stmt.setString(2, vo.getCourseName());

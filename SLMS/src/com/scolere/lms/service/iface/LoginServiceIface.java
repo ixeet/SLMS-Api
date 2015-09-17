@@ -18,6 +18,8 @@ import java.util.List;
  */
 public interface LoginServiceIface {
 
+    boolean defaultUserAssignment(String userName,int schoolId,int classId,int hrmId) throws LmsServiceException;
+
     void saveUserClassMapDetail(UserClassMapVo   vo) throws LmsServiceException;
     
     UserVO  getUser(String userName,String userPwd) throws LmsServiceException; 
@@ -67,7 +69,7 @@ public interface LoginServiceIface {
     
     boolean updateStudentDetail(StudentDetailVo vo) throws LmsServiceException;
     
-    boolean updateProfilePhoto(String photoName) throws LmsServiceException; 
+    boolean updateProfilePhoto(String photoName,String userNm) throws LmsServiceException; 
     /**
      * This method is used for save detail
      *

@@ -84,7 +84,7 @@ public class HomeRoomMasterDaoImpl extends LmsDaoAbstract implements HomeRoomMas
         try {
 
             conn = getConnection();
-            String sql = "UPDATE homeroom_mstr set HRM_NAME=?, DESC_TXT=?, METADATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            String sql = "UPDATE homeroom_mstr set HRM_NAME=?, DESC_TXT=?, METADATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE HRM_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, vo.getHomeRoomMstrName());
@@ -123,7 +123,7 @@ public class HomeRoomMasterDaoImpl extends LmsDaoAbstract implements HomeRoomMas
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO homeroom_mstr(HRM_ID, HRM_NAME, DESC_TXT, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? , current_timestamp)";
+            String sql = "INSERT INTO homeroom_mstr(HRM_ID, HRM_NAME, DESC_TXT, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? , utc_timestamp)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getHomeRoomMstrId());
             stmt.setString(2, vo.getHomeRoomMstrName());

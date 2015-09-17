@@ -22,6 +22,7 @@ import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.application.rest.vo.request.CourseRequest;
 import com.scolere.lms.application.rest.vo.response.CourseResponse;
 import com.scolere.lms.common.utils.AppUtils;
+import com.scolere.lms.common.utils.PropertyManager;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 
@@ -35,7 +36,7 @@ public class CourseController {
 
     CourseBusIface restService = new CourseBusImpl();
     /**
-     * Default controller method
+     * Default controller method 
      *
      * @return
      */
@@ -88,7 +89,7 @@ public class CourseController {
     @Consumes(MediaType.APPLICATION_JSON)    
     @Produces(MediaType.APPLICATION_JSON)     
     public CourseResponse getUserCoursesWeb(CourseRequest course) {
-        System.out.println(">> getCourses "+course);
+        System.out.println(">> getCourses/web "+course);
         CourseResponse resp = new CourseResponse();    
         
         try {
@@ -96,10 +97,48 @@ public class CourseController {
         } catch (RestBusException ex) {
             System.out.println("CourseController#getUserCourses " +ex);
         }
-         System.out.println("<< getCourses "+resp);
+         System.out.println("<< getCourses/web "+resp);
         return resp;
     }  
     
+    
+    
+    @POST
+    @Path("/getCourses/teacher")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)     
+    public CourseResponse getUserCoursesTeacher(CourseRequest course) {
+        System.out.println(">> getCourses/teacher "+course);
+        CourseResponse resp = new CourseResponse();    
+        
+        try {
+            resp = restService.getUserCoursesTeacher(course);
+        } catch (RestBusException ex) {
+            System.out.println("CourseController#getUserCoursesTeacher " +ex);
+        }
+         System.out.println("<< getCourses/teacher "+resp);
+        return resp;
+    }  
+        
+    
+    
+    @POST
+    @Path("/getAssignments/teacher")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)     
+    public CourseResponse getTeacherAssignments(CourseRequest course) {
+        System.out.println(">> getAssignments/teacher "+course);
+        CourseResponse resp = new CourseResponse();    
+        
+        try {
+            resp = restService.getTeacherAssignments(course);
+        } catch (RestBusException ex) {
+            System.out.println("CourseController#getTeacherAssignments " +ex);
+        }
+         System.out.println("<< getAssignments/teacher "+resp);
+        return resp;
+    }  
+           
     
     
     @GET
@@ -145,12 +184,27 @@ public class CourseController {
     @Produces(MediaType.APPLICATION_JSON)     
     public CourseResponse CommentOnComment(CourseRequest course) {
         System.out.println(">> CommentOnComment "+course);
-        CourseResponse resp = new CourseResponse();    
+        CourseResponse resp = null;    
         
         try {
-            //commentId | commentText | userId
-            
+        	resp = new CourseResponse();
+            //commentId | commentText | userName
+        	if(course.getUserName() == null || (course.getUserName() != null && course.getUserName().trim().isEmpty()))
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+        	} 
+        	else if(course.getCommentId() == 0 )
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_commentIdRequired);    //Comment Id validation
+        	}
+        	else
+        	{
             resp = restService.commentOnComment(course);
+        	}
         } catch (RestBusException ex) {
             System.out.println("CourseController#CommentOnComment " +ex);
         }
@@ -165,12 +219,27 @@ public class CourseController {
     @Produces(MediaType.APPLICATION_JSON)     
     public CourseResponse CommentOnResourse(CourseRequest course) {
         System.out.println(">> CommentOnResourse "+course);
-        CourseResponse resp = new CourseResponse();    
+        CourseResponse resp = null;    
         
         try {
-            //resourseId | commentText | user
-            
+        	resp = new CourseResponse();
+            //resourceId | commentText | userName
+        	if(course.getUserName() == null || (course.getUserName() != null && course.getUserName().trim().isEmpty()))
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+        	}   
+        	else if(course.getResourceId() == 0 )
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_resourceIdRequired);    //Resource Id validation
+        	}
+        	else
+        	{
             resp = restService.commentOnResource(course);
+        	}
         } catch (RestBusException ex) {
             System.out.println("CourseController#CommentOnResourse " +ex);
         }
@@ -187,7 +256,23 @@ public class CourseController {
         CourseResponse resp = null;
         
         try {
+        	resp=new CourseResponse();
+        	if(userName == null || (userName != null && userName.trim().isEmpty()))
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+        	} 
+        	else if(commentId == 0)
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_commentIdRequired);    //Comment Id validation
+        	}
+        	else
+        	{
             resp = restService.likeOnComment(userName, commentId);
+        	}
         } catch (RestBusException ex) {
             System.out.println("Exception # likeOnComment - "+ex);
         }
@@ -205,7 +290,23 @@ public class CourseController {
         CourseResponse resp = null;
         
         try {
+        	resp = new CourseResponse();
+        	if(userName == null || (userName != null && userName.trim().isEmpty()))
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+        	}   
+        	else if(resourceId == 0)
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_resourceIdRequired);    //Resource Id validation
+        	}
+        	else
+        	{
             resp = restService.likeOnResource(userName, resourceId);
+        	}
         } catch (RestBusException ex) {
             System.out.println("Exception # likeOnResource - "+ex);
         }
@@ -257,21 +358,47 @@ public class CourseController {
          
          try {
         	 
-        	 String thumbImgUrl="default.png";
+        	 if(assignmentId <= 0)
+         	{
+         		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+         		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+         		resp.setErrorMessage(SLMSRestConstants.message_assignmentIdRequired);    //Assignment Id validation
+         	}  
+        	 else if(resourceName == null || (resourceName != null && resourceName.trim().isEmpty()))
+          	{
+          		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+          		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+          		resp.setErrorMessage(SLMSRestConstants.message_resourceNameRequired);    //Resource name  validation
+          	} 
+        	 else if(resourceAuthor == null || (resourceAuthor != null && resourceAuthor.trim().isEmpty()))
+           	{
+           		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+           		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+           		resp.setErrorMessage(SLMSRestConstants.message_resourceAuthorRequired);    //Resource Author validation
+           	}
+        	 else if(userName == null || (userName != null && userName.trim().isEmpty()))
+            	{
+            		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+            		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+            		resp.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+            	}
+         	  else if(descTxt == null || (descTxt != null && descTxt.trim().isEmpty()))
+            	{
+            		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+            		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+            		resp.setErrorMessage(SLMSRestConstants.message_desc_textRequired);    //Description validation
+            	}
+	        	else if(fileDetail.getFileName().equals("") && (uploadedUrl==null ||(uploadedUrl != null && uploadedUrl.trim().isEmpty())))
+	         	{
+	         		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+	         		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+	         		resp.setErrorMessage(SLMSRestConstants.message_fileDetailRequired);  //File Details or Empty Url validation
+	         	}
+        	 
+        	 else {
+        	 String thumbImgUrl="common.png";
         	 String authorImgUrl="default-author.png";
         	 String resourceUrl;
-        	 
-        	 //Case : File Not Uploading
-        	 if(fileDetail.getFileName().equals(""))
-        	 {
-        		System.out.println("URL submitting ... ");
-        		resourceUrl = uploadedUrl;
-        		
-        		int updateStatus = restService.uploadAssignment(assignmentId, resourceName, resourceAuthor, descTxt, userName, descTxt, resourceUrl, thumbImgUrl, authorImgUrl);
-        		
-        		System.out.println("URL submitted status ? "+updateStatus);
-        	 }
-        	 
         	 
         	//Case : File Uploading
         	 if(!fileDetail.getFileName().equals(""))
@@ -284,18 +411,19 @@ public class CourseController {
         		 System.out.println("Temp file name = "+tempFileName);
         		 
         		 //Writing file
-        		 String uploadedFileLocation = SLMSRestConstants.location_assignments+tempFileName;
+        		 String uploadedFileLocation = PropertyManager.getProperty(SLMSRestConstants.location_assignments)+tempFileName;
         		 System.out.println("Temp file location = "+uploadedFileLocation);
         		 AppUtils.writeToFile(uploadedInputStream, uploadedFileLocation);
         		 System.out.println("Assignment resource successfully uploaded..");
         		 
         		 //Updating into database
-        		 resourceUrl = SLMSRestConstants.baseUrl_resources+tempFileName;
+        		 resourceUrl = PropertyManager.getProperty(SLMSRestConstants.baseUrl_resources)+tempFileName;
      		
         		 int updateStatus = restService.uploadAssignment(assignmentId, resourceName, resourceAuthor, descTxt, userName, descTxt, resourceUrl, thumbImgUrl, authorImgUrl);
             	 System.out.println("File Upload status ? "+updateStatus);  
             	 
             	 //Condition if uploaded url is also adding along with file upload
+            	 /*
             	 if(uploadedUrl != null && !uploadedUrl.isEmpty())
             	 {
              		System.out.println("URL adding ... ");
@@ -304,13 +432,24 @@ public class CourseController {
             		System.out.println("URL adding status ? "+updateStatus2);            		 
            		 
             	 }	 
-            	 
+            	 */
+        	 }
+        	        		 
+        	 //Case : File Not Uploading
+        	 if(fileDetail.getFileName().equals(""))
+        	 {
+        		System.out.println("URL submitting ... ");
+        		resourceUrl = uploadedUrl;
+        		
+        		int updateStatus = restService.uploadAssignment(assignmentId, resourceName, resourceAuthor, descTxt, userName, descTxt, resourceUrl, thumbImgUrl, authorImgUrl);
+        		
+        		System.out.println("URL submitted status ? "+updateStatus);
         	 }
 
          //Common status---
          resp.setStatus(SLMSRestConstants.status_success);
          resp.setStatusMessage(SLMSRestConstants.message_success);  
-
+       }
        }catch(Exception e){
     	   System.out.println("Exception while uploading assignment.."+e);
            resp.setStatus(SLMSRestConstants.status_failure);

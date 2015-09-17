@@ -14,6 +14,7 @@ import com.scolere.lms.application.rest.vo.response.CourseRespTO;
 import com.scolere.lms.application.rest.vo.response.CourseResponse;
 import com.scolere.lms.application.rest.vo.response.ModuleRespTO;
 import com.scolere.lms.application.rest.vo.response.ResourceRespTO;
+import com.scolere.lms.common.utils.PropertyManager;
 import com.scolere.lms.domain.exception.LmsServiceException;
 import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
@@ -60,7 +61,7 @@ public class CourseBusImpl implements CourseBusIface{
                 	assign.setModuleName(asignment.getModuleName());
                 	
                 	//Start - Assignment Resources
-                    List<ResourseVO> attachedResourcesFromDB=service.getAssignmentsResources(assign.getAssignmentId()); 
+                    List<ResourseVO> attachedResourcesFromDB=service.getAssignmentsResources(req.getUserId(), assign.getAssignmentId());
                     List<ResourceRespTO> attachedResources = new ArrayList<ResourceRespTO>(attachedResourcesFromDB.size());
                     ResourceRespTO resourceRespTO = null;
                     for(ResourseVO vo5 : attachedResourcesFromDB)
@@ -423,7 +424,8 @@ public class CourseBusImpl implements CourseBusIface{
                 }
                 
             //Resources list >>>>>>>                
-                        List<ResourseVO> resourceListFromDB = service.getStudentResourcesWeb(req.getUserId(),vo.getCourseId(), mod.getModuleId(), req.getSearchText());
+                       // List<ResourseVO> resourceListFromDB = service.getStudentResourcesWeb(req.getUserId(),vo.getCourseId(), mod.getModuleId(), req.getSearchText());
+                		List<ResourseVO> resourceListFromDB = service.getTeacherModuleResources(mod.getModuleSessionId());
                         List<ResourceRespTO> resourceList = new ArrayList<ResourceRespTO>(resourceListFromDB.size());
 
                         ResourceRespTO resTo = null;
@@ -477,6 +479,271 @@ public class CourseBusImpl implements CourseBusIface{
             
         return resp;
     }
+    
+
+    @Override
+    public CourseResponse getUserCoursesTeacher(CourseRequest req) throws RestBusException {
+            CourseResponse resp = new CourseResponse();
+            CourseServiceIface service = new CourseServiceImpl();
+    
+            try {
+
+            //Courses list
+             List<CourseVO> courseListFromDB = service.getTeacherCourses(req.getUserId(), req.getSchoolId(), req.getClassId(), req.getHrmId(), req.getCourseId());
+            // List<CourseVO> courseListFromDB = service.getStudentCourses(req.getUserName(), req.getSearchText());
+             ArrayList<CourseRespTO> courses = new ArrayList<CourseRespTO>(courseListFromDB.size());
+             
+             CourseRespTO courseResp = null;
+             ModuleRespTO modResp = null;
+             for(CourseVO vo : courseListFromDB)
+             {
+             courseResp = new CourseRespTO();
+             courseResp.setCompletedStatus(vo.getCompletedStatus());
+             courseResp.setCourseId(vo.getCourseId());
+             courseResp.setCourseName(vo.getCourseName());
+             courseResp.setAuthorImg(vo.getAuthorImg());
+             courseResp.setAuthorName(vo.getAuthorName());
+             courseResp.setStartedOn(vo.getStartedOn());
+             courseResp.setCompletedOn(vo.getCompletedOn());
+
+             courseResp.setSchoolId(vo.getSchoolId());
+             courseResp.setSchoolName(vo.getSchoolName());
+             courseResp.setClassId(vo.getClassId());
+             courseResp.setClasseName(vo.getClasseName());
+             courseResp.setHrmId(vo.getHrmId());
+             courseResp.setHrmName(vo.getHrmName());
+             courseResp.setCourseSessionId(vo.getCourseSessionId());
+            // courseResp.set
+             
+             //Modules list
+             
+                double temp=0;
+                List<CourseVO> moduleListFromDB = service.getTeacherCoursesModules(vo.getCourseSessionId());
+                List<ModuleRespTO> moduleList = new ArrayList<ModuleRespTO>(moduleListFromDB.size());
+                for(CourseVO mod:moduleListFromDB)
+                {
+                modResp = new ModuleRespTO();
+                modResp.setModuleId(mod.getModuleId());
+                modResp.setModuleName(mod.getModuleName());
+                modResp.setStartedOn(mod.getStartedOn());
+                modResp.setCompletedOn(mod.getCompletedOn());
+                modResp.setCompletedStatus(mod.getCompletedStatus());
+                modResp.setCompletedPercentStatus(mod.getCompletedPercentStatus());
+                modResp.setModuleSessionId(mod.getModuleSessionId());
+                
+                if(mod.getCompletedStatus().equalsIgnoreCase("y") || mod.getCompletedStatus().equals("1"))
+                {
+                temp=temp+1;
+                }
+                
+            //Resources list >>>>>>>                
+                        List<ResourseVO> resourceListFromDB = service.getTeacherModuleResources(mod.getModuleSessionId());
+                        List<ResourceRespTO> resourceList = new ArrayList<ResourceRespTO>(resourceListFromDB.size());
+                        double temp2=0;
+                        ResourceRespTO resTo = null;
+                        for(ResourseVO vo2:resourceListFromDB)
+                        {
+                            resTo = new ResourceRespTO();
+                            resTo.setAuthorName(vo2.getAuthorName());
+                            resTo.setAuthorImg(vo2.getAuthorImg());
+                            resTo.setResourceId(""+vo2.getResourceId());
+                            resTo.setResourceName(vo2.getResourceName());
+                            resTo.setResourceDesc(vo2.getResourceDesc());
+                            resTo.setResourceUrl(vo2.getResourceUrl());
+                            resTo.setThumbImg(vo2.getThumbUrl());
+                            resTo.setStartedOn(vo2.getStartedOn());
+                            resTo.setCompletedOn(vo2.getCompletedOn());
+                            resTo.setLikeCounts(vo2.getLikeCounts());
+                            resTo.setCommentCounts(vo2.getCommentCounts());
+                            resTo.setShareCounts(vo2.getShareCounts());
+                            resTo.setCompletedStatus(vo2.getCompletedStatus());
+                            resTo.setResourceSessionId(vo2.getResourceSessionId());
+                            
+                            if(resTo.getCompletedStatus().equalsIgnoreCase("y") || resTo.getCompletedStatus().equals("1"))
+                            {
+                            temp2=temp2+1;
+                            }                            
+                            
+                            
+                            resourceList.add(resTo);
+                        }
+
+                        modResp.setResourceList(resourceList);
+
+             //End resources list               
+                
+                      double completedModulePercent=0;
+                      if(resourceListFromDB.size()>0){
+                    	  completedModulePercent = temp2/(double)resourceList.size();
+                      	}
+                      modResp.setCompletedPercentStatus(String.valueOf(Math.round(completedModulePercent*100)));                         
+                        
+                moduleList.add(modResp);
+                }
+             
+             double completedCoursePercent=0;
+             if(moduleListFromDB.size()>0){
+             completedCoursePercent = temp/(double)moduleList.size();
+             }
+             
+             courseResp.setCompletedPercentStatus(String.valueOf(Math.round(completedCoursePercent*100)));   
+
+             courseResp.setModuleList(moduleList);
+             courses.add(courseResp);
+             }
+
+             resp.setCourseList(courses);
+
+            resp.setStatus(SLMSRestConstants.status_success);
+            resp.setStatusMessage(SLMSRestConstants.message_success); 
+        }catch(Exception e){
+            System.out.println("Exception # getUserCoursesTeacher "+e.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(e.getMessage());            
+        }
+            
+        return resp;
+    }
+    
+    
+
+    @Override
+    public CourseResponse getTeacherAssignments(CourseRequest req) throws RestBusException {
+            CourseResponse resp = new CourseResponse();
+            CourseServiceIface service = new CourseServiceImpl();
+    
+            try {
+
+            //Courses list
+             List<CourseVO> courseListFromDB = service.getTeacherCourses(req.getUserId(), req.getSchoolId(), req.getClassId(), req.getHrmId(), req.getCourseId(),req.getModuleId());
+            // List<CourseVO> courseListFromDB = service.getStudentCourses(req.getUserName(), req.getSearchText());
+             ArrayList<CourseRespTO> courses = new ArrayList<CourseRespTO>(courseListFromDB.size());
+             
+             CourseRespTO courseResp = null;
+             ModuleRespTO modResp = null;
+             for(CourseVO vo : courseListFromDB)
+             {
+             courseResp = new CourseRespTO();
+             courseResp.setCompletedStatus(vo.getCompletedStatus());
+             courseResp.setCourseId(vo.getCourseId());
+             courseResp.setCourseName(vo.getCourseName());
+             courseResp.setAuthorImg(vo.getAuthorImg());
+             courseResp.setAuthorName(vo.getAuthorName());
+             courseResp.setStartedOn(vo.getStartedOn());
+             courseResp.setCompletedOn(vo.getCompletedOn());
+
+             courseResp.setSchoolId(vo.getSchoolId());
+             courseResp.setSchoolName(vo.getSchoolName());
+             courseResp.setClassId(vo.getClassId());
+             courseResp.setClasseName(vo.getClasseName());
+             courseResp.setHrmId(vo.getHrmId());
+             courseResp.setHrmName(vo.getHrmName());
+             courseResp.setCourseSessionId(vo.getCourseSessionId());
+            // courseResp.set
+             
+             //Modules list
+             
+                double temp=0;
+                List<CourseVO> moduleListFromDB = null;
+                
+                if(req.getModuleId()!=0)
+                moduleListFromDB = service.getTeacherCoursesModules(vo.getCourseSessionId(),req.getModuleId());
+                else
+                moduleListFromDB = service.getTeacherCoursesModules(vo.getCourseSessionId());
+                
+                List<ModuleRespTO> moduleList = new ArrayList<ModuleRespTO>(moduleListFromDB.size());
+                for(CourseVO mod:moduleListFromDB)
+                {
+                modResp = new ModuleRespTO();
+                modResp.setModuleId(mod.getModuleId());
+                modResp.setModuleName(mod.getModuleName());
+                modResp.setStartedOn(mod.getStartedOn());
+                modResp.setCompletedOn(mod.getCompletedOn());
+                modResp.setCompletedStatus(mod.getCompletedStatus());
+                modResp.setCompletedPercentStatus(mod.getCompletedPercentStatus());
+                modResp.setModuleSessionId(mod.getModuleSessionId());
+                
+                if(mod.getCompletedStatus().equalsIgnoreCase("y") || mod.getCompletedStatus().equals("1"))
+                {
+                temp=temp+1;
+                }
+                
+                //Assignments list start>>>>>>>                
+                    List<AssignmentVO> assignmenteListFromDB = service.getStudentAssignmentsByModuleId(Integer.parseInt(mod.getModuleId()));
+                    List<AssignmentRespTO> assignmentList = new ArrayList<AssignmentRespTO>(assignmenteListFromDB.size());
+                    AssignmentRespTO aresp=null;
+                    for(AssignmentVO avo : assignmenteListFromDB)
+                    {
+                    	aresp=new AssignmentRespTO();
+                    	aresp.setAssignmentId(avo.getAssignmentId());
+                    	aresp.setAssignmentName(avo.getAssignmentName());
+                    	aresp.setAssignmentStatus(avo.getAssignmentStatus());
+                    	aresp.setAssignmentSubmittedDate(avo.getAssignmentSubmittedDate());
+                    	aresp.setAssignmentDesc(avo.getAssignmentDesc());
+                    	aresp.setAssignmentDueDate(avo.getAssignmentDueDate());
+                    	String[] userIdNm=avo.getAssignmentSubmittedBy().split("-");
+                    	aresp.setAssignmentSubmittedBy(userIdNm[1]);
+                    	aresp.setAssignmentSubmittedById(userIdNm[0]);
+                    	
+                    	//Start - Assignment Resources
+                        List<ResourseVO> attachedResourcesFromDB=service.getAssignmentsResources(Integer.parseInt(aresp.getAssignmentSubmittedById()),avo.getAssignmentId());
+                        List<ResourceRespTO> attachedResources = new ArrayList<ResourceRespTO>(attachedResourcesFromDB.size());
+                        ResourceRespTO resourceRespTO = null;
+                        for(ResourseVO vo5 : attachedResourcesFromDB)
+                        {
+                        resourceRespTO = new ResourceRespTO();
+                        resourceRespTO.setResourceId(String.valueOf(vo5.getResourceId()));
+                        resourceRespTO.setResourceName(vo5.getResourceName());
+                        resourceRespTO.setResourceDesc(vo5.getResourceDesc());
+                        resourceRespTO.setResourceUrl(vo5.getResourceUrl());
+                        resourceRespTO.setThumbImg(vo5.getThumbUrl());
+                        resourceRespTO.setUploadedDate(vo5.getUploadedDate());
+                        resourceRespTO.setAuthorName(vo5.getAuthorName());
+                        resourceRespTO.setAuthorImg(vo5.getAuthorImg());
+                        resourceRespTO.setUploadedBy(vo5.getUploadedBy());
+                        
+                        attachedResources.add(resourceRespTO);
+                        }
+                        
+                        aresp.setAttachedResources(attachedResources);
+                    	//End - Assignment Resources
+                        
+                    	assignmentList.add(aresp);
+                    }
+                        
+               //Assignment list end<<<<<<
+                    
+                    modResp.setAssignmentList(assignmentList);        
+                moduleList.add(modResp);
+                }
+             
+             double completedCoursePercent=0;
+             if(moduleListFromDB.size()>0){
+             completedCoursePercent = temp/(double)moduleList.size();
+             }
+             
+             courseResp.setCompletedPercentStatus(String.valueOf(Math.round(completedCoursePercent*100)));   
+
+             courseResp.setModuleList(moduleList);
+             courses.add(courseResp);
+             }
+
+             resp.setCourseList(courses);
+
+            resp.setStatus(SLMSRestConstants.status_success);
+            resp.setStatusMessage(SLMSRestConstants.message_success); 
+        }catch(Exception e){
+            System.out.println("Exception # getUserCoursesTeacher "+e.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(e.getMessage());            
+        }
+            
+        return resp;
+    }
+    
+    
     
     
     public CourseResponse getUserCourses_x(CourseRequest req) throws RestBusException {
@@ -598,7 +865,7 @@ public class CourseBusImpl implements CourseBusIface{
                 resto2 = new CommentRespTO();    
                 resto2.setCommentBy(vo2.getCommentBy());
                 resto2.setCommentById(vo2.getCommentById());
-                resto2.setCommentByImage(vo2.getCommentByImage());
+                resto2.setCommentByImage(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+vo2.getCommentByImage());
                 resto2.setCommentCounts(vo2.getCommentCounts());
                 resto2.setCommentDate(vo2.getCommentDate());
                 resto2.setCommentId(vo2.getCommentId());
@@ -616,7 +883,7 @@ public class CourseBusImpl implements CourseBusIface{
        	        	childresto2 = new CommentRespTO();
        	        	childresto2.setCommentBy(cvo2.getCommentBy());
        	        	childresto2.setCommentById(cvo2.getCommentById());
-       	        	childresto2.setCommentByImage(cvo2.getCommentByImage());
+       	        	childresto2.setCommentByImage(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+cvo2.getCommentByImage());
        	        	childresto2.setCommentDate(cvo2.getCommentDate());
        	        	childresto2.setCommentId(cvo2.getCommentId());
        	        	childresto2.setCommentTxt(cvo2.getCommentTxt());
@@ -649,6 +916,8 @@ public class CourseBusImpl implements CourseBusIface{
                  temp.setResourceUrl(vo3.getResourceUrl());
                  temp.setThumbImg(vo3.getThumbUrl());
                  temp.setUploadedDate(vo3.getUploadedDate());
+                 temp.setAuthorName(vo3.getAuthorName());
+                 temp.setAuthorImg(vo3.getAuthorImg());
                  
                  relatedResList.add(temp);
                 }
@@ -662,7 +931,7 @@ public class CourseBusImpl implements CourseBusIface{
              //>>>>>>>>>>resources end
             
             //Assignment start >>
-            List<AssignmentVO> assgnmentsFromDb = service.getStudentAssignmentsByModuleId(moduleId);
+            List<AssignmentVO> assgnmentsFromDb = service.getStudentAssignmentsByModuleId(feed.getUserName(),moduleId);
             List<AssignmentRespTO> assignmentList = new ArrayList<AssignmentRespTO>(assgnmentsFromDb.size());
             AssignmentRespTO assignmentVo = null;
             for(AssignmentVO vo4:assgnmentsFromDb)
@@ -673,6 +942,8 @@ public class CourseBusImpl implements CourseBusIface{
             assignmentVo.setAssignmentStatus(vo4.getAssignmentStatus());
             assignmentVo.setAssignmentSubmittedBy(vo4.getAssignmentSubmittedBy());
             assignmentVo.setAssignmentSubmittedDate(vo4.getAssignmentSubmittedDate());
+            assignmentVo.setAssignmentDueDate(vo4.getAssignmentDueDate());
+            
             //Assignment Resources
             
             List<ResourseVO> attachedResourcesFromDB=service.getAssignmentsResources(vo4.getAssignmentId()); 
@@ -756,7 +1027,7 @@ public class CourseBusImpl implements CourseBusIface{
                 resTo.setCommentCounts(vo.getCommentCounts());
                 resTo.setShareCounts(vo.getShareCounts());
                 resTo.setIsLiked(vo.isIsLiked());
-                
+                System.out.println("isliked"+vo.isIsLiked());
               //Resource Comments
                 List<CommentVO> commentListDB = service.getResourceComments(req.getUserId(),vo.getResourceId());
                 List<CommentRespTO> commentList = new ArrayList<CommentRespTO>(commentListDB.size());
@@ -766,7 +1037,7 @@ public class CourseBusImpl implements CourseBusIface{
                 {
                 resto2 = new CommentRespTO();    
                 resto2.setCommentBy(vo2.getCommentBy());
-                resto2.setCommentByImage(vo2.getCommentByImage());
+                resto2.setCommentByImage(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+vo2.getCommentByImage());
                 resto2.setCommentById(vo2.getCommentById());
                 resto2.setCommentCounts(vo2.getCommentCounts());
                 resto2.setCommentDate(vo2.getCommentDate());
@@ -786,7 +1057,7 @@ public class CourseBusImpl implements CourseBusIface{
        	        	childResto2 = new CommentRespTO();
        	        	childResto2.setCommentBy(cvo2.getCommentBy());
        	        	childResto2.setCommentById(cvo2.getCommentById());
-       	        	childResto2.setCommentByImage(cvo2.getCommentByImage());
+       	        	childResto2.setCommentByImage(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+cvo2.getCommentByImage());
        	        	childResto2.setCommentDate(cvo2.getCommentDate());
        	        	childResto2.setCommentId(cvo2.getCommentId());
        	        	childResto2.setCommentTxt(cvo2.getCommentTxt());
@@ -832,7 +1103,7 @@ public class CourseBusImpl implements CourseBusIface{
              //>>>>>>>>>>resources end
             
             //Assignment start >>
-            List<AssignmentVO> assgnmentsFromDb = service.getStudentAssignments(req.getUserId());
+            List<AssignmentVO> assgnmentsFromDb = service.getStudentAssignments(0, req.getModuleId(),req.getUserId());
             List<AssignmentRespTO> assignmentList = new ArrayList<AssignmentRespTO>(assgnmentsFromDb.size());
             AssignmentRespTO assignmentVo = null;
             for(AssignmentVO vo4:assgnmentsFromDb)
@@ -843,6 +1114,8 @@ public class CourseBusImpl implements CourseBusIface{
             assignmentVo.setAssignmentStatus(vo4.getAssignmentStatus());
             assignmentVo.setAssignmentSubmittedBy(vo4.getAssignmentSubmittedBy());
             assignmentVo.setAssignmentSubmittedDate(vo4.getAssignmentSubmittedDate());
+            assignmentVo.setAssignmentDueDate(vo4.getAssignmentDueDate());
+            
             //Assignment Resources
 
             List<ResourseVO> attachedResourcesFromDB=service.getAssignmentsResources(req.getUserId(), vo4.getAssignmentId());

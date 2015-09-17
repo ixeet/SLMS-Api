@@ -11,7 +11,9 @@ import java.util.List;
  * @author dell
  */
 public class ModuleRespTO extends CompletedStatusTO{
-    private String courseId;
+    private int moduleSessionId;
+
+	private String courseId;
     private String moduleId;
     private String moduleName;
     List<ResourceRespTO> resourceList;
@@ -28,7 +30,15 @@ public class ModuleRespTO extends CompletedStatusTO{
 
     
     
-    public String getCourseId() {
+    public int getModuleSessionId() {
+		return moduleSessionId;
+	}
+
+	public void setModuleSessionId(int moduleSessionId) {
+		this.moduleSessionId = moduleSessionId;
+	}
+
+	public String getCourseId() {
 		return courseId;
 	}
 

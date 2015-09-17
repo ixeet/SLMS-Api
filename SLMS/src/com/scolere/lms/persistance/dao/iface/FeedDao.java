@@ -19,9 +19,12 @@ import java.util.List;
  */
 public interface FeedDao {
     
-    List<FeedVO> getFeedsList(int userId,String searchTxt) throws LmsDaoException;
-    List<CommentVO> getFeedCommentsList(int feedId,int userId) throws LmsDaoException;
-    List<CommentVO> getFeedChildCommentsList(int commentId,int userId) throws LmsDaoException;
+	long updateNotificationStatus(int userId,int feedId,String status) throws LmsDaoException;
+	FeedVO getFeedDetail(int userId,int feedId) throws LmsDaoException;
+    List<FeedVO> getNotificationsList(int userId,String searchTxt,int offset,int noOfRecords) throws LmsDaoException;
+    List<FeedVO> getFeedsList(int userId,String searchTxt,int offset,int noOfRecords) throws LmsDaoException;
+    List<CommentVO> getFeedCommentsList(int feedId,int userId,int offset,int noOfRecords) throws LmsDaoException;
+    List<CommentVO> getFeedChildCommentsList(int commentId,int userId,int offset,int noOfRecords) throws LmsDaoException;
     ResourseVO getDefaultResourseDetail(int feedId) throws LmsDaoException;
     
     FeedVO getFeedDetail(int feedId) throws LmsDaoException;
@@ -31,6 +34,10 @@ public interface FeedDao {
     CourseVO getModuleDetail(int feedId) throws LmsDaoException;
     ResourseVO getResourseDetail(int feedId) throws LmsDaoException;
     AssignmentVO getAssignmentDetail(int feedId) throws LmsDaoException;
+    
+    public long getTotalFeedsCount(int userId) throws LmsDaoException;
+    public long getTotalCommentsCount(int feedId) throws LmsDaoException;
+    public long getTotalCommentsCount(int feedId,int commentId) throws LmsDaoException;
     
 //    HashMap<Integer,LmsFeedTypeVO> getFeedTemplates() throws LmsDaoException;
 //    List<LmsFeedTxnVO> getAllFeeds(int userId,String searchText) throws LmsDaoException; 

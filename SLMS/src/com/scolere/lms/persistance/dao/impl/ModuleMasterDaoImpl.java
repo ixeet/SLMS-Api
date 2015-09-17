@@ -83,7 +83,7 @@ public class ModuleMasterDaoImpl extends LmsDaoAbstract implements ModuleMasterD
         try {
 
             conn = getConnection();
-            String sql = "UPDATE module_mstr set MODULE_NAME=?, DESC_TXT=?, METADATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            String sql = "UPDATE module_mstr set MODULE_NAME=?, DESC_TXT=?, METADATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE MODULE_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, vo.getModuleMasterName());
@@ -122,7 +122,7 @@ public class ModuleMasterDaoImpl extends LmsDaoAbstract implements ModuleMasterD
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO module_mstr(MODULE_ID, MODULE_NAME, DESC_TXT, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? , current_timestamp)";
+            String sql = "INSERT INTO module_mstr(MODULE_ID, MODULE_NAME, DESC_TXT, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? , utc_timestamp)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getModuleMasterId());
             stmt.setString(2, vo.getModuleMasterName());

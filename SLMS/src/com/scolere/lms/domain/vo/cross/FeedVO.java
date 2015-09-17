@@ -16,7 +16,7 @@ public class FeedVO {
     private int feedID;
     private int feedTypeID;
     private String feedRefName;
-
+    private String viewStatus;
     
     private int schoolId;
     private String schoolName;
@@ -68,11 +68,17 @@ public class FeedVO {
     }
 
     
-    
-    
     //setter-getters
 
-    public int getFeedID() {
+    public String getViewStatus() {
+		return viewStatus;
+	}
+
+	public void setViewStatus(String viewStatus) {
+		this.viewStatus = viewStatus;
+	}
+
+	public int getFeedID() {
         return feedID;
     }
 

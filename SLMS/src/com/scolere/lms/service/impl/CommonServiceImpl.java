@@ -105,6 +105,21 @@ public class CommonServiceImpl implements CommonServiceIface{
        return list;
     }
 
+    @Override
+    public List<SchoolMasterVo> getSchoolMasterVoList(int teacherId) throws LmsServiceException {
+       List<SchoolMasterVo> list = null; 
+
+        try {
+            SchoolMasterDao dao = (SchoolMasterDao) LmsDaoFactory.getDAO(SchoolMasterDao.class);
+            list = dao.getSchoolMasterVoList(teacherId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getSchoolMasterVoList = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }       
+       
+       return list;
+    }    
+    
     /* CLASS RELATED METHODS */
     @Override
     public boolean updateClassDetail(ClassMasterVo vo) throws LmsServiceException {
@@ -193,6 +208,23 @@ public class CommonServiceImpl implements CommonServiceIface{
        
        return list;        
     }
+    
+
+    @Override
+    public List<ClassMasterVo> getClassVoList(int clsId,int teacherId) throws LmsServiceException {
+       List<ClassMasterVo> list = null; 
+
+        try {
+            ClassMasterDao dao = (ClassMasterDao) LmsDaoFactory.getDAO(ClassMasterDao.class);
+           // list = dao.getClassMasterVoList(clsId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getClassVoList = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }       
+       
+       return list;        
+    }
+        
 
     /*HRM RELATED METHODS*/
     @Override
@@ -278,13 +310,45 @@ public class CommonServiceImpl implements CommonServiceIface{
         return list;
     }
 
+
+	@Override
+	public FeedVO getFeedDetail(int userId, int feedId)
+			throws LmsServiceException {
+		
+		FeedVO  feedVO=null;
+        try {
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            feedVO = dao.getFeedDetail(userId, feedId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getFeedsList(x,y) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return feedVO;
+    }
+  
     @Override
-    public List<FeedVO> getFeedsList(int userId, String searchTxt) throws LmsServiceException {
+    public List<FeedVO> getNotificationsList(int userId, String searchTxt,int offset,int noOfRecords) throws LmsServiceException {
         
         List<FeedVO>  list=null;
         try {
             FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
-            list = dao.getFeedsList(userId, searchTxt);
+            list = dao.getNotificationsList(userId, searchTxt, offset, noOfRecords);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getNotificationsList(x,y) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }    
+	
+    @Override
+    public List<FeedVO> getFeedsList(int userId, String searchTxt,int offset,int noOfRecords) throws LmsServiceException {
+        
+        List<FeedVO>  list=null;
+        try {
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            list = dao.getFeedsList(userId, searchTxt, offset, noOfRecords);
         } catch (Exception ex) {
             System.out.println("LmsServiceException # getFeedsList(x,y) = "+ex);
             throw new LmsServiceException(ex.getMessage());
@@ -295,12 +359,12 @@ public class CommonServiceImpl implements CommonServiceIface{
 
 
     @Override
-    public List<CommentVO> getFeedChildCommentsList(int commentId,int userId) throws LmsServiceException {
+    public List<CommentVO> getFeedChildCommentsList(int commentId,int userId,int offset,int noOfRecords) throws LmsServiceException {
        List<CommentVO>  list=null;
         try {
             
             FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
-            list = dao.getFeedChildCommentsList(commentId,userId);
+            list = dao.getFeedChildCommentsList(commentId, userId, offset, noOfRecords);
                     
         } catch (Exception ex) {
             System.out.println("LmsServiceException # getFeedChildCommentsList(x) = "+ex);
@@ -311,12 +375,12 @@ public class CommonServiceImpl implements CommonServiceIface{
     }
     
     @Override
-    public List<CommentVO> getFeedCommentsList(int feedId,int userId) throws LmsServiceException {
+    public List<CommentVO> getFeedCommentsList(int feedId,int userId,int offset,int noOfRecords) throws LmsServiceException {
        List<CommentVO>  list=null;
         try {
             
             FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
-            list = dao.getFeedCommentsList(feedId,userId);
+            list = dao.getFeedCommentsList(feedId, userId, offset, noOfRecords);
                     
         } catch (Exception ex) {
             System.out.println("LmsServiceException # getFeedCommentsList(x) = "+ex);
@@ -629,6 +693,76 @@ public class CommonServiceImpl implements CommonServiceIface{
         
         return vo;
     }
+
+	@Override
+	public long getTotalFeedsCount(int userId) throws LmsServiceException {
+        
+		long count=0;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            count = dao.getTotalFeedsCount(userId);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getTotalFeedsCount = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return count;
+        		
+	}
+	
+	@Override
+	public long getTotalCommentsCount(int feedId)
+			throws LmsServiceException {
+		long count=0;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            count = dao.getTotalCommentsCount(feedId);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getTotalCommentsCount#1 = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return count;
+	}	
+
+	@Override
+	public long getTotalCommentsCount(int feedId, int commentId)
+			throws LmsServiceException {
+		long count=0;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            count = dao.getTotalCommentsCount(feedId, commentId);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getTotalCommentsCount#2 = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return count;
+	}
+
+	@Override
+	public long updateNotificationStatus(int userId, int feedId,
+			String status) throws LmsServiceException {
+		long count=0;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            count = dao.updateNotificationStatus(userId, feedId, status);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # updateNotificationStatus = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return count;
+	}
+
     
     
 }//End of class

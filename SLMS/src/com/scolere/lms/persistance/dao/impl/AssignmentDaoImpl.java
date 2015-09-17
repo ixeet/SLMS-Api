@@ -29,7 +29,7 @@ public class AssignmentDaoImpl extends LmsDaoAbstract implements AssignmentDao {
         try {
 
             conn = getConnection();
-            String sql = "UPDATE assignment set ASSIGNMENT_NAME=?, ASSIGNMENT_TYP_ID=?, DESC_TXT=?, DISPLAY_NO=?, ENABLE_FL=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            String sql = "UPDATE assignment set ASSIGNMENT_NAME=?, ASSIGNMENT_TYP_ID=?, DESC_TXT=?, DISPLAY_NO=?, ENABLE_FL=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE ASSIGNMENT_ID=?";
             /* String sql = "UPDATE assignment set ASSIGNMENT_NAME=?, ASSIGNMENT_TYP_ID=?, DESC_TXT=?, DISPLAY_NO=?, ENABLE_FL=?, LAST_USERID_CD=?\n"
              + "    WHERE ASSIGNMENT_ID=?";*/
@@ -75,7 +75,7 @@ public class AssignmentDaoImpl extends LmsDaoAbstract implements AssignmentDao {
             /* String sql = "INSERT INTO assignment(ASSIGNMENT_ID, ASSIGNMENT_NAME, ASSIGNMENT_TYP_ID, DESC_TXT, DISPLAY_NO," +
              " ENABLE_FL, LAST_USERID_CD)  VALUES(?, ?, ?, ?, ?, ?, ?)";*/
             String sql = "INSERT INTO assignment(ASSIGNMENT_ID, ASSIGNMENT_NAME, ASSIGNMENT_TYP_ID, DESC_TXT, "
-                    + "DISPLAY_NO, ENABLE_FL, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, ?, current_timestamp)";
+                    + "DISPLAY_NO, ENABLE_FL, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, ?, utc_timestamp)";
 
 
             stmt = conn.prepareStatement(sql);

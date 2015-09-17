@@ -82,7 +82,7 @@ public class SchoolMasterDaoImpl extends LmsDaoAbstract implements SchoolMasterD
         try {
 
             conn = getConnection();
-            String sql = "UPDATE school_mstr set  SCHOOL_NAME=?, SCHOOL_ADDRESS=?, DESC_TXT=?, WEBSITE_URL=?, SCHOOL_LOGO=?, OTHER_IMG=?, METADATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            String sql = "UPDATE school_mstr set  SCHOOL_NAME=?, SCHOOL_ADDRESS=?, DESC_TXT=?, WEBSITE_URL=?, SCHOOL_LOGO=?, OTHER_IMG=?, METADATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE SCHOOL_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, vo.getSchoolName());
@@ -126,7 +126,7 @@ public class SchoolMasterDaoImpl extends LmsDaoAbstract implements SchoolMasterD
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO school_mstr(SCHOOL_ID, SCHOOL_NAME, SCHOOL_ADDRESS, DESC_TXT, WEBSITE_URL, SCHOOL_LOGO, OTHER_IMG, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)VALUES(?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, current_timestamp)";
+            String sql = "INSERT INTO school_mstr(SCHOOL_ID, SCHOOL_NAME, SCHOOL_ADDRESS, DESC_TXT, WEBSITE_URL, SCHOOL_LOGO, OTHER_IMG, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)VALUES(?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, utc_timestamp)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getSchoolId());
             stmt.setString(2, vo.getSchoolName());
@@ -240,6 +240,43 @@ public class SchoolMasterDaoImpl extends LmsDaoAbstract implements SchoolMasterD
         //1 . jdbc code endd
 
         //4 Return as required by method
+        return distList;
+    }
+    
+
+    public List<SchoolMasterVo> getSchoolMasterVoList(int teacherId) {
+        List<SchoolMasterVo> distList = new ArrayList<SchoolMasterVo>();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+
+            String sql = "SELECT SCHOOL_ID,SCHOOL_NAME FROM school_mstr where SCHOOL_ID in (SELECT distinct SCHOOL_ID FROM teacher_courses where TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID=?))";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, teacherId);
+            
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                SchoolMasterVo schoolMasterVo = new SchoolMasterVo();
+                schoolMasterVo.setSchoolId(rs.getInt(1));
+                schoolMasterVo.setSchoolName(rs.getString(2));
+
+                //Add into list
+                distList.add(schoolMasterVo);
+            }
+
+
+        } catch (SQLException se) {
+            System.out.println("getSchoolMasterVoList(?) # " + se);
+            se.printStackTrace();
+        } catch (Exception e) {
+            System.out.println("getSchoolMasterVoList(?) # " + e);
+            e.printStackTrace();
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+
         return distList;
     }
     

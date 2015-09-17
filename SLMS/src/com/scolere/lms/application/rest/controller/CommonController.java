@@ -6,9 +6,13 @@ package com.scolere.lms.application.rest.controller;
 
 import com.scolere.lms.application.rest.bus.iface.CommonBusIface;
 import com.scolere.lms.application.rest.bus.impl.CommonBusImpl;
+import com.scolere.lms.application.rest.constants.SLMSRestConstants;
 import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.application.rest.vo.request.CommonRequest;
 import com.scolere.lms.application.rest.vo.response.CommonResponse;
+import com.scolere.lms.application.rest.vo.response.CourseResponse;
+import com.scolere.lms.common.utils.PropertyManager;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -32,7 +36,8 @@ public class CommonController {
      */
     @GET
     public String defaultx() {
-        String message = "Welcome to SLMS common webservices....";
+        String message = "Welcome to SLMS common webservices...."+PropertyManager.getProperty("TEST.MESSAGE.WELCOME");
+        
         return message;
     }
     
@@ -47,8 +52,22 @@ public class CommonController {
         
         try {
             //commentId | commentText | userId
-            
+        	if(req.getUserName() == null || (req.getUserName() != null && req.getUserName().trim().isEmpty()))
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+        	} 
+        	else if(req.getCommentId() == 0 )
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_commentIdRequired);    //Comment Id validation
+        	}
+        	else
+        	{
             resp = restService.commentOnComment(req);
+        	}
         } catch (RestBusException ex) {
             System.out.println("CourseController#CommentOnComment " +ex);
         }
@@ -67,8 +86,22 @@ public class CommonController {
         
         try {
             //feedId | commentText | user
-            
+        	if(req.getUserName() == null || (req.getUserName() != null && req.getUserName().trim().isEmpty()))
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+        	}   
+        	else if(req.getFeedId() == 0 )
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_feedIdRequired);    //Resource Id validation
+        	}
+        	else
+        	{
             resp = restService.commentOnFeed(req);
+        	}
         } catch (RestBusException ex) {
             System.out.println("CourseController#commentOnFeed " +ex);
         }
@@ -85,7 +118,23 @@ public class CommonController {
         CommonResponse resp = null;
         
         try {
-            resp = restService.likeOnComment(userName, commentId);
+        	resp=new CommonResponse();
+        	if(userName == null || (userName != null && userName.trim().isEmpty()))
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+        	} 
+        	else if(commentId <= 0)
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_commentIdRequired);    //Comment Id validation
+        	}
+        	else
+        	{
+                resp = restService.likeOnComment(userName, commentId);
+        	}
         } catch (RestBusException ex) {
             System.out.println("Exception # likeOnComment - "+ex);
         }
@@ -103,7 +152,23 @@ public class CommonController {
         CommonResponse resp = null;
         
         try {
+        	resp = new CommonResponse();
+        	if(userName == null || (userName != null && userName.trim().isEmpty()))
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+        	}   
+        	else if(feedId == 0)
+        	{
+        		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+        		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		resp.setErrorMessage(SLMSRestConstants.message_feedIdRequired);    //Resource Id validation
+        	}
+        	else
+        	{
             resp = restService.likeOnFeed(userName, feedId);
+        	}
         } catch (RestBusException ex) {
             System.out.println("Exception # likeOnFeed - "+ex);
         }
@@ -123,7 +188,18 @@ public class CommonController {
         CommonResponse resp = new CommonResponse();    
         
     try {
+    	
+    	if(req.getNoOfRecords() <= 0)
+    	{
+    		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+    		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+    		resp.setErrorMessage(SLMSRestConstants.message_noOfRecordsRequired);    //noOfRecords validation
+    	}
+    	else
+    	{
           resp = restService.getFeedsList(req); 
+    	}
+    	
         }catch (Exception ex){
             System.out.println("CourseController#getFeeds " +ex);
         }
@@ -132,6 +208,121 @@ public class CommonController {
         return resp;
     }    
 
+    
+    /***
+     * Get Notifications list
+     * @param req [userId | searchText | offset | noOfRecords]
+     * @return
+     */
+    @POST
+    @Path("/getNotifications")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)     
+    public CommonResponse getNotifications(CommonRequest req) {
+        System.out.println(">> getNotifications "+req);
+        CommonResponse resp = new CommonResponse();    
+        
+    try {
+    	
+    	if(req.getNoOfRecords() <= 0)
+    	{
+    		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+    		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+    		resp.setErrorMessage(SLMSRestConstants.message_noOfRecordsRequired);    //noOfRecords validation
+    	}
+    	else
+    	{
+          resp = restService.getNotificationsList(req);
+    	}
+    	
+        }catch (Exception ex){
+            System.out.println("CourseController#getNotifications " +ex);
+        }
+        System.out.println("<< getNotifications "+resp);
+         
+        return resp;
+    }    
+    
+    
+    @GET
+    @Path("/updateNotificationStatus/userId/{userId}/feedId/{feedId}/status/{status}")
+    @Produces(MediaType.APPLICATION_JSON)     
+    public CommonResponse updateNotificationStatus(@PathParam("userId") int userId,@PathParam("feedId") int feedId,@PathParam("status") String status) {
+        System.out.println(">> updateNotificationStatus feedId = "+feedId);
+        CommonResponse resp = new CommonResponse();    
+        
+    try {
+
+          resp = restService.updateNotificationStatus(userId, feedId,status);
+    	
+        }catch (Exception ex){
+            System.out.println("CourseController#updateNotificationStatus " +ex);
+        }
+        System.out.println("<< updateNotificationStatus "+resp);
+         
+        return resp;
+    }    
+    
+    
+    @GET
+    @Path("/getFeedDetail/userId/{userId}/feedId/{feedId}")
+    @Produces(MediaType.APPLICATION_JSON)     
+    public CommonResponse getFeedDetail(@PathParam("userId") int userId,@PathParam("feedId") int feedId) {
+        System.out.println(">> getFeedDetail feedId = "+feedId);
+        CommonResponse resp = new CommonResponse();    
+        
+    try {
+    	
+          resp = restService.getFeedDetail(userId, feedId);
+    	
+        }catch (Exception ex){
+            System.out.println("CourseController#getFeedDetail " +ex);
+        }
+        System.out.println("<< getFeedDetail "+resp);
+         
+        return resp;
+    }    
+
+    
+    
+    /**
+     * This method returns list of comments based on request parameter feedId & commentId. 
+     * If request does not contain commentId it will return commentsList else sub-comments list.
+     *  
+     * @param CommonRequest
+     * @return CommonResponse
+     */
+    
+    @POST
+    @Path("/getFeedComments")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)     
+    public CommonResponse getFeedComments(CommonRequest req) {
+        System.out.println(">> getFeedComments "+req);
+        CommonResponse resp = new CommonResponse();    
+        
+    try {
+    	
+	    	if(req.getNoOfRecords() <= 0)
+	    	{
+	    		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+	    		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+	    		resp.setErrorMessage(SLMSRestConstants.message_noOfRecordsRequired);    //noOfRecords validation
+	    	}
+	    	else
+	    	{
+	          resp = restService.getFeedComments(req);
+	    	}
+    	
+        }catch (Exception ex){
+            System.out.println("CourseController#getFeedComments " +ex);
+        }
+        System.out.println("<< getFeedComments "+resp);
+         
+        return resp;
+    }     
+    
+    
     
     @GET
     @Path("/getCourse/feedId/{feedId}") //Not IN USE
@@ -241,6 +432,26 @@ public class CommonController {
         }
 
         System.out.println("<< End getMasterData # " + commonResponse);
+        return commonResponse;
+    }
+    
+
+    @GET
+    @Path("/getMasterData/teacherId/{teacherId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CommonResponse getMasterData(@PathParam("teacherId") int teacherId) {
+        System.out.println("Start getMasterData/teacherId >> "+teacherId);
+        CommonResponse commonResponse = null;
+
+        try {
+        	
+            commonResponse = restService.getSchoolMasterData();
+            
+        } catch (RestBusException ex) {
+            System.out.println("Exception # getMasterData/teacherId - " + ex);
+        }
+
+        System.out.println("<< End getMasterData/teacherId # " + commonResponse);
         return commonResponse;
     }
     

@@ -28,7 +28,7 @@ public class TeacherCourseDaoImpl extends LmsDaoAbstract implements TeacherCours
 	        try {
 
 	            conn = getConnection();
-	            String sql = "UPDATE teacher_courses set COURSE_ID=?, TEACHER_ID=?, CLASS_ID=?, SCHOOL_ID=?, HRM_ID=?,  DISPLAY_NO=?,ENABLE_FL=?,CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+	            String sql = "UPDATE teacher_courses set COURSE_ID=?, TEACHER_ID=?, CLASS_ID=?, SCHOOL_ID=?, HRM_ID=?,  DISPLAY_NO=?,ENABLE_FL=?,CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
 	                    + "    WHERE TEACHER_COURSE_ID=?";
 	            /*String sql = "UPDATE teacher_courses set COURSE_ID=?, TEACHER_ID=?, CLASS_ID=?, SCHOOL_ID=?, HRM_ID=?," +
 	            		" DISPLAY_NO=?,ENABLE_FL=?,CREATED_BY=?, LAST_USERID_CD=?\n"
@@ -76,7 +76,7 @@ public class TeacherCourseDaoImpl extends LmsDaoAbstract implements TeacherCours
             /*String sql = "INSERT INTO teacher_courses(TEACHER_COURSE_ID, COURSE_ID, TEACHER_ID, CLASS_ID," +
             		" SCHOOL_ID, HRM_ID, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD)  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";*/
             String sql = "INSERT INTO teacher_courses(TEACHER_COURSE_ID, COURSE_ID, TEACHER_ID, CLASS_ID, SCHOOL_ID, HRM_ID, DISPLAY_NO," +
-            		" ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp)";
+            		" ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, utc_timestamp)";
           
             
             stmt = conn.prepareStatement(sql);

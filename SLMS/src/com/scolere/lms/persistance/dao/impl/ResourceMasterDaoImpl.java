@@ -83,7 +83,7 @@ public class ResourceMasterDaoImpl extends LmsDaoAbstract implements ResourseMas
         try {
 
             conn = getConnection();
-            String sql = "UPDATE resourse_mstr set  RESOURSE_NAME=?, RESOURSE_AUTHOR=?, RESOURSE_DURATION=?, CREATED_DT=?, DESC_TXT=?, METADATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT=current_timestamp\n"
+            String sql = "UPDATE resourse_mstr set  RESOURSE_NAME=?, RESOURSE_AUTHOR=?, RESOURSE_DURATION=?, CREATED_DT=?, DESC_TXT=?, METADATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT=utc_timestamp\n"
                     + "    WHERE RESOURSE_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, vo.getResourceName());
@@ -125,7 +125,7 @@ public class ResourceMasterDaoImpl extends LmsDaoAbstract implements ResourseMas
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO resourse_mstr(RESOURSE_ID, RESOURSE_NAME, RESOURCE _AUTHOR, RESOURCE_DURATION, DESC_TXT, RESOURCE_TYP_ID, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ? ,current_timestamp)";
+            String sql = "INSERT INTO resourse_mstr(RESOURSE_ID, RESOURSE_NAME, RESOURCE _AUTHOR, RESOURCE_DURATION, DESC_TXT, RESOURCE_TYP_ID, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)    VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ? ,utc_timestamp)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getResourceId());
             stmt.setString(2, vo.getResourceName());

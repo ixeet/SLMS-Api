@@ -25,7 +25,7 @@ public class AssignmentResourceTagDaoImpl extends LmsDaoAbstract implements Assi
         try {
 
             conn = getConnection();
-            String sql = "UPDATE assignment_resource_tag set RESOURCE_TXN_ID=?, TAG_NAME=?, TAG_WT=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            String sql = "UPDATE assignment_resource_tag set RESOURCE_TXN_ID=?, TAG_NAME=?, TAG_WT=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE RESOURCE_TAG_ID=?";
             stmt = conn.prepareStatement(sql);
 
@@ -61,7 +61,7 @@ public class AssignmentResourceTagDaoImpl extends LmsDaoAbstract implements Assi
         	
             conn = getConnection();
             String sql = "INSERT INTO assignment_resource_tag(RESOURCE_TAG_ID, RESOURCE_TXN_ID, TAG_NAME, TAG_WT, " +
-            		"LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, current_timestamp)";
+            		"LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, utc_timestamp)";
            
             stmt = conn.prepareStatement(sql);
             
