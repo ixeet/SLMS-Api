@@ -20,6 +20,7 @@ public class AssignmentRespTO {
     private String assignmentStatus;
     private String assignmentSubmittedDate;
     private String assignmentSubmittedBy;
+    private String assignmentSubmittedById;
     private String assignmentDueDate;
 
     private int courseId;
@@ -31,7 +32,15 @@ public class AssignmentRespTO {
     
 
     
-    public String getAssignmentDesc() {
+    public String getAssignmentSubmittedById() {
+		return assignmentSubmittedById;
+	}
+
+	public void setAssignmentSubmittedById(String assignmentSubmittedById) {
+		this.assignmentSubmittedById = assignmentSubmittedById;
+	}
+
+	public String getAssignmentDesc() {
 		return assignmentDesc;
 	}
 

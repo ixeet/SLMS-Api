@@ -18,10 +18,29 @@ public class CommonRequest {
     private int feedId;
     private String searchText;
     private String commentText;
+    
+    //Pagination parameter
+    private int offset;
+    private int noOfRecords;
+    
+    
+    public int getOffset() {
+		return offset;
+	}
 
-    
-    
-    public int getFeedId() {
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+
+	public int getNoOfRecords() {
+		return noOfRecords;
+	}
+
+	public void setNoOfRecords(int noOfRecords) {
+		this.noOfRecords = noOfRecords;
+	}
+
+	public int getFeedId() {
 		return feedId;
 	}
 
@@ -93,11 +112,16 @@ public class CommonRequest {
         this.commentText = commentText;
     }
 
-    @Override
-    public String toString() {
-        return "CommonRequest{" + "userName=" + userName + ", userId=" + userId + ", commentId=" + commentId + ", resourceId=" + resourceId + ", courseId=" + courseId + ", moduleId=" + moduleId + ", searchText=" + searchText + ", commentText=" + commentText + '}';
-    }
     
+	@Override
+	public String toString() {
+		return "CommonRequest [userName=" + userName + ", userId=" + userId
+				+ ", commentId=" + commentId + ", resourceId=" + resourceId
+				+ ", courseId=" + courseId + ", moduleId=" + moduleId
+				+ ", feedId=" + feedId + ", searchText=" + searchText
+				+ ", commentText=" + commentText + ", offset=" + offset
+				+ ", noOfRecords=" + noOfRecords + "]";
+	}
     
     
 }

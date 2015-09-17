@@ -11,13 +11,11 @@ import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.application.rest.vo.request.UserRequest;
 import com.scolere.lms.application.rest.vo.response.UserResponse;
 import com.scolere.lms.common.utils.AppUtils;
+import com.scolere.lms.common.utils.PropertyManager;
 import com.scolere.lms.common.utils.StringEncrypter;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -60,10 +58,74 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)      
     public UserResponse registration(UserRequest req,@Context HttpServletRequest request) {
         System.out.println("Start registration >>"+req);
-        UserResponse userResponse = null;
+        UserResponse userResponse = new UserResponse();
         
         try {
+        	
+			if(req.getUserName() == null || (req.getUserName() != null && req.getUserName().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+        	}
+        	else if(req.getFirstName() == null || (req.getFirstName() != null && req.getFirstName().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_firstNameRequired);     //First name validation   		
+        	}
+        	else if(req.getLastName() == null || (req.getLastName() != null && req.getLastName().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_lastNameRequired);    //    last Name Validation		
+        	}
+        	else if(req.getEmailId() == null || (req.getEmailId() != null && req.getEmailId().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_emailIdRequired);      //  		Email Id validation
+        	}
+        	else if(req.getAdminEmailId() == null || (req.getAdminEmailId() != null && req.getAdminEmailId().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_adminEmailIdRequired);      //  Admin Email Id validation
+        	}
+        	else if(req.getSchoolId() == null || (req.getSchoolId() != null && req.getSchoolId().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_schoolIdRequired);        // School Id validation		
+        	}
+        	else if(req.getClassId() == null || (req.getClassId() != null && req.getClassId().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_classIdRequired);        // Class Id Validation		
+        	}
+        	else if(req.getHomeRoomId() == null || (req.getHomeRoomId() != null && req.getHomeRoomId().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_homeRoomIdRequired);       //Home Room Id Validation 		
+        	}
+        	else if(req.getUserPassword() == null || (req.getUserPassword() != null && req.getUserPassword().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_userPasswordRequired);   //Password validation     		
+        	}
+        	else if(req.getTitle() == null || (req.getTitle() != null && req.getTitle().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_titleRequired);   //Title validation     		
+        	}
+        	else
+        	{
             userResponse = restService.registration(req);
+        	}
         } catch (RestBusException ex) {
             System.out.println("Exception # registration - "+ex);
         }
@@ -86,10 +148,49 @@ public class UserController {
     @Produces(MediaType.APPLICATION_JSON)      
     public UserResponse updateProfile(UserRequest req,@Context HttpServletRequest request) {
         System.out.println("Start updateProfile >>"+req);
-        UserResponse userResponse = null;
+        UserResponse userResponse = new UserResponse();
         
         try {
+        	if(req.getUserid() == null || (req.getUserid() != null && req.getUserid().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_userIdRequired);   //UserId validation     		
+        	}	
+        	else if(req.getUserName() == null || (req.getUserName() != null && req.getUserName().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_userNameRequired);   //UserName validation     		
+        	}	
+        	else if(req.getTitle() == null || (req.getTitle() != null && req.getTitle().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_titleRequired);   //Title validation     		
+        	}	
+        	 else if(req.getFirstName() == null || (req.getFirstName() != null && req.getFirstName().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_firstNameRequired);     //First name validation   		
+        	}
+        	else if(req.getLastName() == null || (req.getLastName() != null && req.getLastName().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_lastNameRequired);    //    last Name Validation		
+        	}	
+        	else if(req.getEmailId() == null || (req.getEmailId() != null && req.getEmailId().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_emailIdRequired);      //  		Email Id validation
+        	}
+        	else
+        	{
             userResponse = restService.updateProfile(req);
+        	}
         } catch (RestBusException ex) {
             System.out.println("Exception # updateProfile - "+ex);
         }
@@ -121,18 +222,34 @@ public class UserController {
         UserResponse resp = new UserResponse();
         
         try {
-        //Update PROFILE_IMG to database
-        String profileImgName = userName+SLMSRestConstants.image_extension;
-        boolean updateStatus =  restService.updateProfilePhoto(profileImgName);
-        System.out.println("Image name saved into db ? "+updateStatus);
         
-        String uploadedFileLocation = SLMSRestConstants.location_userprofile+profileImgName;
+        //Update PROFILE_IMG to database
+
+    	if(userName == null || (userName != null && userName.trim().isEmpty()))
+    	{
+    		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+    		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+    		resp.setErrorMessage(SLMSRestConstants.message_userNameRequired);	//user name validation
+    	}
+    	else if(fileDetail.getFileName().equals("") )
+    	{
+    		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+    		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+    		resp.setErrorMessage(SLMSRestConstants.message_fileDetailRequired);	//file url validation
+    	}
+    	else
+    	{
+            String profileImgName = userName.substring(0, userName.indexOf("@"))+System.currentTimeMillis()+SLMSRestConstants.image_extension; //System.currentTimeMillis()
+        boolean updateStatus =  restService.updateProfilePhoto(profileImgName,userName);
+    	System.out.println("Image name saved into db ? "+updateStatus);
+    	
+        String uploadedFileLocation = PropertyManager.getProperty(SLMSRestConstants.location_userprofile)+profileImgName;
         System.out.println("Uploading file @: "+uploadedFileLocation);
         AppUtils.writeToFile(uploadedInputStream, uploadedFileLocation);
         System.out.println("Profile image successfully uploaded..");
         
-        resp.setUploadLocation(uploadedFileLocation);
-        
+        resp.setUploadLocation(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+profileImgName);
+    	}
         resp.setStatus(SLMSRestConstants.status_success);
         resp.setStatusMessage(SLMSRestConstants.message_success);          
         } catch (Exception ex) {
@@ -184,12 +301,28 @@ public class UserController {
     @GET
     @Path("/setFBId/userName/{userName}/userFbId/{fbId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public UserResponse setFBId(@PathParam("userName") String userId,@PathParam("fbId") String fbId) {
-        System.out.println("Start setFBId >> userId="+userId+" | fbid="+fbId);
-        UserResponse userResponse = null;
+    public UserResponse setFBId(@PathParam("userName") String userName,@PathParam("fbId") String fbId) {
+        System.out.println("Start setFBId >> userName="+userName+" | fbid="+fbId);
+        UserResponse userResponse = new UserResponse();
         
         try {
-            userResponse = restService.setFBId(userId, fbId);
+        	if(userName == null || (userName != null && userName.trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_userNameRequired);
+        	}
+        	else if(fbId == null || (fbId != null && fbId.trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_facebookIdRequired);        		
+        	}
+        	else
+        	{
+            userResponse = restService.setFBId(userName, fbId);
+        	}
+            
         } catch (RestBusException ex) {
             System.out.println("Exception # setFBId - "+ex);
         }
@@ -261,7 +394,28 @@ public class UserController {
         UserResponse userResponse = null;
         
         try {
-            userResponse = restService.changePwd(req);
+        	userResponse = new UserResponse();
+        	if(req.getUserName() == null || (req.getUserName() != null && req.getUserName().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_userNameRequired);    //user name validation
+        	}
+        	else if(req.getUserPassword() == null || (req.getUserPassword() != null && req.getUserPassword().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_userPasswordRequired);   //Password validation     		
+        	}
+        	else if(req.getUserNewPassword() == null || (req.getUserNewPassword() != null && req.getUserNewPassword().trim().isEmpty()))
+        	{
+        		userResponse.setStatus(SLMSRestConstants.status_fieldRequired);
+        		userResponse.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+        		userResponse.setErrorMessage(SLMSRestConstants.message_userNewPasswordRequired);   //New Password validation     		
+        	}
+        	else{
+        	userResponse = restService.changePwd(req);
+        	}
         } catch (RestBusException ex) {
             System.out.println("Exception # changePwd - "+ex);
         }

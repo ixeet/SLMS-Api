@@ -86,7 +86,7 @@ public class StudentDetailDaoImpl extends LmsDaoAbstract implements StudentDetai
         try {
 
             conn = getConnection();
-            String sql = "UPDATE student_dtls set TITLE=?,FNAME=?, LNAME=?, EMAIL_ID=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            String sql = "UPDATE student_dtls set TITLE=?,FNAME=?, LNAME=?, EMAIL_ID=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + " WHERE USER_ID=?";
             stmt = conn.prepareStatement(sql);
 
@@ -116,7 +116,7 @@ public class StudentDetailDaoImpl extends LmsDaoAbstract implements StudentDetai
 
     
     @Override
-    public boolean updateProfilePhoto(String photoPath) throws LmsDaoException {
+    public boolean updateProfilePhoto(String photoPath,String userNm) throws LmsDaoException {
         System.out.println("updateProfilePhoto id =" + photoPath);
         boolean status = false;
 
@@ -128,7 +128,7 @@ public class StudentDetailDaoImpl extends LmsDaoAbstract implements StudentDetai
             String sql = "UPDATE student_dtls SET PROFILE_IMG=? WHERE USER_ID=(SELECT USER_ID FROM user_login where USER_NM = ?)";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, photoPath);
-            stmt.setString(2, photoPath.substring(0, photoPath.lastIndexOf(".")));
+            stmt.setString(2, userNm);
             
             stmt.executeUpdate();
             System.out.println("student profile updated..");
@@ -155,7 +155,7 @@ public class StudentDetailDaoImpl extends LmsDaoAbstract implements StudentDetai
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO student_dtls(USER_ID, FNAME, LNAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE, PROFILE_IMG, SOCIAL_PROFILE, ADDRESS, LAST_USERID_CD,TITLE, LAST_UPDT_TM,ADMIN_EMAIL_ID) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, current_timestamp,?)";
+            String sql = "INSERT INTO student_dtls(USER_ID, FNAME, LNAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE, PROFILE_IMG, SOCIAL_PROFILE, ADDRESS, LAST_USERID_CD,TITLE, LAST_UPDT_TM,ADMIN_EMAIL_ID) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, utc_timestamp,?)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getUserId());
             stmt.setString(2, vo.getfName());

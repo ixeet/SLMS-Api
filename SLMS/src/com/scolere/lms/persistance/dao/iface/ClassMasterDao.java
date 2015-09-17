@@ -39,4 +39,6 @@ public interface ClassMasterDao {
     List<ClassMasterVo > getClassMasterVoList(); 
 
     List<ClassMasterVo > getClassMasterVoList(int schoolId); 
+    
+    List<ClassMasterVo > getClassMasterVoList(int schoolId,int teacher); 
 }

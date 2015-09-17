@@ -14,6 +14,7 @@ public class AssignmentVO {
     private String assignmentDesc;
     private String assignmentStatus;
     private String assignmentSubmittedDate;
+    private int assignmentSubmittedById;
     private String assignmentSubmittedBy;
     private String assignmentDueDate;
     
@@ -25,7 +26,15 @@ public class AssignmentVO {
         
     
     
-    public String getAssignmentDesc() {
+    public int getAssignmentSubmittedById() {
+		return assignmentSubmittedById;
+	}
+
+	public void setAssignmentSubmittedById(int assignmentSubmittedById) {
+		this.assignmentSubmittedById = assignmentSubmittedById;
+	}
+
+	public String getAssignmentDesc() {
 		return assignmentDesc;
 	}
 

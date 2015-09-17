@@ -215,11 +215,11 @@ public class LoginServiceImpl implements LoginServiceIface{
     }
     
     @Override
-    public boolean updateProfilePhoto(String photoPath) throws LmsServiceException {
+    public boolean updateProfilePhoto(String photoPath,String userNm) throws LmsServiceException {
         boolean status = false;
         try {
             StudentDetailDao dao = (StudentDetailDao) LmsDaoFactory.getDAO(StudentDetailDao.class);
-            status = dao.updateProfilePhoto(photoPath);
+            status = dao.updateProfilePhoto(photoPath,userNm);
         } catch (Exception ex) {
             System.out.println("LmsServiceException # updateProfilePhoto = "+ex);
             throw new LmsServiceException(ex.getMessage());
@@ -369,6 +369,22 @@ public class LoginServiceImpl implements LoginServiceIface{
         }
     
     }
+
+	@Override
+	public boolean defaultUserAssignment(String userName, int schoolId,
+			int classId, int hrmId) throws LmsServiceException {
+        
+        boolean status = false;
+        try {
+            UserLoginDao dao = (UserLoginDao) LmsDaoFactory.getDAO(UserLoginDao.class);
+            status = dao.defaultUserAssignment(userName, schoolId, classId, hrmId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # defaultUserAssignment = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return status;
+    }  
 
     
     

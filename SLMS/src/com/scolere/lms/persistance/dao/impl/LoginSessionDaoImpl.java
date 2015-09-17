@@ -73,7 +73,7 @@ public class LoginSessionDaoImpl extends LmsDaoAbstract implements LoginSessionD
         try {
 
             conn = getConnection();
-            String sql = "UPDATE login_sessions set SESSION_ID=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            String sql = "UPDATE login_sessions set SESSION_ID=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE LOGIN_SESSIONS_ID=?";
             stmt = conn.prepareStatement(sql);
 
@@ -108,7 +108,7 @@ public class LoginSessionDaoImpl extends LmsDaoAbstract implements LoginSessionD
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO login_sessions(LOGIN_SESSIONS_ID, SESSION_ID, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?,  current_timestamp)";
+            String sql = "INSERT INTO login_sessions(LOGIN_SESSIONS_ID, SESSION_ID, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?,  utc_timestamp)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getLoginSession());
             stmt.setString(2, vo.getSessionId());

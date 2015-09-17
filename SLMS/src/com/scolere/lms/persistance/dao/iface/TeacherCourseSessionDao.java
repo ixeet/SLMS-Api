@@ -19,15 +19,21 @@ public interface TeacherCourseSessionDao
     
     //New methods for students details >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.
     CourseVO getStudentCourseDetail(int courseID) throws LmsDaoException;
+    List<CourseVO> getTeacherCourses(int userId,int schoolId,int classId,int hrmId,int courseId,int moduleId) throws LmsDaoException;
+    List<CourseVO> getTeacherCourses(int userId,int schoolId,int classId,int hrmId,int courseId) throws LmsDaoException;
     List<CourseVO> getStudentCourses(int userId,String searchText) throws LmsDaoException;
     List<CourseVO> getStudentCourses(String userNm,String searchText) throws LmsDaoException;
     CourseVO getStudentModuleDetail(int moduleId) throws LmsDaoException;
     List<CourseVO> getStudentCoursesModules(int courseSessionId) throws LmsDaoException;
+    List<CourseVO> getTeacherCoursesModules(int courseSessionId) throws LmsDaoException;
+    List<CourseVO> getTeacherCoursesModules(int courseSessionId,int moduleId) throws LmsDaoException;
     //Get module details service -Resources & Comments
     List<ResourseVO> getStudentResources(int moduleId) throws LmsDaoException;
     List<ResourseVO> getStudentResources(int courseId,int moduleId) throws LmsDaoException;
     List<ResourseVO> getStudentResources(int userId,int courseId,int moduleId,String searchText) throws LmsDaoException;
     List<ResourseVO> getStudentResourcesWeb(int userId,String courseId,String moduleId,String searchText) throws LmsDaoException;
+    List<ResourseVO> getTeacherModuleResources(int moduleSessionId) throws LmsDaoException;
+    
     List<CommentVO> getResourceComments(int userId,int resourceId) throws LmsDaoException;
     List<CommentVO> getResourceComments(int resourceId) throws LmsDaoException;
 	List<CommentVO> getResourceChildCommentsList(int commentId)throws LmsDaoException;
@@ -41,6 +47,8 @@ public interface TeacherCourseSessionDao
     List<AssignmentVO> getStudentAssignments(int userId,String searchText) throws LmsDaoException;
     
     List<AssignmentVO> getStudentAssignmentsByModuleId(int moduleId) throws LmsDaoException;
+    List<AssignmentVO> getStudentAssignmentsByModuleId(String userName,int moduleId) throws LmsDaoException;
+    
     List<ResourseVO> getAssignmentsResources(int userId,int assignmentDtlId) throws LmsDaoException;
     List<ResourseVO> getAssignmentsResources(int assignmentDtlId) throws LmsDaoException;
 

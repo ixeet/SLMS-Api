@@ -12,6 +12,8 @@ import java.util.List;
 public interface UserLoginDao {
     
 
+	boolean defaultUserAssignment(String userName,int schoolId,int classId,int hrmId) throws LmsDaoException;
+	
     /**
      * Get user complete details by user name & userPwd
      * @param userName

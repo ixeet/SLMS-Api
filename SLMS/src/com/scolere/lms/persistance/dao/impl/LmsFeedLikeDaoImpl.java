@@ -28,7 +28,7 @@ public class LmsFeedLikeDaoImpl extends LmsDaoAbstract implements LmsFeedLikeDao
 
 	            conn = getConnection();
 	            String sql = "UPDATE lms_feed_like set FEED_ID=?, PARENT_COMMENT_ID=?, LIKE_ON=?, ASSOCIATE_ID=?, " +
-	            		"LIKE_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+	            		"LIKE_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
 	                    + "    WHERE FEED_LIKE_ID=?";
 	            /*String sql = "UPDATE lms_feed_like set FEED_ID=?, PARENT_COMMENT_ID=?, LIKE_ON=?, ASSOCIATE_ID=?, LIKE_BY=?, LAST_USERID_CD=?\n"
 	                    + "    WHERE FEED_LIKE_ID=?";*/
@@ -71,7 +71,7 @@ public class LmsFeedLikeDaoImpl extends LmsDaoAbstract implements LmsFeedLikeDao
             /*String sql = "INSERT INTO lms_feed_like(FEED_LIKE_ID, FEED_ID, PARENT_COMMENT_ID, LIKE_ON, ASSOCIATE_ID, " +
             		"LIKE_BY, LAST_USERID_CD)  VALUES(?, ?, ?, ?, ?, ?, ?)";*/
             String sql = "INSERT INTO lms_feed_like(FEED_LIKE_ID, FEED_ID, PARENT_COMMENT_ID, LIKE_ON, ASSOCIATE_ID, " +
-            		"LIKE_BY, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, ?, current_timestamp)";
+            		"LIKE_BY, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, ?, utc_timestamp)";
            
             
             stmt = conn.prepareStatement(sql);

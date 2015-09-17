@@ -10,6 +10,7 @@ package com.scolere.lms.domain.vo.cross;
  */
 public class ResourseVO {
     
+    private int resourceSessionId;
     private int resourceId;
     private String resourceName;
     private String resourceUrl;
@@ -25,8 +26,27 @@ public class ResourseVO {
     private int shareCounts;
     private int commentCounts;
     private boolean isLiked;
+    private String completedStatus;
 
-    public boolean isIsLiked() {
+    
+    
+   	public int getResourceSessionId() {
+		return resourceSessionId;
+	}
+
+	public void setResourceSessionId(int resourceSessionId) {
+		this.resourceSessionId = resourceSessionId;
+	}
+
+	public String getCompletedStatus() {
+		return completedStatus;
+	}
+
+	public void setCompletedStatus(String completedStatus) {
+		this.completedStatus = completedStatus;
+	}
+
+	public boolean isIsLiked() {
         return isLiked;
     }
 

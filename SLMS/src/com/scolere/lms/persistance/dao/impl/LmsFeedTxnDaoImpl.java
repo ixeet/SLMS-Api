@@ -28,7 +28,7 @@ public class LmsFeedTxnDaoImpl extends LmsDaoAbstract implements LmsFeedTxnDao{
 	        	
 	            conn = getConnection();
 	            String sql = "UPDATE lms_feed_txn set FEED_TYPE_ID=?, RESOURCE_ID=?, FEED_ON=?, " +
-	            		"LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+	            		"LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
 	                    + "    WHERE FEED_ID=?";
 	           /* String sql = "UPDATE lms_feed_txn set FEED_TYPE_ID=?, RESOURCE_ID=?, FEED_ON=?, LAST_USERID_CD=?\n"
 	                    + "    WHERE FEED_ID=?";*/
@@ -69,7 +69,7 @@ public class LmsFeedTxnDaoImpl extends LmsDaoAbstract implements LmsFeedTxnDao{
             /*String sql = "INSERT INTO lms_feed_txn(FEED_ID, FEED_TYPE_ID, RESOURCE_ID, FEED_ON, LAST_USERID_CD)" +
             		"  VALUES(?, ?, ?, ?, ?)";*/
             String sql = "INSERT INTO lms_feed_txn(FEED_ID, FEED_TYPE_ID, RESOURCE_ID, FEED_ON, LAST_USERID_CD," +
-            		" LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, current_timestamp)";
+            		" LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, utc_timestamp)";
             
             
             stmt = conn.prepareStatement(sql);

@@ -30,7 +30,7 @@ public class TeacherCourseSessionDtlsDaoImpl extends LmsDaoAbstract implements T
 	            conn = getConnection();
 	            String sql = "UPDATE teacher_course_session_dtls set COURSE_SESSION_ID=?, TEACHER_ID=?, MODULE_ID=?," +
 	            		" CONTENT_ID=?, START_SESSION_TM=?,END_SESSION_TM=?,IS_COMPLETED=?, LAST_USERID_CD=?," +
-	            		" LAST_UPDT_TM=current_timestamp\n"
+	            		" LAST_UPDT_TM=utc_timestamp\n"
 	                    + "    WHERE COURSE_SESSION_DTLS_ID=?";
 	           /* String sql = "UPDATE teacher_course_session_dtls set COURSE_SESSION_ID=?, TEACHER_ID=?, MODULE_ID=?," +
 	            		" CONTENT_ID=?, START_SESSION_TM=?, END_SESSION_TM=?,IS_COMPLETED=?, LAST_USERID_CD=?\n"
@@ -80,7 +80,7 @@ public class TeacherCourseSessionDtlsDaoImpl extends LmsDaoAbstract implements T
             		"LAST_USERID_CD)  VALUES(?, ?, ?, ?, ?, ?, ?,?,?)";*/
             String sql = "INSERT INTO teacher_course_session_dtls(COURSE_SESSION_DTLS_ID, COURSE_SESSION_ID," +
             		"TEACHER_ID, MODULE_ID, CONTENT_ID, START_SESSION_TM,END_SESSION_TM,IS_COMPLETED, " +
-            		"LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp)";
+            		"LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, utc_timestamp)";
 
             
             stmt = conn.prepareStatement(sql);

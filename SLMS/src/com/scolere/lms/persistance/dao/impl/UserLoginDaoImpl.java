@@ -152,6 +152,7 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
                     user.setLastName(rs.getString(5));
                     user.setEmailId(rs.getString(6));
                     user.setAddress(rs.getString(7));
+                    user.setProfileImage(rs.getString(7));
                    
                 }
             	
@@ -232,7 +233,7 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
     public UserLoginVo getUserLoginDetail(int id) throws LmsDaoException {
         System.out.println("Inside getUserLoginDetail(?) >>");
         //Create object to return
-        UserLoginVo userDtls = new UserLoginVo();
+        UserLoginVo userDtls =null;
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -241,9 +242,11 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
 
             String sql = "SELECT * FROM user_login where USER_ID=?";
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, userDtls.getUserId());
+            stmt.setInt(1, id);
+            
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
+            	 userDtls = new UserLoginVo();
                 //3. Set db data to object
                 userDtls.setUserId(rs.getInt("USER_ID"));
                 userDtls.setUserPwd(rs.getString("USER_PWD"));
@@ -368,7 +371,7 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
         try {
 
             conn = getConnection();
-            String sql = "UPDATE user_login set USER_NM=?, USER_PWD=?, DELETED_FL=?, ENABLE_FL=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp"
+            String sql = "UPDATE user_login set USER_NM=?, USER_PWD=?, DELETED_FL=?, ENABLE_FL=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp"
                     + "    WHERE USER_ID=?";
             stmt = conn.prepareStatement(sql);
 
@@ -441,7 +444,13 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
             stmt.setString(1, fbId);
             stmt.setString(2, userName);
             
-            stmt.executeUpdate();
+            int t=stmt.executeUpdate();
+            if(t>0)
+            {
+            	//success
+            }else{
+            	//no update error
+            }
 
         } catch (SQLException e) {
             System.out.println("updateUserLoginDetail # " + e);
@@ -466,7 +475,7 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO user_login(USER_NM, USER_PWD, USER_TYPE_ID, DELETED_FL, ENABLE_FL, LAST_USERID_CD, LAST_UPDT_TM) VALUES(?, ?, ?, ?, ?, ?,  current_timestamp)";
+            String sql = "INSERT INTO user_login(USER_NM, USER_PWD, USER_TYPE_ID, DELETED_FL, ENABLE_FL, LAST_USERID_CD, LAST_UPDT_TM) VALUES(?, ?, ?, ?, ?, ?,  utc_timestamp)";
             stmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
 
             stmt.setString(1, vo.getUserName());
@@ -570,6 +579,19 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
 
         return distList;
     }
+
+
+	@Override
+	public boolean defaultUserAssignment(String userName, int schoolId,
+			int classId, int hrmId) throws LmsDaoException {
+		
+		//SELECT mam.ASSIGNMENT_ID,'usernm',56,current_date,'1','usernm',current_timestamp,date(mod_sess.END_SESSION_TM) FROM teacher_courses course inner join teacher_course_sessions course_sess on course.TEACHER_COURSE_ID=course_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls mod_sess on course_sess.COURSE_SESSION_ID=mod_sess.COURSE_SESSION_ID inner join module_assignment_map mam on mam.MODULE_ID=mod_sess.MODULE_ID where course.SCHOOL_ID=1 and course.CLASS_ID=1 and course.HRM_ID=1
+        String defaultAssignment="INSERT INTO assignment_resource_txn(ASSIGNMENT_ID, STUDENT_ID, UPLODED_RESOURCE_ID, UPLOADED_ON, IS_COMPLETED, LAST_USERID_CD, LAST_UPDT_TM, DUE_ON) SELECT mam.ASSIGNMENT_ID,'"+userName+"',null,null,'1','"+userName+"',current_timestamp,date(mod_sess.END_SESSION_TM) FROM teacher_courses course inner join teacher_course_sessions course_sess on course.TEACHER_COURSE_ID=course_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls mod_sess on course_sess.COURSE_SESSION_ID=mod_sess.COURSE_SESSION_ID inner join module_assignment_map mam on mam.MODULE_ID=mod_sess.MODULE_ID where course.SCHOOL_ID="+schoolId+" and course.CLASS_ID="+classId+" and course.HRM_ID="+hrmId+"";
+        boolean assignmentStatus = deleteOrUpdateByQuery(defaultAssignment);
+        System.out.println("assignmentStatus ? "+assignmentStatus);
+        
+        return assignmentStatus;
+	}
 
     
 }//end of class

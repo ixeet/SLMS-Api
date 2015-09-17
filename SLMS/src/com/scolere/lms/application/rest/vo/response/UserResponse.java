@@ -11,7 +11,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  * @author dell
  */
 
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class UserResponse extends CommonRespTO{
     private String userId;
     private String userFbId;

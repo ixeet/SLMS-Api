@@ -144,6 +144,21 @@ public class CourseServiceImpl implements CourseServiceIface{
         
         return list;
     }
+    
+    @Override
+    public List<ResourseVO> getTeacherModuleResources(int moduleSessionId) throws LmsServiceException {
+        List<ResourseVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getTeacherModuleResources(moduleSessionId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getTeacherModuleResources = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }
+    
     @Override
     public List<CommentVO> getResourceChildComments(int userId,int commentId) throws LmsServiceException {
         
@@ -226,7 +241,7 @@ public class CourseServiceImpl implements CourseServiceIface{
         List<AssignmentVO> list =null;
         try {
             TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
-            list = dao.getStudentAssignments(userId);
+            list = dao.getStudentAssignments(courseId, moduleId, userId);
         } catch (Exception ex) {
             System.out.println("LmsServiceException # getStudentAssignments = "+ex);
             throw new LmsServiceException(ex.getMessage());
@@ -250,6 +265,21 @@ public class CourseServiceImpl implements CourseServiceIface{
         return list;
     }
     
+
+    @Override
+    public List<AssignmentVO> getStudentAssignmentsByModuleId(String userId,int moduleId) throws LmsServiceException {
+        
+        List<AssignmentVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getStudentAssignmentsByModuleId(userId,moduleId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getStudentAssignmentsByModuleId = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }  
     
     @Override
     public List<AssignmentVO> getStudentAssignments(int userId) throws LmsServiceException {
@@ -364,6 +394,37 @@ public class CourseServiceImpl implements CourseServiceIface{
 
     }    
 
+    @Override
+    public List<CourseVO> getTeacherCourses(int userId,int schoolId,int classId,int hrmId,int courseId,int moduleId) throws LmsServiceException {
+        
+        List<CourseVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getTeacherCourses(userId, schoolId, classId, hrmId, courseId,moduleId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getTeacherCourses = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+    return list;
+
+    }      
+    
+    @Override
+    public List<CourseVO> getTeacherCourses(int userId,int schoolId,int classId,int hrmId,int courseId) throws LmsServiceException {
+        
+        List<CourseVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getTeacherCourses(userId, schoolId, classId, hrmId, courseId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getTeacherCourses = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+    return list;
+
+    }     
 
     @Override
     public CourseVO getStudentModuleDetail(int moduleId) throws LmsServiceException {
@@ -380,7 +441,6 @@ public class CourseServiceImpl implements CourseServiceIface{
         return vo;
     }    
     
-    
     @Override
     public List<CourseVO> getStudentCoursesModules(int courseSessionId) throws LmsServiceException {
         List<CourseVO> list =null;
@@ -394,8 +454,37 @@ public class CourseServiceImpl implements CourseServiceIface{
         
     return list;
 
+    }       
+    
+    @Override
+    public List<CourseVO> getTeacherCoursesModules(int courseSessionId) throws LmsServiceException {
+        List<CourseVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getTeacherCoursesModules(courseSessionId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getTeacherCoursesModules = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+    return list;
+
     }        
     
+    @Override
+    public List<CourseVO> getTeacherCoursesModules(int courseSessionId,int moduleId) throws LmsServiceException {
+        List<CourseVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getTeacherCoursesModules(courseSessionId,moduleId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getTeacherCoursesModules(?,?) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+    return list;
+
+    }            
     
     @Override
     public boolean updateTeacherCourseSession(TeacherCourseSessionVO vo) throws LmsServiceException {

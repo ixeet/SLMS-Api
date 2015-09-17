@@ -9,7 +9,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 /**
- * Web application lifecycle listener.
+ * Web application lifecycle listener. 
  *
  * @author dell
  */
@@ -19,6 +19,8 @@ public class ApplContextListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         System.out.println("Context initialized...........");
+        PropertyManager propertyManager= new PropertyManager();
+        System.out.println("Application property loaded..."+propertyManager.getProperty("TEST.MESSAGE.WELCOME"));
     }
 
     @Override

@@ -27,7 +27,7 @@ public class LmsFeedTypeDaoImpl extends LmsDaoAbstract implements LmsFeedTypeDao
 	        try {
 	        	
 	            conn = getConnection();
-	            String sql = "UPDATE lms_feed_type set FEED_TYPE_NM=?, DISPLAY_NO=?, ENABLE_FL=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+	            String sql = "UPDATE lms_feed_type set FEED_TYPE_NM=?, DISPLAY_NO=?, ENABLE_FL=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
 	                    + "    WHERE FEED_TYPE_ID=?";
 	           /* String sql = "UPDATE lms_feed_type set FEED_TYPE_NM=?, DISPLAY_NO=?, ENABLE_FL=?, LAST_USERID_CD=?\n"
 	                    + "    WHERE FEED_TYPE_ID=?";*/
@@ -67,7 +67,7 @@ public class LmsFeedTypeDaoImpl extends LmsDaoAbstract implements LmsFeedTypeDao
 
             conn = getConnection();
             //String sql = "INSERT INTO lms_feed_type(FEED_TYPE_ID, FEED_TYPE_NM, DISPLAY_NO, ENABLE_FL, LAST_USERID_CD)  VALUES(?, ?, ?, ?, ?)";
-            String sql = "INSERT INTO lms_feed_type(FEED_TYPE_ID, FEED_TYPE_NM, DISPLAY_NO, ENABLE_FL, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, current_timestamp)";
+            String sql = "INSERT INTO lms_feed_type(FEED_TYPE_ID, FEED_TYPE_NM, DISPLAY_NO, ENABLE_FL, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, utc_timestamp)";
                         
             stmt = conn.prepareStatement(sql);
             

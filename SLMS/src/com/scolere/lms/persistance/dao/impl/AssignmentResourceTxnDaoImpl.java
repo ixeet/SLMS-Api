@@ -25,7 +25,7 @@ public class AssignmentResourceTxnDaoImpl extends LmsDaoAbstract implements Assi
         try {
         	
             conn = getConnection();
-           String sql = "UPDATE assignment_resource_txn set  ASSIGNMENT_DTL_ID=?, STUDENT_ID=?, UPLODED_RESOURCE_PATH=?, RESOURCE_TYPE_ID=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+           String sql = "UPDATE assignment_resource_txn set  ASSIGNMENT_DTL_ID=?, STUDENT_ID=?, UPLODED_RESOURCE_PATH=?, RESOURCE_TYPE_ID=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE RESOURCE_TXN_ID=?";
             /*String sql = "UPDATE assignment_resource_txn set  ASSIGNMENT_DTL_ID=?, STUDENT_ID=?, UPLODED_RESOURCE_PATH=?, RESOURCE_TYPE_ID=?, LAST_USERID_CD=?\n"
                     + "    WHERE RESOURCE_TXN_ID=?";*/
@@ -65,7 +65,7 @@ public class AssignmentResourceTxnDaoImpl extends LmsDaoAbstract implements Assi
 
             conn = getConnection();
             String sql = "INSERT INTO assignment_resource_txn(RESOURCE_TXN_ID, ASSIGNMENT_DTL_ID, STUDENT_ID, UPLODED_RESOURCE_PATH, RESOURCE_TYPE_ID," +
-            		" LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, current_timestamp)";
+            		" LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, utc_timestamp)";
            
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getResourceTxnID());

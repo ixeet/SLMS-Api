@@ -11,7 +11,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  *
  * @author dell
  */
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class FeedRespTO extends CountsTO{
     private int feedId;
     private String feedOn;
@@ -22,9 +22,18 @@ public class FeedRespTO extends CountsTO{
     CommentRespTO comment;
     CourseRespTO course;
     private List<CommentRespTO> feedCommentsList;
+    private String viewStatus;
 
     
-    public String getFeedOn() {
+    public String getViewStatus() {
+		return viewStatus;
+	}
+
+	public void setViewStatus(String viewStatus) {
+		this.viewStatus = viewStatus;
+	}
+
+	public String getFeedOn() {
 		return feedOn;
 	}
 

@@ -11,7 +11,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  *
  * @author dell
  */
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class CommonResponse extends CommonRespTO{
     
     private List<SchoolRespTO> schoolList;
@@ -22,15 +22,41 @@ public class CommonResponse extends CommonRespTO{
     private ModuleRespTO moduleDetail;
     private AssignmentRespTO assignmentDetail;
     private ResourceRespTO resourceDetail;
+    private FeedRespTO feedDetail;
+    
+    private long totalRecords; //pagination parameter
+    private List<CommentRespTO> commentsList;
     
     
     //Getter-setters
-
+    
+    
     public UserResponse getUserDetail() {
         return userDetail;
     }
+	public FeedRespTO getFeedDetail() {
+		return feedDetail;
+	}
+	public void setFeedDetail(FeedRespTO feedDetail) {
+		this.feedDetail = feedDetail;
+	}
+	public List<CommentRespTO> getCommentsList() {
+		return commentsList;
+	}
 
-    public void setUserDetail(UserResponse userDetail) {
+	public void setCommentsList(List<CommentRespTO> commentsList) {
+		this.commentsList = commentsList;
+	}
+
+	public long getTotalRecords() {
+		return totalRecords;
+	}
+
+	public void setTotalRecords(long totalRecords) {
+		this.totalRecords = totalRecords;
+	}
+
+	public void setUserDetail(UserResponse userDetail) {
         this.userDetail = userDetail;
     }
 

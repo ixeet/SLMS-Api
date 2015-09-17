@@ -80,7 +80,7 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
         try {
 
             conn = getConnection();
-            String sql = "UPDATE class_mstr set CLASS_NAME=?, DESC_TXT=?, METEDATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            String sql = "UPDATE class_mstr set CLASS_NAME=?, DESC_TXT=?, METEDATA=?, DELETED_FL=?, DISPLAY_NO=?, ENABLE_FL=?, CREATED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE CLASS_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, vo.getClassName());
@@ -118,7 +118,7 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO class_mstr(CLASS_ID, CLASS_NAME, DESC_TXT, METEDATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? , current_timestamp)";
+            String sql = "INSERT INTO class_mstr(CLASS_ID, CLASS_NAME, DESC_TXT, METEDATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM)   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ? , utc_timestamp)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getClassId());
             stmt.setString(2, vo.getClassName());
@@ -273,6 +273,12 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
         return distList;
 
     }
+
+	@Override
+	public List<ClassMasterVo> getClassMasterVoList(int schoolId, int teacher) {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
     
 }//End of class

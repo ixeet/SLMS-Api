@@ -29,7 +29,7 @@ public class LmsFeedCommentsDaoImpl extends LmsDaoAbstract implements LmsFeedCom
 	        	
 	            conn = getConnection();
 	            String sql = "UPDATE assignment set FEED_ID=?, COMMENT_TXT=?, PARENT_COMMENT_ID=?, ASSOCIATE_ID=?," +
-	            		"COMMENTED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+	            		"COMMENTED_BY=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
 	                    + "    WHERE FEED_COMMENT_ID=?";
 	           /* String sql = "UPDATE lms_feed_comments set FEED_ID=?, COMMENT_TXT=?, PARENT_COMMENT_ID=?," +
 	            		" ASSOCIATE_ID=?, COMMENTED_BY=?, LAST_USERID_CD=?\n"
@@ -75,7 +75,7 @@ public class LmsFeedCommentsDaoImpl extends LmsDaoAbstract implements LmsFeedCom
             /*String sql = "INSERT INTO lms_feed_comments(FEED_COMMENT_ID, FEED_ID, COMMENT_TXT, PARENT_COMMENT_ID, " +
             		"ASSOCIATE_ID, COMMENTED_BY, LAST_USERID_CD)  VALUES(?, ?, ?, ?, ?, ?, ?)";*/
             String sql = "INSERT INTO lms_feed_comments(FEED_COMMENT_ID, FEED_ID, COMMENT_TXT, PARENT_COMMENT_ID, " +
-            		"ASSOCIATE_ID, COMMENTED_BY, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, ?, current_timestamp)";
+            		"ASSOCIATE_ID, COMMENTED_BY, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, ?, ?, utc_timestamp)";
 
             
             stmt = conn.prepareStatement(sql);

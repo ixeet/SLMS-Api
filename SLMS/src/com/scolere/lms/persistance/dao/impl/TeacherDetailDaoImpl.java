@@ -83,7 +83,7 @@ public class TeacherDetailDaoImpl extends LmsDaoAbstract implements TeacherDetai
         try {
 
             conn = getConnection();
-            String sql = "UPDATE teacher_dtls set USER_ID=?, F_NAME=?, L_NAME=?, EMAIL_ID=?, CONTACT_NO=?, BIRTH_DT=?, JOINING_DATE=?, EXPERIENCE=?, CONTRACT_EXP_DT=?, ADDRESS=?, LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            String sql = "UPDATE teacher_dtls set USER_ID=?, F_NAME=?, L_NAME=?, EMAIL_ID=?, CONTACT_NO=?, BIRTH_DT=?, JOINING_DATE=?, EXPERIENCE=?, CONTRACT_EXP_DT=?, ADDRESS=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE TEACHER_DETAILS_ID=?";
             stmt = conn.prepareStatement(sql);
 
@@ -125,7 +125,7 @@ public class TeacherDetailDaoImpl extends LmsDaoAbstract implements TeacherDetai
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO teacher_dtls(USER_ID, F_NAME, L_NAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE, EXPERIENCE, CONTRACT_EXP_DT, ADDRESS, LAST_USERID_CD, LAST_UPDT_TM) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  current_timestamp)";
+            String sql = "INSERT INTO teacher_dtls(USER_ID, F_NAME, L_NAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE, EXPERIENCE, CONTRACT_EXP_DT, ADDRESS, LAST_USERID_CD, LAST_UPDT_TM) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  utc_timestamp)";
             stmt = conn.prepareStatement(sql);
 
             stmt.setInt(1, vo.getUserId());

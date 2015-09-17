@@ -4,6 +4,9 @@
  */
 package com.scolere.lms.service.iface;
 
+import java.util.HashMap;
+import java.util.List;
+
 import com.scolere.lms.domain.exception.LmsServiceException;
 import com.scolere.lms.domain.vo.ClassMasterVo;
 import com.scolere.lms.domain.vo.HomeRoomMasterVo;
@@ -16,8 +19,6 @@ import com.scolere.lms.domain.vo.cross.CourseVO;
 import com.scolere.lms.domain.vo.cross.FeedVO;
 import com.scolere.lms.domain.vo.cross.ResourseVO;
 import com.scolere.lms.domain.vo.cross.UserVO;
-import java.util.HashMap;
-import java.util.List;
 
 
 /**
@@ -28,16 +29,28 @@ public interface CommonServiceIface {
     
     /*FEED RELATED SERVICES*/
     
+	long updateNotificationStatus(int userId,int feedId,String status) throws LmsServiceException;
         // Comment & Likes
     boolean saveFeedComment(String commentBy,int resourceId,String commentTxt) throws LmsServiceException;
     boolean saveCommentComment(String commentBy,int commentId,String commentTxt) throws LmsServiceException;
     boolean saveCommentLike(String commentBy,int commentId) throws LmsServiceException;
     boolean saveFeedLike(String commentBy,int resourceId) throws LmsServiceException;
     
-    List<FeedVO> getFeedsList(int userId,String searchTxt) throws LmsServiceException;
-    List<CommentVO> getFeedCommentsList(int feedId,int userId) throws LmsServiceException;
-    List<CommentVO> getFeedChildCommentsList(int commentId,int userId) throws LmsServiceException;
+    FeedVO getFeedDetail(int userId,int feedId) throws LmsServiceException;
+    List<FeedVO> getNotificationsList(int userId,String searchTxt,int offset,int noOfRecords) throws LmsServiceException;
+    List<FeedVO> getFeedsList(int userId,String searchTxt,int offset,int noOfRecords) throws LmsServiceException;
+    //List<FeedVO> getFeedsList(int userId,String searchTxt) throws LmsServiceException;
+    List<CommentVO> getFeedCommentsList(int feedId,int userId,int offset,int noOfRecords) throws LmsServiceException;
+    //List<CommentVO> getFeedCommentsList(int feedId,int userId) throws LmsServiceException;
+    List<CommentVO> getFeedChildCommentsList(int commentId,int userId,int offset,int noOfRecords) throws LmsServiceException;
+    //List<CommentVO> getFeedChildCommentsList(int commentId,int userId) throws LmsServiceException;
     ResourseVO getDefaultResourseDetail(int feedId) throws LmsServiceException;
+    
+    //total record counts
+    long getTotalFeedsCount(int userId) throws LmsServiceException;
+    long getTotalCommentsCount(int feedId) throws LmsServiceException;
+    long getTotalCommentsCount(int feedId,int commentId) throws LmsServiceException;
+    
     
     FeedVO getFeedDetail(int feedId) throws LmsServiceException;            
     UserVO getUserDetail(String userName) throws LmsServiceException;
@@ -62,6 +75,7 @@ public interface CommonServiceIface {
     void saveSchoolMasterDetail(SchoolMasterVo vo) throws LmsServiceException;
     boolean deleteSchoolMasterDetail(SchoolMasterVo vo) throws LmsServiceException;
     SchoolMasterVo getSchoolMasterDetail(int id) throws LmsServiceException;
+    List<SchoolMasterVo> getSchoolMasterVoList(int teacherId) throws LmsServiceException;
     List<SchoolMasterVo> getSchoolMasterVoList() throws LmsServiceException;
     
     /* CLASS RELATED METHODS */
@@ -70,7 +84,8 @@ public interface CommonServiceIface {
     boolean deleteClassDetail(ClassMasterVo   vo) throws LmsServiceException;
     ClassMasterVo  getClassDetail(int id) throws LmsServiceException;
     List<ClassMasterVo > getClassVoList() throws LmsServiceException; 
-    List<ClassMasterVo > getClassVoList(int mstrId) throws LmsServiceException; 
+    List<ClassMasterVo > getClassVoList(int classId) throws LmsServiceException; 
+    List<ClassMasterVo > getClassVoList(int classId,int teacherId) throws LmsServiceException; 
     
     /*HRM RELATED METHODS*/
     boolean updateHomeRoomMasterDetail(HomeRoomMasterVo  vo) throws LmsServiceException;

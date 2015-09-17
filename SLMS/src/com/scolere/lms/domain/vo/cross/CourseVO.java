@@ -13,11 +13,19 @@ import java.util.List;
 public class CourseVO {
     
     private int courseSessionId;
+    private int moduleSessionId;
 
     private String startedOn;
     private String completedOn;
     private String completedStatus;
     private String completedPercentStatus;
+    
+    private int schoolId;
+    private String schoolName;
+    private int classId;
+    private String classeName;
+    private int hrmId;
+    private String hrmName;
     
     private String courseId;
     private String courseName;
@@ -31,7 +39,63 @@ public class CourseVO {
     private List<ResourseVO> resources;
 
     
-    public List<CourseVO> getModules() {
+    public int getModuleSessionId() {
+		return moduleSessionId;
+	}
+
+	public void setModuleSessionId(int moduleSessionId) {
+		this.moduleSessionId = moduleSessionId;
+	}
+
+	public int getSchoolId() {
+		return schoolId;
+	}
+
+	public void setSchoolId(int schoolId) {
+		this.schoolId = schoolId;
+	}
+
+	public String getSchoolName() {
+		return schoolName;
+	}
+
+	public void setSchoolName(String schoolName) {
+		this.schoolName = schoolName;
+	}
+
+	public int getClassId() {
+		return classId;
+	}
+
+	public void setClassId(int classId) {
+		this.classId = classId;
+	}
+
+	public String getClasseName() {
+		return classeName;
+	}
+
+	public void setClasseName(String classeName) {
+		this.classeName = classeName;
+	}
+
+	public int getHrmId() {
+		return hrmId;
+	}
+
+	public void setHrmId(int hrmId) {
+		this.hrmId = hrmId;
+	}
+
+	public String getHrmName() {
+		return hrmName;
+	}
+
+	public void setHrmName(String hrmName) {
+		this.hrmName = hrmName;
+	}
+
+	public List<CourseVO> getModules() {
         return modules;
     }
 

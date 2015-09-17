@@ -26,7 +26,7 @@ public class AssignmentVdoTxnDaoImpl extends LmsDaoAbstract implements Assignmen
         	
             conn = getConnection();
             String sql = "UPDATE assignment_vdo_txn set  ASSIGNMENT_DTL_ID=?, STUDENT_ID=?, UPLODED_VDO_PATH=?, " +
-            		"LAST_USERID_CD=?, LAST_UPDT_TM=current_timestamp\n"
+            		"LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE VDO_TXN_ID=?";
             /*String sql = "UPDATE assignment_vdo_txn set  ASSIGNMENT_DTL_ID=?, STUDENT_ID=?, UPLODED_VDO_PATH=?, LAST_USERID_CD=?\n"
                     + "    WHERE VDO_TXN_ID=?";*/
@@ -64,7 +64,7 @@ public class AssignmentVdoTxnDaoImpl extends LmsDaoAbstract implements Assignmen
         	
             conn = getConnection();
             String sql = "INSERT INTO assignment_vdo_txn(VDO_TXN_ID, ASSIGNMENT_DTL_ID, STUDENT_ID, " +
-            		"UPLODED_VDO_PATH, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, current_timestamp)";
+            		"UPLODED_VDO_PATH, LAST_USERID_CD, LAST_UPDT_TM)  VALUES(?, ?, ?, ?, ?, utc_timestamp)";
             /*String sql = "INSERT INTO assignment_vdo_txn(VDO_TXN_ID, ASSIGNMENT_DTL_ID, STUDENT_ID, " +
             		"UPLODED_VDO_PATH, LAST_USERID_CD)  VALUES(?, ?, ?, ?, ?)";*/
             

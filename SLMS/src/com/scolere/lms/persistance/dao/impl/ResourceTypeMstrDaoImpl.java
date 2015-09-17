@@ -213,10 +213,10 @@ public class ResourceTypeMstrDaoImpl extends LmsDaoAbstract implements ResourceT
 
             conn = getConnection();
             String sql = "INSERT INTO resourse_mstr(RESOURSE_ID, RESOURSE_NAME, RESOURCE_AUTHOR, RESOURCE_DURATION, DESC_TXT, RESOURCE_TYP_ID, METADATA, DELETED_FL, DISPLAY_NO, ENABLE_FL, CREATED_BY, LAST_USERID_CD, LAST_UPDT_TM, RESOURCE_URL, AUTHOR_IMG, THUMB_IMG)" +
-            		"VALUES(?, ?, ?, 0, ?, 1, ?, '0', 0, '1', ?, ?,current_timestamp, ?, ?, ?)";
+            		"VALUES(?, ?, ?, 0, ?, 1, ?, '0', 0, '1', ?, ?,utc_timestamp, ?, ?, ?)";
             
             String res_id=getQueryConcatedResult("SELECT MAX(RESOURSE_ID)+1 FROM resourse_mstr");
-            stmt = conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(sql);
             stmt.setInt(1, Integer.parseInt(res_id));
             stmt.setString(2,resourceName);
             stmt.setString(3, resourceAuthor);
@@ -230,15 +230,23 @@ public class ResourceTypeMstrDaoImpl extends LmsDaoAbstract implements ResourceT
 
             int t=stmt.executeUpdate();
             System.out.println("No of inserted resources = "+t);
-            resultSet = stmt.getGeneratedKeys();
-            if (resultSet.next()) {
-            int last_inserted_id = resultSet.getInt(1);
-                System.out.println("Last inserted userId : "+last_inserted_id);
+            if (res_id!=null && t>0) {
+                System.out.println("Last inserted userId : "+res_id);
+                //Add module-resource mapping
+                String modResMapQuery="INSERT INTO module_resource_map(MODULE_ID, RESOURCE_ID)VALUES((SELECT MODULE_ID FROM module_assignment_map where ASSIGNMENT_ID="+assignmentId+"), "+res_id+")";
+                boolean modResMapStatus = deleteOrUpdateByQuery(modResMapQuery);
+                System.out.println("Create module-resource mapping ? "+modResMapStatus);     
+                
                 //Update assignment status
-                String updateQuery = "UPDATE assignment_resource_txn SET UPLODED_RESOURCE_ID="+last_inserted_id+", UPLOADED_ON=current_date, IS_COMPLETED='3', LAST_USERID_CD='"+userName+"', LAST_UPDT_TM=current_timestamp WHERE ASSIGNMENT_ID = "+assignmentId+" AND STUDENT_ID='"+userName+"'";
+                String updateQuery = "UPDATE assignment_resource_txn SET UPLODED_RESOURCE_ID="+res_id+", UPLOADED_ON=current_date, IS_COMPLETED='2', LAST_USERID_CD='"+userName+"', LAST_UPDT_TM=utc_timestamp WHERE ASSIGNMENT_ID = "+assignmentId+" AND STUDENT_ID='"+userName+"'";
                 boolean updateStatus = deleteOrUpdateByQuery(updateQuery);
-               
-                System.out.println("Uploaded assignment status updated ? "+updateStatus);
+                System.out.println("Uploaded assignment status updated ? "+updateStatus);               
+                
+                //Create A feed | lms_feed_type = 2 | $ submitted an assignment $ for the module $ <- user,assignment,module
+                String feedQuery = "INSERT INTO lms_feed_txn(FEED_TYPE_ID, REFRENCE_NM, USER_ID, COURSE_ID, RESOURCE_ID, ASSIGNMENT_ID, MODULE_ID, HRM_ID, LAST_USERID_CD, LAST_UPDT_TM) SELECT 2, 'assignment_upload', ucm.USER_ID,null, null,"+assignmentId+", (SELECT MODULE_ID FROM module_assignment_map where ASSIGNMENT_ID="+assignmentId+") as moduleId, ucm.HRM_ID,ulogin.USER_NM,current_timestamp FROM user_login ulogin inner join user_cls_map ucm on ucm.USER_ID=ulogin.USER_ID where ulogin.USER_NM='"+userName+"'";
+                boolean feedStatus = deleteOrUpdateByQuery(feedQuery);
+                System.out.println("Feed Creation ? "+feedStatus);                 
+
             }
             
             status=t;

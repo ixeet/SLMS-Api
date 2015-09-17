@@ -25,6 +25,10 @@ public interface CourseBusIface {
     CourseResponse getUserCourses(CourseRequest req) throws RestBusException;
 
     CourseResponse getUserCoursesWeb(CourseRequest req) throws RestBusException;
+
+    CourseResponse getUserCoursesTeacher(CourseRequest req) throws RestBusException;
+
+    CourseResponse getTeacherAssignments(CourseRequest req) throws RestBusException;
     
     /**
      * Returns all the resources associated with a module.

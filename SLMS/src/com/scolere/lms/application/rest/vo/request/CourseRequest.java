@@ -13,14 +13,41 @@ public class CourseRequest {
     private String userName;
     private int userId;
     private int commentId;
-    private int resourceId;
+    private int schoolId;
+    private int classId;
+    private int hrmId;
     private int courseId;
     private int moduleId;
+    private int resourceId;
     private String searchText;
     private String commentText;
 
     
-    public int getResourceId() {
+    public int getSchoolId() {
+		return schoolId;
+	}
+
+	public void setSchoolId(int schoolId) {
+		this.schoolId = schoolId;
+	}
+
+	public int getClassId() {
+		return classId;
+	}
+
+	public void setClassId(int classId) {
+		this.classId = classId;
+	}
+
+	public int getHrmId() {
+		return hrmId;
+	}
+
+	public void setHrmId(int hrmId) {
+		this.hrmId = hrmId;
+	}
+
+	public int getResourceId() {
         return resourceId;
     }
 
@@ -85,9 +112,15 @@ public class CourseRequest {
     }
 
     
-    @Override
-    public String toString() {
-        return "CourseRequest{" + "userName=" + userName + ", userId=" + userId + ", courseId=" + courseId + ", moduleId=" + moduleId + ", searchText=" + searchText + '}';
-    }
+	@Override
+	public String toString() {
+		return "CourseRequest [userName=" + userName + ", userId=" + userId
+				+ ", commentId=" + commentId + ", schoolId=" + schoolId
+				+ ", classId=" + classId + ", hrmId=" + hrmId + ", courseId="
+				+ courseId + ", moduleId=" + moduleId + ", resourceId="
+				+ resourceId + ", searchText=" + searchText + ", commentText="
+				+ commentText + "]";
+	}
+
         
 }

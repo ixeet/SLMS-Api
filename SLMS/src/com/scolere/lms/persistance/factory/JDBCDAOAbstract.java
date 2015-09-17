@@ -27,7 +27,7 @@ public class JDBCDAOAbstract {
         Context ctx = new InitialContext();
         DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/slmsdb_ds");
         conn=ds.getConnection();
-        System.out.println("New Connection created.."+conn);
+        System.out.println("New Connection created from ds.."+conn);
         }catch(Exception e){
             System.out.println("Exception while getting JDBC Connection : "+e.getMessage());
         }
@@ -49,7 +49,7 @@ public class JDBCDAOAbstract {
         Context ctx = new InitialContext();
         DataSource ds = (DataSource)ctx.lookup("java:comp/env/"+dataSource);
         conn=ds.getConnection();
-        System.out.println("New Connection created.."+conn);
+        System.out.println("New Connection created from ds2.."+conn);
         }catch(Exception e){
             System.out.println("Exception while getting JDBC Connection : "+e.getMessage());
         }
@@ -75,7 +75,7 @@ public class JDBCDAOAbstract {
         try{
         Class.forName(driver);
         conn=DriverManager.getConnection(driver_url, user, pwd);
-        System.out.println("New Connection created.."+conn);
+        System.out.println("Local db connection.."+conn);
         }catch(Exception e){
             System.out.println("Exception while getting local JDBC Connection : "+e.getMessage());
         }
