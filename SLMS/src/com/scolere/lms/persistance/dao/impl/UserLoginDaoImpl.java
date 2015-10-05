@@ -6,6 +6,8 @@
 package com.scolere.lms.persistance.dao.impl;
 
 import com.scolere.lms.domain.exception.LmsDaoException;
+import com.scolere.lms.domain.vo.CommonKeyValueVO;
+import com.scolere.lms.domain.vo.UserClassMapVo;
 import com.scolere.lms.domain.vo.UserLoginVo;
 import com.scolere.lms.domain.vo.cross.UserVO;
 import com.scolere.lms.persistance.dao.iface.UserLoginDao;
@@ -136,7 +138,7 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
             {
             	
             	System.out.println("Teacher login.");
-                String sql = "SELECT usr.USER_ID,usr.USER_NM,usr.USER_FB_ID,teachr.FNAME,teachr.LNAME,teachr.EMAIL_ID,teachr.ADDRESS FROM teacher_dtls teachr INNER JOIN user_login usr ON teachr.USER_ID=usr.USER_ID where usr.USER_NM=? AND usr.USER_PWD=?";
+                String sql = "SELECT usr.USER_ID,usr.USER_NM,usr.USER_FB_ID,teachr.FNAME,teachr.LNAME,teachr.EMAIL_ID,teachr.ADDRESS FROM student_dtls teachr INNER JOIN user_login usr ON teachr.USER_ID=usr.USER_ID where usr.USER_NM=? AND usr.USER_PWD=?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setString(1, userName);
                 stmt.setString(2, userPwd);
@@ -329,8 +331,8 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
 
             String sql = "SELECT * FROM user_login where USER_NM=? and USER_PWD=?";
             stmt = conn.prepareStatement(sql);
-            stmt.setString(1, userDtls.getUserName());
-            stmt.setString(2, userDtls.getUserPwd());
+            stmt.setString(1, userName);
+            stmt.setString(2, userPwd);
             
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -582,6 +584,17 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
 
 
 	@Override
+	public boolean defaultFeedsAccessType(int userId,int hrmId) 
+			throws LmsDaoException {
+        String defaultFeedsAccess="INSERT INTO feed_user_access(user_id, access_type_id, access_for_id)VALUES("+userId+", 4, "+hrmId+")";
+        boolean status = deleteOrUpdateByQuery(defaultFeedsAccess);
+        System.out.println("defaultFeedsAccessType ? "+status);
+        
+        return status;
+	}
+	
+    
+	@Override
 	public boolean defaultUserAssignment(String userName, int schoolId,
 			int classId, int hrmId) throws LmsDaoException {
 		
@@ -593,5 +606,236 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
         return assignmentStatus;
 	}
 
+	
+	@Override
+	public int getFeedAccessType(int userId) throws LmsDaoException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		int accessTypeId = 0;
+		try {
+			conn = getConnection();
+
+			String sql = "SELECT access_type_id FROM feed_user_access where user_id="+ userId;
+			stmt = conn.prepareStatement(sql);
+			rs = stmt.executeQuery();
+			if (rs.next()) {
+				accessTypeId = rs.getInt("access_type_id");
+			}
+
+		} catch (SQLException se) {
+			System.out.println("getFeedAccessType # " + se);
+		} catch (Exception e) {
+			System.out.println("getFeedAccessType # " + e);
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
+
+		return accessTypeId;
+	}
+
+	
+	@Override
+	public int setFeedAccessType(int userId, int accesTypeId)
+			throws LmsDaoException {
+		Connection conn = null;
+		PreparedStatement cstmt = null;
+		ResultSet resultSet = null;
+		int t = 0;
+		try {
+			conn = getConnection();
+			
+			//Get access_for_id
+			String accessForIdQuery=null;
+			if(accesTypeId==1)
+				accessForIdQuery="SCHOOL_ID";
+			else if(accesTypeId==2)
+				accessForIdQuery="HRM_ID";
+			else if(accesTypeId==3)
+				accessForIdQuery="CLASS_ID";
+			else if(accesTypeId==4)
+				accessForIdQuery="HRM_ID";
+
+		
+			String query = "update feed_user_access set access_type_id="+accesTypeId+",access_for_id=(SELECT "+accessForIdQuery+" FROM user_cls_map where USER_ID="+userId+") where user_id="+userId;
+			System.out.println("Query : " + query);
+			cstmt = conn.prepareStatement(query);
+			
+			t = cstmt.executeUpdate();
+			System.out.println("No of affected row = " + t);
+		} catch (Exception e) {
+			System.out.println("Error setFeedAccessType - "
+					+ e.getMessage());
+		} finally {
+			closeResources(conn, cstmt, resultSet);
+		}
+
+		return t;
+	}
+	
+
+	@Override
+	public List<UserVO> getFeedUsers(int userId) throws LmsDaoException {
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		List<UserVO> userList = new ArrayList<UserVO>();
+		try {
+			
+			//Get access_for_id : 1)school 2)district 3)class 4)home group + userId
+			String accessTypFor=getQueryConcatedResult("SELECT concat(access_type_id,'~',access_for_id) FROM feed_user_access where user_id="+userId);
+			if(accessTypFor != null && !accessTypFor.isEmpty())
+			{
+			String[] accessTypForArr=accessTypFor.split("~");	
+			
+			//Start getting userslist as per access type
+			int accessType=Integer.parseInt(accessTypForArr[0]);
+			UserClassMapVo userCls=getUserClassMapDetail(userId);
+			
+			StringBuffer userListQry=new StringBuffer("SELECT USER_ID FROM user_cls_map where SCHOOL_ID=").append(userCls.getSchoolId()); //Default school
+			if(accessType==1) //School
+			{
+				//No Action
+			}else if(accessType==2) //district
+			{
+				//Not yet implemented
+			}else if(accessType==3) //class
+			{
+				userListQry.append(" AND CLASS_ID=").append(userCls.getClassId());
+				
+			}else if(accessType==4) //Home room
+			{
+				userListQry.append(" AND CLASS_ID=").append(userCls.getClassId());
+				userListQry.append(" AND HRM_ID=").append(userCls.getHomeRoomMasterId());
+			}
+
+			conn = getConnection();
+			//String sql = "SELECT USER_ID,EMAIL_ID,CONCAT(FNAME,' ',LNAME) as USERNM,PROFILE_IMG,(SELECT count(*) FROM feed_restricted_users where userId=? and restricted_userId=sdtl.USER_ID) as usr_count FROM student_dtls sdtl where USER_ID in (SELECT user_id FROM feed_user_access where access_type_id="+accessTypForArr[0]+" and access_for_id="+accessTypForArr[1]+" and user_id !="+userId+")";
+			String sql = "SELECT USER_ID,EMAIL_ID,CONCAT(FNAME,' ',LNAME) as USERNM,PROFILE_IMG,(SELECT count(*) FROM feed_restricted_users where userId=? and restricted_userId=sdtl.USER_ID) as usr_count FROM student_dtls sdtl where USER_ID != ? AND USER_ID in ("+userListQry+")";
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, userId);
+			stmt.setInt(2, userId);
+			
+			rs = stmt.executeQuery();
+			UserVO user =null;
+			while (rs.next()) {
+				user = new UserVO();
+				user.setUserId(rs.getInt(1));
+				user.setEmailId(rs.getString(2));
+				user.setUserName(rs.getString(3));
+				user.setProfileImage(rs.getString(4));
+				int temp=rs.getInt(5);
+				if(temp>0)
+					user.setIsFollowUpAllowed("0");
+				else
+					user.setIsFollowUpAllowed("1");
+				// Add into list
+				userList.add(user);
+			}
+		  }
+		} catch (SQLException se) {
+			System.out.println("getFeedUsers # " + se);
+		} catch (Exception e) {
+			System.out.println("getFeedUsers # " + e);
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
+
+		return userList;
+	}
+
+	@Override
+	public List<CommonKeyValueVO> getAccessTypeMasterData()
+			throws LmsDaoException {
+		List<CommonKeyValueVO> accessTypeList = null;
+		try {
+			String sql = "SELECT access_type_id,access_type_txt FROM feed_access_type";
+			accessTypeList = getKeyValuePairList(sql);
+		} catch (Exception se) {
+			System.out.println("getAccessTypeMasterData # " + se);
+		}
+
+		return accessTypeList;
+	}
+
+
+	@Override
+	public int updateFollowersStatus(int userId,List<UserVO> usersList)
+			throws LmsDaoException {
+		int updtCount=0;
+		Connection conn = null;
+		Statement cstmt = null;
+		ResultSet resultSet = null;
+		int []t =null;
+		try {
+			conn = getConnection();
+			conn.setAutoCommit(false);
+			cstmt=conn.createStatement();
+			for(UserVO vo:usersList)
+			{
+				String query=null;
+				if(vo.getIsFollowUpAllowed().equals("0"))
+				{
+				query = "INSERT INTO feed_restricted_users(userId, restricted_userId)VALUES("+userId+", "+vo.getUserId()+")";
+				}else{
+				query = "DELETE FROM feed_restricted_users WHERE userId="+userId+" and restricted_userId="+vo.getUserId()+"";	
+				}
+				System.out.println("Query : " + query);
+				cstmt.addBatch(query);	
+			}
+			
+			t = cstmt.executeBatch();
+			System.out.println("No of affected row = " + t.length);
+			updtCount=t.length;
+			
+			conn.commit();
+			conn.setAutoCommit(true);
+		} catch (Exception e) {
+			System.out.println("Error updateFollowersStatus - "
+					+ e.getMessage());
+		} finally {
+			closeResources(conn, cstmt, resultSet);
+		}
+
+		return updtCount;
+	}
+	
+	
+	
+    private UserClassMapVo getUserClassMapDetail(int userId) throws LmsDaoException {
+        System.out.println("Inside getUserClassDetail(?) >>");
+        //Create object to return
+        UserClassMapVo userDtls = null;
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+
+            String sql = "SELECT USER_ID,SCHOOL_ID,CLASS_ID,HRM_ID FROM user_cls_map where USER_ID=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+            	userDtls = new UserClassMapVo();
+                userDtls.setUserId(rs.getInt(1));
+                userDtls.setSchoolId(rs.getInt(2));
+                userDtls.setClassId(rs.getInt(3));
+                userDtls.setHomeRoomMasterId(rs.getInt(4));
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getUserClassMapDetail # " + se);
+        } catch (Exception e) {
+            System.out.println("getUserClassMapDetail # " + e);
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+        
+        return userDtls;
+    }
+	
+	
     
 }//end of class

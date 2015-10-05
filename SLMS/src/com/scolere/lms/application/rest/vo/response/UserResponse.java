@@ -4,6 +4,8 @@
  */
 package com.scolere.lms.application.rest.vo.response;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
@@ -31,10 +33,48 @@ public class UserResponse extends CommonRespTO{
     private String title;
     private String uploadLocation;
     private String profileImage;
+    private String isFollowUpAllowed;
 
+    //Update users
+    private int userAccessTypeId;
+    private List<KeyValTypeVO> accessTypeList;
+    private List<UserResponse> usersList;    
     
     
-    public String getUserType() {
+    
+    public int getUserAccessTypeId() {
+		return userAccessTypeId;
+	}
+
+	public void setUserAccessTypeId(int userAccessTypeId) {
+		this.userAccessTypeId = userAccessTypeId;
+	}
+
+	public List<KeyValTypeVO> getAccessTypeList() {
+		return accessTypeList;
+	}
+
+	public void setAccessTypeList(List<KeyValTypeVO> accessTypeList) {
+		this.accessTypeList = accessTypeList;
+	}
+
+	public List<UserResponse> getUsersList() {
+		return usersList;
+	}
+
+	public void setUsersList(List<UserResponse> usersList) {
+		this.usersList = usersList;
+	}
+
+	public String getIsFollowUpAllowed() {
+		return isFollowUpAllowed;
+	}
+
+	public void setIsFollowUpAllowed(String isFollowUpAllowed) {
+		this.isFollowUpAllowed = isFollowUpAllowed;
+	}
+
+	public String getUserType() {
 		return userType;
 	}
 

@@ -4,6 +4,10 @@
  */
 package com.scolere.lms.application.rest.vo.request;
 
+import java.util.List;
+
+import com.scolere.lms.application.rest.vo.response.KeyValTypeVO;
+
 /**
  *
  * @author dell
@@ -13,7 +17,7 @@ public class CourseRequest {
     private String userName;
     private int userId;
     private int commentId;
-    private int schoolId;
+    private int schoolId=1;
     private int classId;
     private int hrmId;
     private int courseId;
@@ -21,9 +25,38 @@ public class CourseRequest {
     private int resourceId;
     private String searchText;
     private String commentText;
-
+    private int status;
     
-    public int getSchoolId() {
+    private List<KeyValTypeVO> ratingParameters;
+    private int assignmentResourceTxnId;
+    
+    
+    
+    public List<KeyValTypeVO> getRatingParameters() {
+		return ratingParameters;
+	}
+
+	public void setRatingParameters(List<KeyValTypeVO> ratingParameters) {
+		this.ratingParameters = ratingParameters;
+	}
+
+	public int getAssignmentResourceTxnId() {
+		return assignmentResourceTxnId;
+	}
+
+	public void setAssignmentResourceTxnId(int assignmentResourceTxnId) {
+		this.assignmentResourceTxnId = assignmentResourceTxnId;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	public int getSchoolId() {
 		return schoolId;
 	}
 
@@ -111,7 +144,6 @@ public class CourseRequest {
         this.searchText = searchText;
     }
 
-    
 	@Override
 	public String toString() {
 		return "CourseRequest [userName=" + userName + ", userId=" + userId
@@ -119,7 +151,7 @@ public class CourseRequest {
 				+ ", classId=" + classId + ", hrmId=" + hrmId + ", courseId="
 				+ courseId + ", moduleId=" + moduleId + ", resourceId="
 				+ resourceId + ", searchText=" + searchText + ", commentText="
-				+ commentText + "]";
+				+ commentText + ", status=" + status + "]";
 	}
 
         

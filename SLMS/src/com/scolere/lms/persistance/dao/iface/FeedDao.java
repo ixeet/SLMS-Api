@@ -5,6 +5,7 @@
 package com.scolere.lms.persistance.dao.iface;
 
 import com.scolere.lms.domain.exception.LmsDaoException;
+import com.scolere.lms.domain.vo.CourseMasterVo;
 import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
 import com.scolere.lms.domain.vo.cross.CourseVO;

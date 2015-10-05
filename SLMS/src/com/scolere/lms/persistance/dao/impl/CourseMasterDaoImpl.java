@@ -241,4 +241,62 @@ public class CourseMasterDaoImpl extends LmsDaoAbstract implements CourseMasterD
         return distList;
 
     }
+
+	@Override
+	public List<CourseMasterVo> getCourseList(int homeRoomMstrId, int classId,
+			int schoolId, int teacherId) throws LmsDaoException {
+		//Create object to return
+       
+        List< CourseMasterVo> distList = new ArrayList<CourseMasterVo>();
+        //1 . jdbc code start
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+
+            /*String sql = "SELECT * FROM course_mstr where COURSE_ID in (SELECT CLASS_ID FROM clas_course_map where CLASS_ID in (select CLASS_ID from class_hrm_map where HRM_ID='"+homeRoomMstrId+"'))";
+           */
+            
+            String sql="SELECT cm.COURSE_ID, cm.COURSE_NAME, cm.METADATA ,cm.COURSE_AUTHOR,cm.DESC_TXT,cm.COURSE_DURATION, tcs.START_SESSION_TM, " +
+            		"tcs.LAST_UPDT_TM, tcs.IS_COMPLETE, tcs.END_SESSION_TM FROM course_mstr cm, teacher_course_sessions tcs, teacher_courses tc ," +
+            		" student_dtls td where cm.COURSE_ID = tc.COURSE_ID and tc.TEACHER_COURSE_ID = tcs.TEACHER_COURSE_ID and" +
+            		" tc.SCHOOL_ID = '"+schoolId+"' and tc.CLASS_ID = '"+classId+"' and tc.HRM_ID='"+homeRoomMstrId+"' and tc.TEACHER_ID=td.EMAIL_ID and td.USER_ID='"+teacherId+"' ";
+            
+            
+            
+            stmt = conn.prepareStatement(sql);
+           // stmt.setInt(1, userDtls.getCourseId());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                //3. Set db data to object
+            	 CourseMasterVo userDtls = new CourseMasterVo();
+                userDtls.setCourseId(rs.getInt("COURSE_ID"));
+                userDtls.setCourseName(rs.getString("COURSE_NAME"));
+                userDtls.setCourseAuthor(rs.getString("COURSE_AUTHOR"));
+                userDtls.setCourseDuration(rs.getString("COURSE_DURATION"));
+                //userDtls.setCreatedDt(rs.getString("CREATED_DT"));
+               // userDtls.setDescTxt(rs.getString("DESC_TXT"));
+                userDtls.setMetadata(rs.getString("IS_COMPLETE"));
+                //Add into list
+                distList.add(userDtls);
+            }
+
+            System.out.println("get records into the table...");
+
+        } catch (SQLException se) {
+            System.out.println("getClassDetail # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getClassDetail # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+        //1 . jdbc code endd
+
+        //4 Return as required by method
+        return distList;
+	}
+
+	 
 }

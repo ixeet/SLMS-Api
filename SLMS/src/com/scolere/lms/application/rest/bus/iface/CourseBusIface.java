@@ -29,7 +29,8 @@ public interface CourseBusIface {
     CourseResponse getUserCoursesTeacher(CourseRequest req) throws RestBusException;
 
     CourseResponse getTeacherAssignments(CourseRequest req) throws RestBusException;
-    
+
+   
     /**
      * Returns all the resources associated with a module.
      * @param req
@@ -47,8 +48,11 @@ public interface CourseBusIface {
     CourseResponse likeOnResource(String userName,int resourceId) throws RestBusException;
     
     /*****Assignment services*****/
+    CourseResponse getAssignmentsForTeacher(CourseRequest req) throws RestBusException;
     CourseResponse getAssignments(CourseRequest req) throws RestBusException;
 
     int uploadAssignment(int assignmentId,String resourceName,String resourceAuthor, String resourceDesc,String userName, String descTxt, String url, String thumbUrl, String authorImgUrl) throws RestBusException;
+
+	CourseResponse rateAssignment(CourseRequest course) throws RestBusException;
 
 }

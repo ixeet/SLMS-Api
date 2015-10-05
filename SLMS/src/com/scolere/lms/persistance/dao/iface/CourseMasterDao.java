@@ -43,4 +43,5 @@ public interface CourseMasterDao {
     CourseMasterVo  getCourseMasterDetail(int id) throws LmsDaoException;
 
     List<CourseMasterVo > getCourseMasterVoList() throws LmsDaoException;
+	List<CourseMasterVo> getCourseList(int homeRoomMstrId, int classId,	int schoolId, int teacherId) throws LmsDaoException;
 }

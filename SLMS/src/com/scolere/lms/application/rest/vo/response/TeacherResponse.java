@@ -18,6 +18,7 @@ public class TeacherResponse extends CommonRespTO{
     private AssignmentRespTO assignmentDetail;
     private ResourceRespTO resourceDetail;
     private FeedRespTO feedDetail;
+    private PercentageRespTo percentage;
     
     private long totalRecords; //pagination parameter
     private List<CommentRespTO> commentsList;
@@ -102,6 +103,12 @@ public class TeacherResponse extends CommonRespTO{
     public void setSchoolList(List<SchoolRespTO> schoolList) {
         this.schoolList = schoolList;
     }
+	public PercentageRespTo getPercentage() {
+		return percentage;
+	}
+	public void setPercentage(PercentageRespTo percentage) {
+		this.percentage = percentage;
+	}
 
     
 }//End of class

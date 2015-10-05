@@ -4,10 +4,14 @@
  */
 package com.scolere.lms.application.rest.bus.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.scolere.lms.application.rest.bus.iface.CommonBusIface;
 import com.scolere.lms.application.rest.constants.SLMSRestConstants;
 import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.application.rest.vo.request.CommonRequest;
+import com.scolere.lms.application.rest.vo.response.AssignmentRespTO;
 import com.scolere.lms.application.rest.vo.response.ClassRespTO;
 import com.scolere.lms.application.rest.vo.response.CommentRespTO;
 import com.scolere.lms.application.rest.vo.response.CommonResponse;
@@ -15,13 +19,17 @@ import com.scolere.lms.application.rest.vo.response.CourseRespTO;
 import com.scolere.lms.application.rest.vo.response.FeedRespTO;
 import com.scolere.lms.application.rest.vo.response.HomeRoomRespTO;
 import com.scolere.lms.application.rest.vo.response.KeyValTypeVO;
+import com.scolere.lms.application.rest.vo.response.ModuleRespTO;
 import com.scolere.lms.application.rest.vo.response.ResourceRespTO;
 import com.scolere.lms.application.rest.vo.response.SchoolRespTO;
 import com.scolere.lms.application.rest.vo.response.UserResponse;
 import com.scolere.lms.common.utils.PropertyManager;
 import com.scolere.lms.domain.exception.LmsServiceException;
+import com.scolere.lms.domain.vo.AssignmentVO;
 import com.scolere.lms.domain.vo.ClassMasterVo;
+import com.scolere.lms.domain.vo.CourseMasterVo;
 import com.scolere.lms.domain.vo.HomeRoomMasterVo;
+import com.scolere.lms.domain.vo.ModuleMasterVo;
 import com.scolere.lms.domain.vo.SchoolMasterVo;
 import com.scolere.lms.domain.vo.UserLoginVo;
 import com.scolere.lms.domain.vo.cross.CommentVO;
@@ -32,9 +40,6 @@ import com.scolere.lms.service.iface.CommonServiceIface;
 import com.scolere.lms.service.iface.LoginServiceIface;
 import com.scolere.lms.service.impl.CommonServiceImpl;
 import com.scolere.lms.service.impl.LoginServiceImpl;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -738,34 +743,47 @@ public class CommonBusImpl implements CommonBusIface{
         {
 	        schoolRespTO = new SchoolRespTO(String.valueOf(vo.getSchoolId()), vo.getSchoolName());
 	        //Class master data
-	        List<ClassMasterVo> clsMstrListDB = service.getClassVoList(vo.getSchoolId());
+	        List<ClassMasterVo> clsMstrListDB = service.getClassVoList(vo.getSchoolId(),teacherId);
 	        List<ClassRespTO> classList = new ArrayList<ClassRespTO>(clsMstrListDB.size());
 	        ClassRespTO classRespTO = null;
 	        for(ClassMasterVo clsvo : clsMstrListDB)
 	        {
 	        classRespTO = new ClassRespTO(String.valueOf(clsvo.getClassId()), clsvo.getClassName());
 	        //Homeroom data
-	        List<HomeRoomMasterVo> hrmListDB = service.getHomeRoomMasterVoList(clsvo.getClassId());
+	         List<HomeRoomMasterVo> hrmListDB = service.getHomeRoomMasterVoList(clsvo.getClassId(),vo.getSchoolId(),teacherId);
 	        List<HomeRoomRespTO> homeRoomList = new ArrayList<HomeRoomRespTO>(hrmListDB.size());
 	        HomeRoomRespTO homeRoomRespTO = null;
 	        for(HomeRoomMasterVo hrmvo  : hrmListDB)
 	        {
 	        homeRoomRespTO = new HomeRoomRespTO(String.valueOf(hrmvo.getHomeRoomMstrId()), hrmvo.getHomeRoomMstrName());
+	        
+	        List<CourseMasterVo> courseMstrListDB = service.getCourseVoList(hrmvo.getHomeRoomMstrId(),clsvo.getClassId(),vo.getSchoolId(),teacherId);
+	        List<CourseRespTO> courseList = new ArrayList<CourseRespTO>(courseMstrListDB.size());
+	        CourseRespTO courseRespTO = null;
+	        for(CourseMasterVo courvo  : courseMstrListDB)
+	        {
+	        	courseRespTO= new CourseRespTO(String.valueOf(courvo.getCourseId()), courvo.getCourseName());
+	        	List<ModuleMasterVo> moduleMstrListDB = service.getModuleVoList(courvo.getCourseId(),hrmvo.getHomeRoomMstrId(),clsvo.getClassId(),vo.getSchoolId(),teacherId);
+	  	        List<ModuleRespTO> moduleList = new ArrayList<ModuleRespTO>(moduleMstrListDB.size());
+	  	        ModuleRespTO moduleRespTO = null;
+	  	        for(ModuleMasterVo modvo : moduleMstrListDB){
+	  	        	moduleRespTO = new ModuleRespTO(String.valueOf(modvo.getModuleMasterId()) , modvo.getModuleMasterName());
+	  	        	moduleList.add(moduleRespTO);
+	  	        }
+	        	
+	  	        courseRespTO.setModuleList(moduleList);
+	        	courseList.add(courseRespTO);
+	        }
+	        homeRoomRespTO.setCourseList(courseList);
 	        homeRoomList.add(homeRoomRespTO);
 	        
-	        //Add teacher courses start
-	        
-	        
-	        //Add teacher course module start
-	        //Add teacher course module end
-	        
-	        //Add teacher courses end
-	        
-	        
-	        }//hrm loop
-	        
+	       } 
+	         
+	        //hrm loop
+	       
 	        classRespTO.setHomeRoomList(homeRoomList);
 	        classList.add(classRespTO);
+	        
 	        }//cls loop
 	        
 	        schoolRespTO.setClassList(classList);
@@ -785,6 +803,7 @@ public class CommonBusImpl implements CommonBusIface{
         return resp;
   }
 
+    
 
     @Override
     public CommonResponse getSchoolMasterData() throws RestBusException {

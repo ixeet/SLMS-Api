@@ -7,6 +7,7 @@ package com.scolere.lms.service.impl;
 import java.util.List;
 
 import com.scolere.lms.domain.exception.LmsServiceException;
+import com.scolere.lms.domain.vo.CommonKeyValueVO;
 import com.scolere.lms.domain.vo.TeacherCourseSessionDtlsVO;
 import com.scolere.lms.domain.vo.TeacherCourseSessionVO;
 import com.scolere.lms.domain.vo.TeacherCourseVO;
@@ -27,6 +28,70 @@ import com.scolere.lms.service.iface.CourseServiceIface;
  */
 public class CourseServiceImpl implements CourseServiceIface{
 
+	
+	@Override
+	public int setRatingData(int userId, int assignmentResourceTxnId,
+			List<CommonKeyValueVO> list) throws LmsServiceException {
+		
+		int count=0;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            count=dao.setRatingData(userId, assignmentResourceTxnId, list);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getRatingMasterData = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return count;
+	}
+	
+
+	@Override
+	public List<CommonKeyValueVO> getRatingMasterData(int schoolId)
+			throws LmsServiceException {
+        List<CommonKeyValueVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getRatingMasterData(schoolId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getRatingMasterData = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }
+
+	@Override
+	public List<CommonKeyValueVO> getRatingValuesMasterData(int gradeParamId)
+			throws LmsServiceException {
+        List<CommonKeyValueVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getRatingValuesMasterData(gradeParamId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getRatingValuesMasterData = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }	
+
+	@Override
+	public List<CommonKeyValueVO> getRatingData(int assignmentResourceTxnId)
+			throws LmsServiceException {
+        List<CommonKeyValueVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getRatingData(assignmentResourceTxnId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getStudentResources = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }
+
+	
 
     @Override
     public boolean saveResourceComment(String commentBy, int resourceId, String commentTxt) throws LmsServiceException {
@@ -313,6 +378,23 @@ public class CourseServiceImpl implements CourseServiceIface{
     }
     
 
+	@Override
+	public List<AssignmentVO> getTeacherAssignments(int schoolId, int classId,
+			int hrmId, int courseId, int moduleId,int status, int userId, String searchText)
+			throws LmsServiceException {
+        List<AssignmentVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getTeacherAssignments(schoolId, classId, hrmId, courseId, moduleId, status, userId, searchText);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getTeacherAssignments .. = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }
+
+	
     @Override
     public List<ResourseVO> getAssignmentsResources(int assignmentDtlId) throws LmsServiceException {
         
@@ -723,6 +805,38 @@ public class CourseServiceImpl implements CourseServiceIface{
         }
         
        return status; 
+	}
+
+
+	@Override
+	public List<AssignmentVO> getAssignmentsByModuleId(int moduleId) throws LmsServiceException {
+
+        List<AssignmentVO> list =null;
+        try {
+            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+            list = dao.getAssignmentsByModuleId(moduleId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getAssignmentsByModuleId = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+	}
+
+
+	@Override
+	public List<AssignmentVO> getStudentsByAssignmentId(int assignmentId)
+			throws LmsServiceException {
+		 List<AssignmentVO> list =null;
+	        try {
+	            TeacherCourseSessionDao dao = (TeacherCourseSessionDao) LmsDaoFactory.getDAO(TeacherCourseSessionDao.class);
+	            list = dao.getStudentsByAssignmentId(assignmentId);
+	        } catch (Exception ex) {
+	            System.out.println("LmsServiceException # getStudentsByAssignmentId = "+ex);
+	            throw new LmsServiceException(ex.getMessage());
+	        }
+	        
+	        return list;
 	}
 
 

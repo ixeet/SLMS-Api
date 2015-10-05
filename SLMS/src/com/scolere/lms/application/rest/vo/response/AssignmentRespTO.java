@@ -7,6 +7,8 @@ package com.scolere.lms.application.rest.vo.response;
 import java.util.List;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
+import com.scolere.lms.domain.vo.cross.AssignmentVO;
+
 /**
  *
  * @author dell
@@ -14,6 +16,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
 public class AssignmentRespTO {
+    private int assignmentResourceTxnId;
     private int assignmentId;
     private String assignmentName;
     private String assignmentDesc;
@@ -29,10 +32,27 @@ public class AssignmentRespTO {
     private String moduleName;
     
     private List<ResourceRespTO> attachedResources;
+    private List<KeyValTypeVO> ratingParameters;
+    private List<AssignmentRespTO> studentList;
     
+    
+    public List<KeyValTypeVO> getRatingParameters() {
+		return ratingParameters;
+	}
 
-    
-    public String getAssignmentSubmittedById() {
+	public void setRatingParameters(List<KeyValTypeVO> ratingParameters) {
+		this.ratingParameters = ratingParameters;
+	}
+
+	public int getAssignmentResourceTxnId() {
+		return assignmentResourceTxnId;
+	}
+
+	public void setAssignmentResourceTxnId(int assignmentResourceTxnId) {
+		this.assignmentResourceTxnId = assignmentResourceTxnId;
+	}
+
+	public String getAssignmentSubmittedById() {
 		return assignmentSubmittedById;
 	}
 
@@ -135,6 +155,14 @@ public class AssignmentRespTO {
     public void setAttachedResources(List<ResourceRespTO> attachedResources) {
         this.attachedResources = attachedResources;
     }
+
+	public List<AssignmentRespTO> getStudentList() {
+		return studentList;
+	}
+
+	public void setStudentList(List<AssignmentRespTO> studentList) {
+		this.studentList = studentList;
+	}
     
     
     

@@ -350,7 +350,7 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
 
     @Override
     public String getUserFeedText(int userId) throws LmsDaoException {
-        String query="SELECT CONCAT(temp.FNAME,' ',temp.LNAME,'#',temp.USER_ID) FROM user_login usr inner join (SELECT USER_ID, TITLE, FNAME, LNAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE, PROFILE_IMG FROM student_dtls union SELECT USER_ID,'', FNAME, LNAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE,'Teacher' FROM teacher_dtls) temp on temp.USER_ID = usr.USER_ID where usr.USER_ID="+userId;
+        String query="SELECT CONCAT(temp.FNAME,' ',temp.LNAME,'#',temp.USER_ID) FROM user_login usr inner join (SELECT USER_ID, TITLE, FNAME, LNAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE, PROFILE_IMG FROM student_dtls union SELECT USER_ID,'', FNAME, LNAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE,'Teacher' FROM student_dtls) temp on temp.USER_ID = usr.USER_ID where usr.USER_ID="+userId;
         return getQueryConcatedResult(query);
     }
 

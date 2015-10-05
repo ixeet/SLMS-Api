@@ -5,6 +5,7 @@
 package com.scolere.lms.service.impl;
 
 import com.scolere.lms.domain.exception.LmsServiceException;
+import com.scolere.lms.domain.vo.CommonKeyValueVO;
 import com.scolere.lms.domain.vo.LoginSessionVo;
 import com.scolere.lms.domain.vo.StudentDetailVo;
 import com.scolere.lms.domain.vo.UserClassMapVo;
@@ -371,6 +372,22 @@ public class LoginServiceImpl implements LoginServiceIface{
     }
 
 	@Override
+	public boolean defaultFeedsAccessType(int userId,int hrmId) throws LmsServiceException
+	{
+        boolean status = false;
+        try {
+            UserLoginDao dao = (UserLoginDao) LmsDaoFactory.getDAO(UserLoginDao.class);
+            status = dao.defaultFeedsAccessType(userId, hrmId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # defaultFeedsAccessType = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return status;
+    }
+
+    
+	@Override
 	public boolean defaultUserAssignment(String userName, int schoolId,
 			int classId, int hrmId) throws LmsServiceException {
         
@@ -384,8 +401,81 @@ public class LoginServiceImpl implements LoginServiceIface{
         }
         
         return status;
-    }  
+    }
 
-    
+	
+	@Override
+	public int getFeedAccessType(int userId) throws LmsServiceException {
+		int count = 0;
+        try {
+            UserLoginDao dao = (UserLoginDao) LmsDaoFactory.getDAO(UserLoginDao.class);
+            count= dao.getFeedAccessType(userId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getFeedAccessType = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return count;
+    }
+
+
+	@Override
+	public int setFeedAccessType(int userId, int accesTypeId)
+			throws LmsServiceException {
+		int count = 0;
+        try {
+            UserLoginDao dao = (UserLoginDao) LmsDaoFactory.getDAO(UserLoginDao.class);
+            count= dao.setFeedAccessType(userId,accesTypeId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # setFeedAccessType = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return count;
+    }
+	
+
+	@Override
+	public List<UserVO> getFeedUsers(int userId) throws LmsServiceException {
+		List<UserVO> list = null;
+        try {
+            UserLoginDao dao = (UserLoginDao) LmsDaoFactory.getDAO(UserLoginDao.class);
+            list= dao.getFeedUsers(userId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getFeedUsers = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }		
+		return list;
+	}
+
+	
+	@Override
+	public List<CommonKeyValueVO> getAccessTypeMasterData()
+			throws LmsServiceException {
+		List<CommonKeyValueVO> list = null;
+        try {
+            UserLoginDao dao = (UserLoginDao) LmsDaoFactory.getDAO(UserLoginDao.class);
+            list= dao.getAccessTypeMasterData();
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getAccessTypeMasterData = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }		
+		return list;
+	}
+
+	@Override
+	public int updateFollowersStatus(int userId,List<UserVO> usersList)
+			throws LmsServiceException {
+		int count = 0;
+        try {
+            UserLoginDao dao = (UserLoginDao) LmsDaoFactory.getDAO(UserLoginDao.class);
+            count= dao.updateFollowersStatus(userId, usersList);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # updateFollowersStatus = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return count;
+    }    
     
 }//end of class

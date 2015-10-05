@@ -4,15 +4,22 @@
  */
 package com.scolere.lms.application.rest.vo.response;
 
+import java.util.List;
+
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+
 /**
  *
  * @author dell
  */
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class KeyValTypeVO {
     private String key;
     private String value;
     private String type;
 
+    List<KeyValTypeVO> childs;
+    
     public KeyValTypeVO(String key, String value, String type) {
         this.key = key;
         this.value = value;
@@ -24,7 +31,15 @@ public class KeyValTypeVO {
 
     
     
-    public String getKey() {
+    public List<KeyValTypeVO> getChilds() {
+		return childs;
+	}
+
+	public void setChilds(List<KeyValTypeVO> childs) {
+		this.childs = childs;
+	}
+
+	public String getKey() {
         return key;
     }
 

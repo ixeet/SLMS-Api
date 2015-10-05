@@ -1,6 +1,8 @@
 package com.scolere.lms.application.rest.controller;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -10,6 +12,7 @@ import com.scolere.lms.application.rest.bus.iface.TeacherBusIface;
 import com.scolere.lms.application.rest.bus.impl.TeacherBusImpl;
 import com.scolere.lms.application.rest.constants.SLMSRestConstants;
 import com.scolere.lms.application.rest.exceptions.RestBusException;
+import com.scolere.lms.application.rest.vo.request.CommonRequest;
 import com.scolere.lms.application.rest.vo.response.TeacherResponse;
 
 
@@ -93,5 +96,43 @@ public class TeacherController {
         return resp;
     }    
     
+    
+    
+    /**
+     * This method returns percent of course and assignment. 
+     * If request does not contain commentId it will return commentsList else sub-comments list.
+     *  
+     * @param CommonRequest
+     * @return CommonResponse
+     */
+    
+    @POST
+    @Path("/getPercentage")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)     
+    public TeacherResponse getFeedComments(CommonRequest req) {
+        System.out.println(">> getFeedComments "+req);
+        TeacherResponse resp = new TeacherResponse();    
+        
+    try {
+    	
+	    	if(req.getUserName() =="" || req.getUserName() ==null)
+	    	{
+	    		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+	    		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+	    		resp.setErrorMessage(SLMSRestConstants.message_noOfRecordsRequired);    //noOfRecords validation
+	    	}
+	    	else
+	    	{
+	          resp = restService.getPercentage(req);
+	    	}
+    	
+        }catch (Exception ex){
+            System.out.println("CourseController#getFeedComments " +ex);
+        }
+        System.out.println("<< getFeedComments "+resp);
+         
+        return resp;
+    }     
 	
 }//End of class

@@ -1,6 +1,7 @@
 package com.scolere.lms.persistance.dao.iface;
 
 import com.scolere.lms.domain.exception.LmsDaoException;
+import com.scolere.lms.domain.vo.CommonKeyValueVO;
 import com.scolere.lms.domain.vo.TeacherCourseSessionVO;
 import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
@@ -8,9 +9,14 @@ import com.scolere.lms.domain.vo.cross.CourseVO;
 import com.scolere.lms.domain.vo.cross.ResourseVO;
 import java.util.List;
 
+
 public interface TeacherCourseSessionDao
 {
-
+	List<CommonKeyValueVO> getRatingMasterData(int schoolId) throws LmsDaoException;
+	List<CommonKeyValueVO> getRatingValuesMasterData(int gradeParamId) throws LmsDaoException;
+	List<CommonKeyValueVO> getRatingData(int assignmentResourceTxnId) throws LmsDaoException;
+	int setRatingData(int userId,int assignmentResourceTxnId,List<CommonKeyValueVO> list) throws LmsDaoException;
+	
     // Comment & Likes
     boolean saveResourceComment(String commentBy,int resourceId,String commentTxt) throws LmsDaoException;
     boolean saveCommentComment(String commentBy,int commentId,String commentTxt) throws LmsDaoException;
@@ -45,6 +51,8 @@ public interface TeacherCourseSessionDao
     List<AssignmentVO> getStudentAssignments(int userId) throws LmsDaoException;
 
     List<AssignmentVO> getStudentAssignments(int userId,String searchText) throws LmsDaoException;
+    
+    List<AssignmentVO> getTeacherAssignments(int schoolId ,int classId ,int hrmId ,int courseId ,int moduleId ,int status,int userId,String searchText) throws LmsDaoException;
     
     List<AssignmentVO> getStudentAssignmentsByModuleId(int moduleId) throws LmsDaoException;
     List<AssignmentVO> getStudentAssignmentsByModuleId(String userName,int moduleId) throws LmsDaoException;
@@ -82,6 +90,20 @@ public interface TeacherCourseSessionDao
      * @return
      */
     List<TeacherCourseSessionVO > getTeacherCourseSessionList()throws LmsDaoException;
+    
+    /**
+     * This method  used for get AssignmentList by moduleId
+     * @param vo
+     * @return assignmentList
+     */
+	List<AssignmentVO> getAssignmentsByModuleId(int moduleId)throws LmsDaoException;
+	
+	 /**
+     * This method  used for get studentList by assignmentId
+     * @param vo
+     * @return assignmentList
+     */
+	List<AssignmentVO> getStudentsByAssignmentId(int assignmentId) throws LmsDaoException;
 
 
 

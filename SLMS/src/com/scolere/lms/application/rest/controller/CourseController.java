@@ -318,6 +318,55 @@ public class CourseController {
    
     /***ASSIGNMENT SERVICES***/    
     
+    
+    /**
+     * Assignment rating by teacher.
+     * @param course
+     * @return
+     */
+    
+    @POST
+    @Path("/rateAssignment")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)  
+    public CourseResponse rateAssignment(CourseRequest course) {
+        System.out.println("Start rateAssignment >> "+course);
+        CourseResponse resp = null;
+        
+        try {
+        	//assignmentResourceTxnId | ratingParameters
+        	
+        	//if(course.getAssignmentResourceTxnId()>0 && (course.))
+            resp = restService.rateAssignment(course);
+            
+        } catch (RestBusException ex) {
+            System.out.println("Exception # rateAssignment - "+ex);
+        }
+        System.out.println("<< End rateAssignment # "+resp); 
+        
+        return resp;
+    }       
+    
+    @POST
+    @Path("/getTeacherAssignments")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)  
+    public CourseResponse getAssignmentsForTeacher(CourseRequest course) {
+        System.out.println("Start getAssignmentsForTeacher >> "+course);
+        CourseResponse resp = null;
+        
+        try {
+        	//schoolId | classId | hrmId | courseId | moduleId | status  + userId | searchText
+            resp = restService.getAssignmentsForTeacher(course);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # getAssignmentsForTeacher - "+ex);
+        }
+        System.out.println("<< End getAssignmentsForTeacher # "+resp); 
+        
+        return resp;
+    }      
+        
+    
     @POST
     @Path("/getAssignments")
     @Consumes(MediaType.APPLICATION_JSON)    
@@ -337,7 +386,6 @@ public class CourseController {
         return resp;
     }   
     
-  
     
     @POST
     @Path("/uploadResourceDetail")

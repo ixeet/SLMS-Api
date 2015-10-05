@@ -4,6 +4,8 @@
  */
 package com.scolere.lms.application.rest.vo.response;
 
+import java.util.List;
+
 /**
  *
  * @author dell
@@ -12,6 +14,8 @@ public class HomeRoomRespTO {
     
     private String homeRoomId;
     private String homeRoomName;  
+    
+    private List<CourseRespTO> courseList;
 
     public HomeRoomRespTO() {
     }
@@ -43,6 +47,14 @@ public class HomeRoomRespTO {
     public String toString() {
         return "HomeRoomRespTO{" + "homeRoomId=" + homeRoomId + ", homeRoomName=" + homeRoomName + '}';
     }
+
+	public List<CourseRespTO> getCourseList() {
+		return courseList;
+	}
+
+	public void setCourseList(List<CourseRespTO> courseList) {
+		this.courseList = courseList;
+	}
     
     
 }

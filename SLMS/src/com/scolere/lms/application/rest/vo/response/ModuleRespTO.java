@@ -28,6 +28,11 @@ public class ModuleRespTO extends CompletedStatusTO{
     public ModuleRespTO() {
     }
 
+    public String toString (){
+    	
+    	return "ModuleRespTO{"+" moduleId="+moduleId+", moduleName="+moduleName+'}';
+    }
+    
     
     
     public int getModuleSessionId() {
