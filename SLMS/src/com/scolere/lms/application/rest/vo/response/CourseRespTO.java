@@ -28,6 +28,19 @@ public class CourseRespTO extends CompletedStatusTO{
 
     
     
+    public CourseRespTO() {
+    }
+
+    public CourseRespTO(String courseId, String courseName) {
+        this.courseId = courseId;
+        this.courseName = courseName;
+    }
+    
+    @Override
+    public String toString() {
+        return "CourseRespTO{" + "courseId=" + courseId + ", courseName=" + courseName + '}';
+    }
+    
     public int getCourseSessionId() {
 		return courseSessionId;
 	}

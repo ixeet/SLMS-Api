@@ -47,4 +47,6 @@ public interface HomeRoomMasterDao {
 
     List<HomeRoomMasterVo > getHomeRoomMasterVoList(int clsId) throws LmsDaoException;
     
+	List<HomeRoomMasterVo> getHomeRoomMasterVoList(int clsId,int schoolId, int teacherId)throws LmsDaoException;
+    
 }

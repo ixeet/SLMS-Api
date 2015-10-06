@@ -23,5 +23,11 @@ public interface UserBusIface {
     UserResponse forgetPwd(String userId) throws RestBusException;
     UserResponse changePwd(UserRequest req) throws RestBusException;
     
+    //Feed users 
+    UserResponse getFeedAccessType(int userId) throws RestBusException;
+    UserResponse setFeedAccessType(int userId,int accesTypeId) throws RestBusException;
+    UserResponse getFeedUsers(int userId) throws RestBusException;
+    UserResponse updateFollowersStatus(UserRequest req) throws RestBusException;
     
+
 }

@@ -9,9 +9,11 @@ import java.util.List;
 
 import com.scolere.lms.domain.exception.LmsServiceException;
 import com.scolere.lms.domain.vo.ClassMasterVo;
+import com.scolere.lms.domain.vo.CourseMasterVo;
 import com.scolere.lms.domain.vo.HomeRoomMasterVo;
 import com.scolere.lms.domain.vo.LmsFeedTxnVO;
 import com.scolere.lms.domain.vo.LmsFeedTypeVO;
+import com.scolere.lms.domain.vo.ModuleMasterVo;
 import com.scolere.lms.domain.vo.SchoolMasterVo;
 import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
@@ -94,6 +96,14 @@ public interface CommonServiceIface {
     HomeRoomMasterVo  getHomeRoomMasterDetail(int id) throws LmsServiceException;
     List<HomeRoomMasterVo > getHomeRoomMasterVoList() throws LmsServiceException;    
     List<HomeRoomMasterVo > getHomeRoomMasterVoList(int clsId) throws LmsServiceException;
+    List<HomeRoomMasterVo> getHomeRoomMasterVoList(int classId, int schoolId,int teacherId) throws LmsServiceException;
+    
+    /*COURSE RELATED METHODS*/
+    List<CourseMasterVo> getCourseVoList(int homeRoomMstrId, int classId,int schoolId, int teacherId)throws LmsServiceException;
+	List<ModuleMasterVo> getModuleVoList(int courseId, int homeRoomMstrId,int classId, int schoolId, int teacherId)throws LmsServiceException;
+	List<com.scolere.lms.domain.vo.AssignmentVO> getAssignVoList(int moduleMasterId, int homeRoomMstrId, int classId, int schoolId,int teacherId) throws LmsServiceException;
+	
+	
 
         
     

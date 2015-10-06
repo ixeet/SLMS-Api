@@ -273,6 +273,58 @@ public class HomeRoomMasterDaoImpl extends LmsDaoAbstract implements HomeRoomMas
         //4 Return as required by method
         return distList;
     }
+
+    @Override
+    public List<HomeRoomMasterVo> getHomeRoomMasterVoList(int clsId, int schoolId,int teacherId) throws LmsDaoException {
+        List< HomeRoomMasterVo> distList = new ArrayList<HomeRoomMasterVo>();
+
+        //1 . jdbc code start
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+
+           /* String sql = "SELECT * FROM homeroom_mstr where HRM_ID in (SELECT HRM_ID FROM class_hrm_map where CLASS_ID=?)";*/
+            String sql = "SELECT * FROM homeroom_mstr where HRM_ID in (SELECT HRM_ID FROM teacher_courses tc,student_dtls td" +
+            		" where tc.CLASS_ID = '"+clsId+"' and  tc.SCHOOL_ID = '"+schoolId+"' and tc.TEACHER_ID=td.EMAIL_ID and td.USER_ID= '"+teacherId+"')";
+            
+            stmt = conn.prepareStatement(sql);
+           // stmt.setInt(1, clsId);
+            
+            ResultSet rs = stmt.executeQuery();
+            HomeRoomMasterVo userDtls = null;
+            while (rs.next()) {
+                //3. Set db data to object
+                userDtls = new HomeRoomMasterVo();
+                userDtls.setHomeRoomMstrId(rs.getInt("HRM_ID"));
+                userDtls.setHomeRoomMstrName(rs.getString("HRM_NAME"));
+                userDtls.setDescTxt(rs.getString("DESC_TXT"));
+                userDtls.setMetadata(rs.getString("METADATA"));
+                userDtls.setDeletedFl(rs.getString("DELETED_FL"));
+                userDtls.setDisplayNo(rs.getInt("DISPLAY_NO"));
+                userDtls.setEnableFl(rs.getString("ENABLE_FL"));
+                userDtls.setCreatedBy(rs.getString("CREATED_BY"));
+                userDtls.setLastuserIdCd(rs.getString("LAST_USERID_CD"));
+                userDtls.setLastUpdtTm(rs.getString("LAST_UPDT_TM"));
+
+                //Add into list
+                distList.add(userDtls);
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getHomeRoomMasterDetail(clsId) # " + se);
+        } catch (Exception e) {
+            System.out.println("getHomeRoomMasterDetail(clsId) # " + e);
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+     //1 . jdbc code endd
+
+        //4 Return as required by method
+        return distList;
+    }
+    
+    
     
     
 }//End of class

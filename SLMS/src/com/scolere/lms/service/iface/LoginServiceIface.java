@@ -5,6 +5,7 @@
 package com.scolere.lms.service.iface;
 
 import com.scolere.lms.domain.exception.LmsServiceException;
+import com.scolere.lms.domain.vo.CommonKeyValueVO;
 import com.scolere.lms.domain.vo.LoginSessionVo;
 import com.scolere.lms.domain.vo.StudentDetailVo;
 import com.scolere.lms.domain.vo.UserClassMapVo;
@@ -17,6 +18,16 @@ import java.util.List;
  * @author dell
  */
 public interface LoginServiceIface {
+
+	//Fee users start
+	int updateFollowersStatus(int userId,List<UserVO> usersList) throws LmsServiceException;
+    int getFeedAccessType(int userId) throws LmsServiceException;
+    int setFeedAccessType(int userId,int accesTypeId) throws LmsServiceException;
+    List<UserVO> getFeedUsers(int userId) throws LmsServiceException;
+    List<CommonKeyValueVO> getAccessTypeMasterData() throws LmsServiceException;
+	//Feed users end
+    
+    boolean defaultFeedsAccessType(int userId,int hrmId) throws LmsServiceException;
 
     boolean defaultUserAssignment(String userName,int schoolId,int classId,int hrmId) throws LmsServiceException;
 

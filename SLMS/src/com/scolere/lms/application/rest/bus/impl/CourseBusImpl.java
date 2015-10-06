@@ -12,10 +12,12 @@ import com.scolere.lms.application.rest.vo.response.AssignmentRespTO;
 import com.scolere.lms.application.rest.vo.response.CommentRespTO;
 import com.scolere.lms.application.rest.vo.response.CourseRespTO;
 import com.scolere.lms.application.rest.vo.response.CourseResponse;
+import com.scolere.lms.application.rest.vo.response.KeyValTypeVO;
 import com.scolere.lms.application.rest.vo.response.ModuleRespTO;
 import com.scolere.lms.application.rest.vo.response.ResourceRespTO;
 import com.scolere.lms.common.utils.PropertyManager;
 import com.scolere.lms.domain.exception.LmsServiceException;
+import com.scolere.lms.domain.vo.CommonKeyValueVO;
 import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
 import com.scolere.lms.domain.vo.cross.CourseVO;
@@ -36,6 +38,7 @@ import java.util.List;
 public class CourseBusImpl implements CourseBusIface{
 
 	CourseRequest req;
+	
 	@Override
     public CourseResponse getAssignments(CourseRequest req) throws RestBusException {
             CourseResponse resp = new CourseResponse();
@@ -59,7 +62,30 @@ public class CourseBusImpl implements CourseBusIface{
                 	assign.setCourseName(asignment.getCourseName());
                 	assign.setModuleId(asignment.getModuleId());
                 	assign.setModuleName(asignment.getModuleName());
-                	
+                	assign.setAssignmentResourceTxnId(asignment.getAssignmentResourceTxnId());
+                	/**
+                	 * Assignment rating data - 
+                	 * 
+                	 * if assignment status=3 (reviewed) -> Add list of review status parameters
+                	 * else add -> review parameters master data
+                	 */
+                	List<KeyValTypeVO> reviewParameters=null;
+                	if(asignment.getAssignmentStatus().trim().equals("3"))
+                	{
+                		//Review status parameters
+                		List<CommonKeyValueVO> ratingsFromDb=service.getRatingData(asignment.getAssignmentResourceTxnId());
+                		reviewParameters = new ArrayList<KeyValTypeVO>(ratingsFromDb.size());
+                		KeyValTypeVO kvtVo=null;
+                		for(CommonKeyValueVO vo1: ratingsFromDb)
+                		{
+                			kvtVo=new KeyValTypeVO();
+                			kvtVo.setKey(vo1.getItemCode());
+                			kvtVo.setValue(vo1.getItemName());
+                			
+                			reviewParameters.add(kvtVo);
+                		}
+                	}
+                	assign.setRatingParameters(reviewParameters);
                 	//Start - Assignment Resources
                     List<ResourseVO> attachedResourcesFromDB=service.getAssignmentsResources(req.getUserId(), assign.getAssignmentId());
                     List<ResourceRespTO> attachedResources = new ArrayList<ResourceRespTO>(attachedResourcesFromDB.size());
@@ -102,6 +128,137 @@ public class CourseBusImpl implements CourseBusIface{
     }
 	
 	
+	@Override
+    public CourseResponse getAssignmentsForTeacher(CourseRequest req) throws RestBusException {
+            CourseResponse resp = new CourseResponse();
+            CourseServiceIface service = new CourseServiceImpl();
+    
+            try {
+                //Assignment start - //schoolId | classId | hrmId | courseId | moduleId | status  + userId | searchText
+                List<AssignmentVO> assignmentListFromDB= service.getTeacherAssignments(req.getSchoolId(), req.getClassId(), req.getHrmId(), req.getCourseId(), req.getModuleId(), req.getStatus(), req.getUserId(), req.getSearchText());
+                List<AssignmentRespTO> assignmentList = new ArrayList<AssignmentRespTO>(assignmentListFromDB.size());
+                
+                AssignmentRespTO assign = null;
+                for( AssignmentVO asignment : assignmentListFromDB){
+                	assign = new AssignmentRespTO();
+                	assign.setAssignmentId(asignment.getAssignmentId());
+                	assign.setAssignmentName(asignment.getAssignmentName());
+                	assign.setAssignmentDesc(asignment.getAssignmentDesc());
+                	assign.setAssignmentSubmittedDate(asignment.getAssignmentSubmittedDate());
+                	assign.setAssignmentSubmittedBy(asignment.getAssignmentSubmittedBy());
+                	assign.setAssignmentSubmittedById(""+asignment.getAssignmentSubmittedById());
+                	assign.setAssignmentStatus(asignment.getAssignmentStatus());
+                	assign.setAssignmentDueDate(asignment.getAssignmentDueDate());
+                	assign.setCourseId(asignment.getCourseId());
+                	assign.setCourseName(asignment.getCourseName());
+                	assign.setModuleId(asignment.getModuleId());
+                	assign.setModuleName(asignment.getModuleName());
+                	assign.setAssignmentResourceTxnId(asignment.getAssignmentResourceTxnId());
+                	
+                	/**
+                	 * Assignment rating data - 
+                	 * 
+                	 * if assignment status=3 (reviewed) -> Add list of review status parameters
+                	 * else add -> review parameters master data
+                	 */
+                	List<KeyValTypeVO> reviewParameters=null;
+                	if(asignment.getAssignmentStatus().trim().equals("3"))
+                	{
+                		//Review status parameters
+                		List<CommonKeyValueVO> ratingsFromDb=service.getRatingData(asignment.getAssignmentResourceTxnId());
+                		reviewParameters = new ArrayList<KeyValTypeVO>(ratingsFromDb.size());
+                		KeyValTypeVO kvtVo=null;
+                		for(CommonKeyValueVO vo1: ratingsFromDb)
+                		{
+                			kvtVo=new KeyValTypeVO();
+                			//Param
+                			String[] param=vo1.getItemCode().split("-");
+                			kvtVo.setKey(param[0]);
+                			kvtVo.setValue(param[1]);
+                			
+                			//values
+                			String[] val=vo1.getItemName().split("-");
+                			List<KeyValTypeVO> childs=new ArrayList<KeyValTypeVO>(1);
+                			childs.add(new KeyValTypeVO(val[0],val[1], null));
+                			kvtVo.setChilds(childs);
+                			reviewParameters.add(kvtVo);
+                		}
+                	}
+                	else
+                	{
+                		//Review Parameters master data
+                		int schoolId=asignment.getSchoolId();
+                		List<CommonKeyValueVO> ratingsFromDb=service.getRatingMasterData(schoolId);
+                		reviewParameters = new ArrayList<KeyValTypeVO>(ratingsFromDb.size());
+                		KeyValTypeVO kvtVo=null;
+                		for(CommonKeyValueVO vo1: ratingsFromDb)
+                		{
+                			kvtVo=new KeyValTypeVO();
+                			kvtVo.setKey(vo1.getItemCode());
+                			kvtVo.setValue(vo1.getItemName());
+                			//Review param values
+                       		List<CommonKeyValueVO> ratingsValuesFromDb=service.getRatingValuesMasterData(Integer.parseInt(vo1.getItemCode()));
+                       		List<KeyValTypeVO> ratingsValues = new ArrayList<KeyValTypeVO>(ratingsValuesFromDb.size());
+                    		KeyValTypeVO kvtVo2=null;   
+                    		for(CommonKeyValueVO vo2: ratingsValuesFromDb)
+                    		{
+                    			kvtVo2=new KeyValTypeVO();
+                    			kvtVo2.setKey(vo2.getItemCode());
+                    			kvtVo2.setValue(vo2.getItemName());                    			
+                    			ratingsValues.add(kvtVo2);
+                    		}
+                    		kvtVo.setChilds(ratingsValues);
+                    		
+                			reviewParameters.add(kvtVo);
+                		}                		
+                		
+                	}
+                	
+                	assign.setRatingParameters(reviewParameters);
+                	//End assignment rating data
+                	
+                	//Start - Assignment Resources
+                    List<ResourseVO> attachedResourcesFromDB=service.getAssignmentsResources(asignment.getAssignmentSubmittedById(), assign.getAssignmentId());
+                    List<ResourceRespTO> attachedResources = new ArrayList<ResourceRespTO>(attachedResourcesFromDB.size());
+                    ResourceRespTO resourceRespTO = null;
+                    for(ResourseVO vo5 : attachedResourcesFromDB)
+                    {
+                    resourceRespTO = new ResourceRespTO();
+                    resourceRespTO.setResourceId(String.valueOf(vo5.getResourceId()));
+                    resourceRespTO.setResourceName(vo5.getResourceName());
+                    resourceRespTO.setResourceDesc(vo5.getResourceDesc());
+                    resourceRespTO.setResourceUrl(vo5.getResourceUrl());
+                    resourceRespTO.setThumbImg(vo5.getThumbUrl());
+                    resourceRespTO.setUploadedDate(vo5.getUploadedDate());
+                    resourceRespTO.setAuthorName(vo5.getAuthorName());
+                    resourceRespTO.setAuthorImg(vo5.getAuthorImg());
+                    
+                    attachedResources.add(resourceRespTO);
+                    }
+                    
+                    assign.setAttachedResources(attachedResources);
+                	//End - Assignment Resources
+                	
+                	assignmentList.add(assign);
+                }
+                
+                
+            //Assignment end
+            resp.setAssignmentList(assignmentList);
+
+            resp.setStatus(SLMSRestConstants.status_success);
+            resp.setStatusMessage(SLMSRestConstants.message_success); 
+        }catch(Exception e){
+            System.out.println("Exception # getAssignments "+e.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(e.getMessage());            
+        }
+            
+        return resp;
+    }
+	
+
 	
     public CourseResponse getAssignments_hirarichal(CourseRequest req) throws RestBusException {
             CourseResponse resp = new CourseResponse();
@@ -632,7 +789,6 @@ public class CourseBusImpl implements CourseBusIface{
              courseResp.setAuthorName(vo.getAuthorName());
              courseResp.setStartedOn(vo.getStartedOn());
              courseResp.setCompletedOn(vo.getCompletedOn());
-
              courseResp.setSchoolId(vo.getSchoolId());
              courseResp.setSchoolName(vo.getSchoolName());
              courseResp.setClassId(vo.getClassId());
@@ -670,24 +826,83 @@ public class CourseBusImpl implements CourseBusIface{
                 }
                 
                 //Assignments list start>>>>>>>                
-                    List<AssignmentVO> assignmenteListFromDB = service.getStudentAssignmentsByModuleId(Integer.parseInt(mod.getModuleId()));
-                    List<AssignmentRespTO> assignmentList = new ArrayList<AssignmentRespTO>(assignmenteListFromDB.size());
-                    AssignmentRespTO aresp=null;
-                    for(AssignmentVO avo : assignmenteListFromDB)
+                List<AssignmentVO> assignmenteListFromDB = service.getAssignmentsByModuleId(Integer.parseInt(mod.getModuleId()));
+                List<AssignmentRespTO> assignmentList = new ArrayList<AssignmentRespTO>(assignmenteListFromDB.size());
+                AssignmentRespTO assResp=null;
+                for(AssignmentVO ass : assignmenteListFromDB){
+                	assResp = new AssignmentRespTO();
+                	assResp.setAssignmentId(ass.getAssignmentId());
+                	assResp.setAssignmentName(ass.getAssignmentName());
+                	assResp.setAssignmentDesc(ass.getAssignmentDesc());
+                    List<AssignmentVO> studentListFromDB = service.getStudentsByAssignmentId(ass.getAssignmentId());
+                    List<AssignmentRespTO> studentList = new ArrayList<AssignmentRespTO>(studentListFromDB.size());
+                    AssignmentRespTO student=null;
+                    for(AssignmentVO avo : studentListFromDB)
                     {
-                    	aresp=new AssignmentRespTO();
-                    	aresp.setAssignmentId(avo.getAssignmentId());
-                    	aresp.setAssignmentName(avo.getAssignmentName());
-                    	aresp.setAssignmentStatus(avo.getAssignmentStatus());
-                    	aresp.setAssignmentSubmittedDate(avo.getAssignmentSubmittedDate());
-                    	aresp.setAssignmentDesc(avo.getAssignmentDesc());
-                    	aresp.setAssignmentDueDate(avo.getAssignmentDueDate());
+                    	student=new AssignmentRespTO();
+                    	student.setAssignmentStatus(avo.getAssignmentStatus());
+                    	student.setAssignmentSubmittedDate(avo.getAssignmentSubmittedDate());
+                    	student.setAssignmentDueDate(avo.getAssignmentDueDate());
                     	String[] userIdNm=avo.getAssignmentSubmittedBy().split("-");
-                    	aresp.setAssignmentSubmittedBy(userIdNm[1]);
-                    	aresp.setAssignmentSubmittedById(userIdNm[0]);
+                    	student.setAssignmentSubmittedBy(userIdNm[1]);
+                    	student.setAssignmentSubmittedById(userIdNm[0]);
+                    	student.setAssignmentResourceTxnId(avo.getAssignmentResourceTxnId());
+                    	/**
+                    	 * Assignment rating data - 
+                    	 * 
+                    	 * if assignment status=3 (reviewed) -> Add list of review status parameters
+                    	 * else add -> review parameters master data
+                    	 */
+                    	List<KeyValTypeVO> reviewParameters=null;
+                    	if(student.getAssignmentStatus().trim().equals("3"))
+                    	{
+                    		//Review status parameters
+                    		List<CommonKeyValueVO> ratingsFromDb=service.getRatingData(student.getAssignmentResourceTxnId());
+                    		reviewParameters = new ArrayList<KeyValTypeVO>(ratingsFromDb.size());
+                    		KeyValTypeVO kvtVo=null;
+                    		for(CommonKeyValueVO vo1: ratingsFromDb)
+                    		{
+                    			kvtVo=new KeyValTypeVO();
+                    			kvtVo.setKey(vo1.getItemCode());
+                    			kvtVo.setValue(vo1.getItemName());
+                    			
+                    			reviewParameters.add(kvtVo);
+                    		}
+                    	}
+                    	else
+                    	{
+                    		//Review Parameters master data
+                    		int schoolId=courseResp.getSchoolId();
+                    		List<CommonKeyValueVO> ratingsFromDb=service.getRatingMasterData(schoolId);
+                    		reviewParameters = new ArrayList<KeyValTypeVO>(ratingsFromDb.size());
+                    		KeyValTypeVO kvtVo=null;
+                    		for(CommonKeyValueVO vo1: ratingsFromDb)
+                    		{
+                    			kvtVo=new KeyValTypeVO();
+                    			kvtVo.setKey(vo1.getItemCode());
+                    			kvtVo.setValue(vo1.getItemName());
+                    			//Review param values
+                           		List<CommonKeyValueVO> ratingsValuesFromDb=service.getRatingValuesMasterData(Integer.parseInt(vo1.getItemCode()));
+                           		List<KeyValTypeVO> ratingsValues = new ArrayList<KeyValTypeVO>(ratingsValuesFromDb.size());
+                        		KeyValTypeVO kvtVo2=null;   
+                        		for(CommonKeyValueVO vo2: ratingsValuesFromDb)
+                        		{
+                        			kvtVo2=new KeyValTypeVO();
+                        			kvtVo2.setKey(vo2.getItemCode());
+                        			kvtVo2.setValue(vo2.getItemName());                    			
+                        			ratingsValues.add(kvtVo2);
+                        		}
+                        		kvtVo.setChilds(ratingsValues);
+                        		
+                    			reviewParameters.add(kvtVo);
+                    		}                		
+                    		
+                    	}
+                    	
+                    	student.setRatingParameters(reviewParameters);
                     	
                     	//Start - Assignment Resources
-                        List<ResourseVO> attachedResourcesFromDB=service.getAssignmentsResources(Integer.parseInt(aresp.getAssignmentSubmittedById()),avo.getAssignmentId());
+                        List<ResourseVO> attachedResourcesFromDB=service.getAssignmentsResources(Integer.parseInt(student.getAssignmentSubmittedById()),assResp.getAssignmentId());
                         List<ResourceRespTO> attachedResources = new ArrayList<ResourceRespTO>(attachedResourcesFromDB.size());
                         ResourceRespTO resourceRespTO = null;
                         for(ResourseVO vo5 : attachedResourcesFromDB)
@@ -706,11 +921,15 @@ public class CourseBusImpl implements CourseBusIface{
                         attachedResources.add(resourceRespTO);
                         }
                         
-                        aresp.setAttachedResources(attachedResources);
+                        student.setAttachedResources(attachedResources);
                     	//End - Assignment Resources
                         
-                    	assignmentList.add(aresp);
+                        studentList.add(student);
                     }
+                    assResp.setStudentList(studentList);
+                    assignmentList.add(assResp);
+                    
+                }
                         
                //Assignment list end<<<<<<
                     
@@ -1387,7 +1606,45 @@ public class CourseBusImpl implements CourseBusIface{
        return resp;
     }
 
+    
+	@Override
+    public CourseResponse rateAssignment(CourseRequest req) throws RestBusException {
+            CourseResponse resp = new CourseResponse();
+            CourseServiceIface service = new CourseServiceImpl();
+    
+            try {
+            	int ratingDataCount=req.getRatingParameters().size();
+            	
+            	if(ratingDataCount>0)
+            	{		
+            		ArrayList<CommonKeyValueVO> list=new ArrayList<CommonKeyValueVO>(ratingDataCount);
+            		CommonKeyValueVO vo=null;
+            		for(KeyValTypeVO temp : req.getRatingParameters())
+            		{
+            			vo=new CommonKeyValueVO(temp.getKey(),temp.getValue());
+            			list.add(vo);
+            		}
+            		
+            	service.setRatingData(req.getUserId(), req.getAssignmentResourceTxnId(),list);	
+            	
+                resp.setStatus(SLMSRestConstants.status_success);
+                resp.setStatusMessage(SLMSRestConstants.message_success); 	
+            	}else{
+                    resp.setStatus(SLMSRestConstants.status_badrequest);
+                    resp.setStatusMessage(SLMSRestConstants.message_badrequest); 	            		
+            	}
 
+        }catch(Exception e){
+            System.out.println("Exception # rateAssignment "+e.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(e.getMessage());            
+        }
+            
+        return resp;
+    }
+    
+    
 	@Override
 	public int uploadAssignment(int assignmentId,String resourceName,String resourceAuthor, String resourceDesc,String userName, String descTxt, String url, String thumbUrl, String authorImgUrl)
 			throws RestBusException {

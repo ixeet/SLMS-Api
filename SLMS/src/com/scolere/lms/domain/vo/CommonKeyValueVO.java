@@ -4,6 +4,8 @@
  */
 package com.scolere.lms.domain.vo;
 
+import java.util.List;
+
 /**
  *
  * @author dell
@@ -13,6 +15,8 @@ public class CommonKeyValueVO {
     private String itemCode;
     private String itemName;
 
+    private List<CommonKeyValueVO> childs;
+    
     public CommonKeyValueVO(String itemCode, String itemName) {
         this.itemCode = itemCode;
         this.itemName = itemName;
@@ -21,7 +25,17 @@ public class CommonKeyValueVO {
     public CommonKeyValueVO() {
     }
 
-    /**
+   
+    
+    public List<CommonKeyValueVO> getChilds() {
+		return childs;
+	}
+
+	public void setChilds(List<CommonKeyValueVO> childs) {
+		this.childs = childs;
+	}
+
+	/**
      * @return the itemCode
      */
     public String getItemCode() {

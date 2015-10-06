@@ -32,7 +32,7 @@ public class TeacherDetailDaoImpl extends LmsDaoAbstract implements TeacherDetai
         try {
             conn = getConnection();
 
-            String sql = "SELECT * FROM teacher_dtls where TEACHER_DETAILS_ID=?";
+            String sql = "SELECT * FROM student_dtls where TEACHER_DETAILS_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userDtls.getTeacherDetailId());
             ResultSet rs = stmt.executeQuery();
@@ -83,7 +83,7 @@ public class TeacherDetailDaoImpl extends LmsDaoAbstract implements TeacherDetai
         try {
 
             conn = getConnection();
-            String sql = "UPDATE teacher_dtls set USER_ID=?, F_NAME=?, L_NAME=?, EMAIL_ID=?, CONTACT_NO=?, BIRTH_DT=?, JOINING_DATE=?, EXPERIENCE=?, CONTRACT_EXP_DT=?, ADDRESS=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
+            String sql = "UPDATE student_dtls set USER_ID=?, F_NAME=?, L_NAME=?, EMAIL_ID=?, CONTACT_NO=?, BIRTH_DT=?, JOINING_DATE=?, EXPERIENCE=?, CONTRACT_EXP_DT=?, ADDRESS=?, LAST_USERID_CD=?, LAST_UPDT_TM=utc_timestamp\n"
                     + "    WHERE TEACHER_DETAILS_ID=?";
             stmt = conn.prepareStatement(sql);
 
@@ -125,7 +125,7 @@ public class TeacherDetailDaoImpl extends LmsDaoAbstract implements TeacherDetai
         try {
 
             conn = getConnection();
-            String sql = "INSERT INTO teacher_dtls(USER_ID, F_NAME, L_NAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE, EXPERIENCE, CONTRACT_EXP_DT, ADDRESS, LAST_USERID_CD, LAST_UPDT_TM) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  utc_timestamp)";
+            String sql = "INSERT INTO student_dtls(USER_ID, F_NAME, L_NAME, EMAIL_ID, CONTACT_NO, BIRTH_DT, JOINING_DATE, EXPERIENCE, CONTRACT_EXP_DT, ADDRESS, LAST_USERID_CD, LAST_UPDT_TM) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,  utc_timestamp)";
             stmt = conn.prepareStatement(sql);
 
             stmt.setInt(1, vo.getUserId());
@@ -167,7 +167,7 @@ public class TeacherDetailDaoImpl extends LmsDaoAbstract implements TeacherDetai
         try {
             conn = getConnection();
 
-            String sql = "DELETE FROM teacher_dtls WHERE TEACHER_DETAILS_ID = ?";
+            String sql = "DELETE FROM student_dtls WHERE TEACHER_DETAILS_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, vo.getTeacherDetailId());
             stmt.executeUpdate();

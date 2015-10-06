@@ -1,6 +1,7 @@
 package com.scolere.lms.persistance.dao.iface;
 
 import com.scolere.lms.domain.exception.LmsDaoException;
+import com.scolere.lms.domain.vo.CommonKeyValueVO;
 import com.scolere.lms.domain.vo.UserLoginVo;
 import com.scolere.lms.domain.vo.cross.UserVO;
 import java.util.List;
@@ -11,7 +12,15 @@ import java.util.List;
  */
 public interface UserLoginDao {
     
+	//Fee users start
+	int updateFollowersStatus(int userId,List<UserVO> usersList) throws LmsDaoException;
+    int getFeedAccessType(int userId) throws LmsDaoException;
+    int setFeedAccessType(int userId,int accesTypeId) throws LmsDaoException;
+    List<UserVO> getFeedUsers(int userId) throws LmsDaoException;
+    List<CommonKeyValueVO> getAccessTypeMasterData() throws LmsDaoException;
+	//Feed users end
 
+    boolean defaultFeedsAccessType(int userId,int hrmId) throws LmsDaoException;
 	boolean defaultUserAssignment(String userName,int schoolId,int classId,int hrmId) throws LmsDaoException;
 	
     /**

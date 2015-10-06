@@ -26,10 +26,19 @@ public class UserVO {
     private String title;
     private String profileImage;
     private String userType;
+    private String isFollowUpAllowed;
+    
+    
+    
+    public String getIsFollowUpAllowed() {
+		return isFollowUpAllowed;
+	}
 
-    
-    
-    public String getUserType() {
+	public void setIsFollowUpAllowed(String isFollowUpAllowed) {
+		this.isFollowUpAllowed = isFollowUpAllowed;
+	}
+
+	public String getUserType() {
 		return userType;
 	}
 

@@ -233,4 +233,53 @@ public class AssignmentDaoImpl extends LmsDaoAbstract implements AssignmentDao {
         //4 Return as required by method
         return distList;
     }
+
+	@Override
+	public List<AssignmentVO> getAssignmentList(int moduleMasterId,
+			int homeRoomMstrId, int classId, int schoolId, int teacherId)
+			throws LmsDaoException {
+        //Create object to return
+		  List< AssignmentVO> distList = new ArrayList<AssignmentVO>();
+        AssignmentVO assignmentVO = new AssignmentVO();
+
+        //1 . jdbc code start
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+
+            String sql = "SELECT * FROM assignment where ASSIGNMENT_ID=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, assignmentVO.getAssignmentID());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                //3. Set db data to object
+                assignmentVO.setAssignmentID(rs.getInt("ASSIGNMENT_ID"));
+                assignmentVO.setAssignmentName(rs.getString("ASSIGNMENT_NAME"));
+                assignmentVO.setAssignmentTypID(rs.getInt("ASSIGNMENT_TYP_ID"));
+                assignmentVO.setDescTxt(rs.getString("DESC_TXT"));
+                assignmentVO.setDisplayNo(rs.getInt("DISPLAY_NO"));
+                assignmentVO.setEnableFl(rs.getString("ENABLE_FL"));
+                assignmentVO.setLastUserIDCD(rs.getString("LAST_USERID_CD"));
+                assignmentVO.setLastUpdtTm(rs.getString("LAST_UPDT_TM"));
+            }
+
+            System.out.println("get records into the table...");
+
+        } catch (SQLException se) {
+            System.out.println("getAssignment # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getAssignment # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+        //1 . jdbc code endd
+
+        //4 Return as required by method
+        return distList;
+	}
+
+	 
 }

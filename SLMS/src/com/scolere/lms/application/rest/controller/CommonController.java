@@ -4,15 +4,6 @@
  */
 package com.scolere.lms.application.rest.controller;
 
-import com.scolere.lms.application.rest.bus.iface.CommonBusIface;
-import com.scolere.lms.application.rest.bus.impl.CommonBusImpl;
-import com.scolere.lms.application.rest.constants.SLMSRestConstants;
-import com.scolere.lms.application.rest.exceptions.RestBusException;
-import com.scolere.lms.application.rest.vo.request.CommonRequest;
-import com.scolere.lms.application.rest.vo.response.CommonResponse;
-import com.scolere.lms.application.rest.vo.response.CourseResponse;
-import com.scolere.lms.common.utils.PropertyManager;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -20,6 +11,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
+import com.scolere.lms.application.rest.bus.iface.CommonBusIface;
+import com.scolere.lms.application.rest.bus.impl.CommonBusImpl;
+import com.scolere.lms.application.rest.constants.SLMSRestConstants;
+import com.scolere.lms.application.rest.exceptions.RestBusException;
+import com.scolere.lms.application.rest.vo.request.CommonRequest;
+import com.scolere.lms.application.rest.vo.response.CommonResponse;
+import com.scolere.lms.common.utils.PropertyManager;
 
 /**
  *
@@ -445,7 +444,7 @@ public class CommonController {
 
         try {
         	
-            commonResponse = restService.getSchoolMasterData();
+            commonResponse = restService.getSchoolMasterData(teacherId);
             
         } catch (RestBusException ex) {
             System.out.println("Exception # getMasterData/teacherId - " + ex);

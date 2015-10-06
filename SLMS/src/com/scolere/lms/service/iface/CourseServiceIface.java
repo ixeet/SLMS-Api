@@ -6,6 +6,7 @@ package com.scolere.lms.service.iface;
 
 
 import com.scolere.lms.domain.exception.LmsServiceException;
+import com.scolere.lms.domain.vo.CommonKeyValueVO;
 import com.scolere.lms.domain.vo.TeacherCourseSessionDtlsVO;
 import com.scolere.lms.domain.vo.TeacherCourseSessionVO;
 import com.scolere.lms.domain.vo.TeacherCourseVO;
@@ -21,6 +22,12 @@ import java.util.List;
  */
 public interface CourseServiceIface {
 
+	//Assignment rating methods
+	List<CommonKeyValueVO> getRatingMasterData(int schoolId) throws LmsServiceException;
+	List<CommonKeyValueVO> getRatingValuesMasterData(int gradeParamId) throws LmsServiceException;
+	List<CommonKeyValueVO> getRatingData(int assignmentResourceTxnId) throws LmsServiceException;
+	int setRatingData(int userId,int assignmentResourceTxnId,List<CommonKeyValueVO> list) throws LmsServiceException;
+	
     // Comment & Likes
     boolean saveResourceComment(String commentBy,int resourceId,String commentTxt) throws LmsServiceException;
     boolean saveCommentComment(String commentBy,int commentId,String commentTxt) throws LmsServiceException;
@@ -58,6 +65,7 @@ public interface CourseServiceIface {
     List<AssignmentVO> getStudentAssignments(int userId) throws LmsServiceException;
 
     List<AssignmentVO> getStudentAssignments(int userId,String searchText) throws LmsServiceException;
+    List<AssignmentVO> getTeacherAssignments(int schoolId ,int classId ,int hrmId ,int courseId ,int moduleId ,int status,int userId,String searchText) throws LmsServiceException;
     
     List<ResourseVO> getAssignmentsResources(int assignmentDtlId) throws LmsServiceException;
     List<ResourseVO> getAssignmentsResources(int userId,int assignmentDtlId) throws LmsServiceException;
@@ -97,6 +105,8 @@ public interface CourseServiceIface {
     List<TeacherCourseVO> getTeacherCourseList() throws LmsServiceException;
 
     int uploadAssignment(int assignmentId,String resourceName,String resourceAuthor, String resourceDesc,String userName, String descTxt, String url, String thumbUrl, String authorImgUrl) throws LmsServiceException;
+	List<AssignmentVO> getAssignmentsByModuleId(int moduleId)throws LmsServiceException;
+	List<AssignmentVO> getStudentsByAssignmentId(int assignmentId)throws LmsServiceException;
 	
 
     

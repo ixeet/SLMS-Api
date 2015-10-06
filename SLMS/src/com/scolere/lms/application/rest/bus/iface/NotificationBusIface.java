@@ -13,6 +13,8 @@ import com.scolere.lms.application.rest.vo.response.NotificationResponse;
  * @author dell
  */
 public interface NotificationBusIface {
+	
     NotificationResponse registerDevice(NotificationRequest req) throws RestBusException;
     NotificationResponse pushNotification(NotificationRequest req) throws RestBusException;
+
 }

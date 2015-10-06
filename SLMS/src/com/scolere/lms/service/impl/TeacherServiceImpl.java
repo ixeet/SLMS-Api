@@ -1,5 +1,8 @@
 package com.scolere.lms.service.impl;
 
+import java.util.List;
+
+import com.scolere.lms.application.rest.vo.response.PercentageRespTo;
 import com.scolere.lms.domain.exception.LmsServiceException;
 import com.scolere.lms.persistance.dao.iface.TeacherDao;
 import com.scolere.lms.persistance.factory.LmsDaoFactory;
@@ -56,6 +59,38 @@ public class TeacherServiceImpl implements TeacherServiceIface {
         }
         
         return updateCount;
+	}
+
+
+	@Override
+	public List<Integer> getCoursePercentage(String userName, int schoolId,
+			int classId, int hrmId) throws LmsServiceException {
+		List<Integer> list = null;
+		 try {
+	            TeacherDao dao = (TeacherDao) LmsDaoFactory.getDAO(TeacherDao.class);
+	            list = (List<Integer>) dao.getCoursePercentage(userName, schoolId,classId, hrmId);
+	        } catch (Exception ex) {
+	            System.out.println("LmsServiceException # updateCourseResourceStatus = "+ex);
+	            throw new LmsServiceException(ex.getMessage());
+	        }
+	        
+	        return list;
+	}
+
+
+	@Override
+	public List<Integer> getAssignmentPercentage(String userName, int schoolId,
+			int classId, int hrmId) throws LmsServiceException {
+		List<Integer> list = null;
+		 try {
+	            TeacherDao dao = (TeacherDao) LmsDaoFactory.getDAO(TeacherDao.class);
+	            list = (List<Integer>) dao.getAssignmentPercentage(userName, schoolId,classId, hrmId);
+	        } catch (Exception ex) {
+	            System.out.println("LmsServiceException # updateCourseResourceStatus = "+ex);
+	            throw new LmsServiceException(ex.getMessage());
+	        }
+	        
+	        return list;
 	}
 	
 	

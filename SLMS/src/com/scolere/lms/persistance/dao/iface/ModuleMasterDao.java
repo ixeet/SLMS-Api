@@ -48,4 +48,8 @@ public interface ModuleMasterDao {
     ModuleMasterVo getModuleMasterDetail(int id) throws LmsDaoException;
 
     List<ModuleMasterVo> getModuleMasterVoList() throws LmsDaoException;
+
+
+	List<ModuleMasterVo> getModuleList(int courseId, int homeRoomMstrId,int classId, int schoolId, int teacherId)  throws LmsDaoException;
+
 }

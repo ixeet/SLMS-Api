@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.scolere.lms.domain.exception.LmsDaoException;
 import com.scolere.lms.domain.vo.AssignmentVO;
+import com.scolere.lms.domain.vo.ModuleMasterVo;
 
 
 public interface AssignmentDao {
@@ -36,5 +37,6 @@ public interface AssignmentDao {
      * @return
      */
     List<AssignmentVO > getAssignmentList()throws LmsDaoException;
+	List<com.scolere.lms.domain.vo.AssignmentVO> getAssignmentList(int moduleMasterId, int homeRoomMstrId, int classId, int schoolId,int teacherId)  throws LmsDaoException;
 
 }

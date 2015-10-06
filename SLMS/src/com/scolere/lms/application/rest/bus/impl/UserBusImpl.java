@@ -4,6 +4,9 @@
  */
 package com.scolere.lms.application.rest.bus.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.scolere.lms.application.rest.bus.iface.UserBusIface;
 import com.scolere.lms.application.rest.constants.SLMSRestConstants;
 import com.scolere.lms.application.rest.exceptions.RestBusException;
@@ -94,6 +97,8 @@ public class UserBusImpl implements UserBusIface{
                 
                 //Default assignments
                 loginService.defaultUserAssignment(req.getUserName(), schoolId, classId, hrmId);
+                //Default updates access type of user
+                loginService.defaultFeedsAccessType(loginVo.getUserId(), hrmId); //Default access type is home group
                 
                 //Email to admin
                 Emailer emailer = new Emailer();
@@ -470,6 +475,169 @@ public class UserBusImpl implements UserBusIface{
         
         return resp;
     }
-    
+
+
+	@Override
+	public UserResponse getFeedAccessType(int userId) throws RestBusException {
+        UserResponse resp = new UserResponse();
+        
+        try {
+            
+            LoginServiceIface loginService = new LoginServiceImpl();
+            //Setting userStatus
+            resp.setUserId(String.valueOf(userId));
+            resp.setUserAccessTypeId(loginService.getFeedAccessType(userId));
+            
+            /*
+            //Setting master data
+            List<CommonKeyValueVO> mstrListFromDb=loginService.getAccessTypeMasterData();
+            List<KeyValTypeVO> listMstrData=new ArrayList<KeyValTypeVO>(mstrListFromDb.size());
+            KeyValTypeVO vo=null;
+            for(CommonKeyValueVO temp:mstrListFromDb)        
+            {
+            	vo = new KeyValTypeVO(temp.getItemCode(), temp.getItemName(), "");
+            	listMstrData.add(vo);
+            }
+            resp.setAccessTypeList(listMstrData);
+            */
+            
+            //setting success into response
+            resp.setStatus(SLMSRestConstants.status_success);
+            resp.setStatusMessage(SLMSRestConstants.message_success);                   
+
+        } catch (LmsServiceException ex) {
+            System.out.println("LmsServiceException # getFeedAccessType "+ex.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("Exception # getFeedAccessType "+ex.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(ex.getMessage());
+        }
+
+        return resp;
+    }
+
+
+	@Override
+	public UserResponse setFeedAccessType(int userId, int accesTypeId)
+			throws RestBusException {
+        UserResponse resp = new UserResponse();
+        
+        try {
+            
+            LoginServiceIface loginService = new LoginServiceImpl();
+            //Setting userStatus
+            loginService.setFeedAccessType(userId, accesTypeId);
+            
+            //setting success into response
+            resp.setStatus(SLMSRestConstants.status_success);
+            resp.setStatusMessage(SLMSRestConstants.message_success);                   
+
+        } catch (LmsServiceException ex) {
+            System.out.println("LmsServiceException # setFeedAccessType "+ex.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("Exception # setFeedAccessType "+ex.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(ex.getMessage());
+        }
+
+        return resp;
+    }
+
+
+	@Override
+	public UserResponse getFeedUsers(int userId) throws RestBusException {
+        UserResponse resp = new UserResponse();
+        
+        try {
+            
+            LoginServiceIface loginService = new LoginServiceImpl();
+            //Setting userStatus
+            List<UserVO> userListFromDb=loginService.getFeedUsers(userId);
+            List<UserResponse> usersList = new ArrayList<UserResponse>(userListFromDb.size());
+            UserResponse temp=null;
+            for(UserVO vo:userListFromDb)
+            {
+            	temp = new UserResponse();
+            	temp.setUserId(String.valueOf(vo.getUserId()));
+            	temp.setUserName(vo.getUserName());
+            	temp.setProfileImage(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+vo.getProfileImage());            	
+            	temp.setIsFollowUpAllowed(vo.getIsFollowUpAllowed());
+            	usersList.add(temp);
+            }
+            
+            resp.setUsersList(usersList);
+            
+            //setting success into response
+            resp.setStatus(SLMSRestConstants.status_success);
+            resp.setStatusMessage(SLMSRestConstants.message_success);                   
+
+        } catch (LmsServiceException ex) {
+            System.out.println("LmsServiceException # getFeedUsers "+ex.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(ex.getMessage());
+        } catch (Exception ex) {
+            System.out.println("Exception # getFeedUsers "+ex.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(ex.getMessage());
+        }
+
+        return resp;
+    }
+
+
+	@Override
+	public UserResponse updateFollowersStatus(UserRequest req)
+			throws RestBusException {
+	       UserResponse resp = new UserResponse();
+	        
+	        try {
+	            
+	            LoginServiceIface loginService = new LoginServiceImpl();
+	            //Setting userStatus
+	            
+	            List<UserVO> usersList = new ArrayList<UserVO>();
+	            UserVO vo=null;
+	            for(UserRequest usr:req.getUsersList())
+	            {
+
+	            	vo=new UserVO();
+	            	vo.setUserId(Integer.parseInt(usr.getUserid()));
+	            	vo.setIsFollowUpAllowed(usr.getIsFollowUpAllowed());
+	            	usersList.add(vo);
+
+	            }
+	            
+	            loginService.updateFollowersStatus(Integer.parseInt(req.getUserid()), usersList);
+	            
+	            //setting success into response
+	            resp.setStatus(SLMSRestConstants.status_success);
+	            resp.setStatusMessage(SLMSRestConstants.message_success);                   
+
+	        } catch (LmsServiceException ex) {
+	            System.out.println("LmsServiceException # updateFollowersStatus "+ex.getMessage());
+	            resp.setStatus(SLMSRestConstants.status_failure);
+	            resp.setStatusMessage(SLMSRestConstants.message_failure);
+	            resp.setErrorMessage(ex.getMessage());
+	        } catch (Exception ex) {
+	            System.out.println("Exception # updateFollowersStatus "+ex.getMessage());
+	            resp.setStatus(SLMSRestConstants.status_failure);
+	            resp.setStatusMessage(SLMSRestConstants.message_failure);
+	            resp.setErrorMessage(ex.getMessage());
+	        }
+
+	        return resp;
+	    }
+
+	
     
 }//End of class

@@ -4,6 +4,8 @@ public class AssignmentTypMstrVO {
 	
 	private int assignmentTypID;
 	private String assignmentTypNm;
+	
+	
 	public int getAssignmentTypID() {
 		return assignmentTypID;
 	}

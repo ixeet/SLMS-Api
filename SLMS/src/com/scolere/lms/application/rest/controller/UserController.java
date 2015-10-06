@@ -16,6 +16,9 @@ import com.scolere.lms.common.utils.StringEncrypter;
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataParam;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -427,6 +430,83 @@ public class UserController {
     
     
     @GET
+    @Path("/getFeedAccessType/userId/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)      
+    public UserResponse getFeedAccessType(@PathParam("userId") int userId) {
+        System.out.println("Start getFeedAccessType >> userId = "+userId);
+        UserResponse userResponse = null;
+        
+        try {
+            userResponse = restService.getFeedAccessType(userId);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # getFeedAccessType - "+ex);
+        }
+        
+        System.out.println("<< End getFeedAccessType # "+userResponse); 
+        return userResponse;
+    }    
+    
+    
+    @GET
+    @Path("/setFeedAccessType/userId/{userId}/accessTypeId/{accessTypeId}")
+    @Produces(MediaType.APPLICATION_JSON)      
+    public UserResponse setFeedAccessType(@PathParam("userId") int userId,@PathParam("accessTypeId") int accessTypeId) {
+        System.out.println("Start setFeedAccessType >> userId = "+userId);
+        UserResponse userResponse = null;
+        
+        try {
+            userResponse = restService.setFeedAccessType(userId,accessTypeId);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # setFeedAccessType - "+ex);
+        }
+        
+        System.out.println("<< End setFeedAccessType # "+userResponse); 
+        return userResponse;
+    } 
+    
+    
+    
+    @GET
+    @Path("/getFeedUsers/userId/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)      
+    public UserResponse getFeedUsers(@PathParam("userId") int userId) {
+        System.out.println("Start getFeedUsers >> userId = "+userId);
+        UserResponse userResponse = null;
+        
+        try {
+            userResponse = restService.getFeedUsers(userId);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # getFeedUsers - "+ex);
+        }
+        
+        System.out.println("<< End getFeedUsers # "+userResponse); 
+        return userResponse;
+    } 
+    
+    
+    
+    @POST
+    @Path("/updateFollowersStatus")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)      
+    public UserResponse updateFollowersStatus(UserRequest req,@Context HttpServletRequest request) {
+        System.out.println("Start updateFollowersStatus >>"+req);
+        UserResponse userResponse = null;
+        
+        try {
+            userResponse = restService.updateFollowersStatus(req);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # updateFollowersStatus - "+ex);
+        }
+        
+        System.out.println("<< End updateFollowersStatus # "+userResponse); 
+        
+        return userResponse;
+    }        
+    
+    
+    
+    @GET
     @Path("/test")
     @Produces(MediaType.APPLICATION_JSON)     
     public UserRequest testUserReqVo()
@@ -453,8 +533,28 @@ public class UserController {
         userDetail.setAdminEmailId("admin@ixeet.com");
         userDetail.setTitle("Mr.");
         
+        List<UserRequest> userList=new ArrayList<UserRequest>();
+        UserRequest ur1=new UserRequest();
+        ur1.setUserid("1");
+        ur1.setIsFollowUpAllowed("1");
+        userList.add(ur1 );
+        
+
+        ur1.setUserid("2");
+        ur1.setIsFollowUpAllowed("0");
+        userList.add(ur1 );
+        
+        ur1.setUserid("3");
+        ur1.setIsFollowUpAllowed("0");
+        userList.add(ur1 );
+
+        userDetail.setUsersList(userList);
+        
         return userDetail;
     }
+    
+    
+    
     
     
 }//End of class

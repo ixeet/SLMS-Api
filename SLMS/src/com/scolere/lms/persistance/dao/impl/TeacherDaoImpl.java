@@ -1,5 +1,13 @@
 package com.scolere.lms.persistance.dao.impl;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.scolere.lms.application.rest.vo.response.PercentageRespTo;
 import com.scolere.lms.domain.exception.LmsDaoException;
 import com.scolere.lms.persistance.dao.iface.TeacherDao;
 import com.scolere.lms.persistance.factory.LmsDaoAbstract;
@@ -145,6 +153,90 @@ public class TeacherDaoImpl extends LmsDaoAbstract implements TeacherDao{
 		}
 	    
 	    return updateCount;
+	}
+
+
+
+	@Override
+	public List<Integer> getCoursePercentage(String userName, int schoolId,
+			int classId, int hrmId) throws LmsDaoException {
+		List<Integer> list = new ArrayList<Integer>();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+
+            StringBuffer sql = new StringBuffer("SELECT tcs.IS_COMPLETE FROM teacher_courses  tc, teacher_course_sessions tcs WHERE tc.TEACHER_ID='"+userName+"' and tcs.TEACHER_COURSE_ID=tc.TEACHER_COURSE_ID");
+            if(schoolId>0)
+            	sql.append(" AND tc.SCHOOL_ID = ").append(schoolId);
+            if(classId>0)
+            	sql.append(" AND tc.CLASS_ID = ").append(classId);
+            if(hrmId>0)
+            	sql.append(" AND tc.HRM_ID = ").append(hrmId);
+            
+            System.out.println("Generated query : "+sql);
+            
+            stmt = conn.prepareStatement(sql.toString());
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getInt(1));
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getTeacherCourses # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getTeacherCourses # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return list;
+	}
+
+
+
+	@Override
+	public List<Integer> getAssignmentPercentage(String userName, int schoolId,
+			int classId, int hrmId) throws LmsDaoException {
+		List<Integer> list = new ArrayList<Integer>();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+
+            StringBuffer sql = new StringBuffer("SELECT distinct artxn.IS_COMPLETED, artxn.STUDENT_ID, artxn.ASSIGNMENT_ID,tc.SCHOOL_ID FROM teacher_course_session_dtls tcsd INNER JOIN module_assignment_map mam ON mam.MODULE_ID=tcsd.MODULE_ID INNER JOIN assignment_resource_txn artxn ON artxn.ASSIGNMENT_ID=mam.ASSIGNMENT_ID INNER JOIN teacher_courses tc ON tc.TEACHER_ID=tcsd.TEACHER_ID INNER JOIN teacher_course_sessions tcs on tcs.COURSE_SESSION_ID=tc.TEACHER_COURSE_ID and tcsd.COURSE_SESSION_ID = tcs.COURSE_SESSION_ID WHERE tcsd.TEACHER_ID ='"+userName+"'");
+            if(schoolId>0)
+            	sql.append(" AND tc.SCHOOL_ID = ").append(schoolId);
+            if(classId>0)
+            	sql.append(" AND tc.CLASS_ID = ").append(classId);
+            if(hrmId>0)
+            	sql.append(" AND tc.HRM_ID = ").append(hrmId);
+            
+            System.out.println("Generated query : "+sql);
+            
+            stmt = conn.prepareStatement(sql.toString());
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                list.add(rs.getInt(1));
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getTeacherCourses # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getTeacherCourses # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return list;
 	}
 	
 

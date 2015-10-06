@@ -276,8 +276,55 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
 
 	@Override
 	public List<ClassMasterVo> getClassMasterVoList(int schoolId, int teacher) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		   List< ClassMasterVo> distList = new ArrayList<ClassMasterVo>();
+		  Connection conn = null;
+	        PreparedStatement stmt = null;
+	        try {
+	            conn = getConnection();
+
+	           /* String sql = "SELECT * FROM class_mstr where CLASS_ID in (SELECT CLASS_ID FROM school_cls_map where SCHOOL_ID = ?)";*/
+	            
+	            String sql = "SELECT * FROM class_mstr where CLASS_ID in (SELECT tc.CLASS_ID FROM teacher_courses tc,student_dtls td where " +
+	            		"tc.SCHOOL_ID = '"+schoolId+"' and tc.TEACHER_ID=td.EMAIL_ID and td.USER_ID='"+teacher+"')";
+	            
+	            stmt = conn.prepareStatement(sql);
+	            //stmt.setInt(1, schoolId);
+	            
+	            ResultSet rs = stmt.executeQuery();
+	            
+	            ClassMasterVo userDtls =null;
+	            while (rs.next()) {
+
+	                //3. Set db data to object
+	                userDtls = new ClassMasterVo();
+	                userDtls.setClassId(rs.getInt("CLASS_ID"));
+	                userDtls.setClassName(rs.getString("CLASS_NAME"));
+	                userDtls.setDescTxt(rs.getString("DESC_TXT"));
+	                userDtls.setMetadata(rs.getString("METEDATA"));
+	                userDtls.setDeletedFl(rs.getString("DELETED_FL"));
+	                userDtls.setDisplayNo(rs.getInt("DISPLAY_NO"));
+	                userDtls.setEnableFl(rs.getString("ENABLE_FL"));
+	                userDtls.setCreatedBy(rs.getString("CREATED_BY"));
+
+	                userDtls.setLastuserIdCd(rs.getString("LAST_USERID_CD"));
+	                userDtls.setLastUpdtTm(rs.getString("LAST_UPDT_TM"));
+
+	                //Add into list
+	                distList.add(userDtls);
+	            }
+
+	        } catch (SQLException se) {
+	            System.out.println("getClassMasterVoList(schoolId) # " + se);
+	        } catch (Exception e) {
+	            System.out.println("getClassMasterVoList(schoolId) # " + e);
+	        } finally {
+	            closeResources(conn, stmt, null);
+	        }
+	        //1 . jdbc code endd
+
+	        //4 Return as required by method
+	        return distList;
 	}
     
     

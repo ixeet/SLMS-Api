@@ -4,6 +4,8 @@
  */
 package com.scolere.lms.application.rest.vo.response;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
@@ -12,6 +14,5 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  */
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class NotificationResponse extends CommonRespTO{
-    
     
 }//End of class

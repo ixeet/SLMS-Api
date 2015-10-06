@@ -9,6 +9,7 @@ package com.scolere.lms.domain.vo.cross;
  * @author dell
  */
 public class AssignmentVO {
+    private int assignmentResourceTxnId;
     private int assignmentId;
     private String assignmentName;
     private String assignmentDesc;
@@ -23,10 +24,28 @@ public class AssignmentVO {
     private String courseName;
     private int moduleId;
     private String moduleName;
-        
+    //schoolid    
+    private int schoolId;
     
     
-    public int getAssignmentSubmittedById() {
+    
+    public int getSchoolId() {
+		return schoolId;
+	}
+
+	public void setSchoolId(int schoolId) {
+		this.schoolId = schoolId;
+	}
+
+	public int getAssignmentResourceTxnId() {
+		return assignmentResourceTxnId;
+	}
+
+	public void setAssignmentResourceTxnId(int assignmentResourceTxnId) {
+		this.assignmentResourceTxnId = assignmentResourceTxnId;
+	}
+
+	public int getAssignmentSubmittedById() {
 		return assignmentSubmittedById;
 	}
 

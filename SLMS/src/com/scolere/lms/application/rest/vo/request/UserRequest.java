@@ -4,6 +4,8 @@
  */
 package com.scolere.lms.application.rest.vo.request;
 
+import java.util.List;
+
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
@@ -30,9 +32,30 @@ public class UserRequest {
     private String userPassword="";
     private String userNewPassword="";
     private String title;
-
+    private String isFollowUpAllowed;
+    //User access var
+    private List<UserRequest> usersList;
     
-    public String getTitle() {
+    
+
+
+	public String getIsFollowUpAllowed() {
+		return isFollowUpAllowed;
+	}
+
+	public void setIsFollowUpAllowed(String isFollowUpAllowed) {
+		this.isFollowUpAllowed = isFollowUpAllowed;
+	}
+
+	public List<UserRequest> getUsersList() {
+		return usersList;
+	}
+
+	public void setUsersList(List<UserRequest> usersList) {
+		this.usersList = usersList;
+	}
+
+	public String getTitle() {
         return title;
     }
 

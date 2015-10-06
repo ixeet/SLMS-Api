@@ -6,9 +6,11 @@ package com.scolere.lms.service.impl;
 
 import com.scolere.lms.domain.exception.LmsServiceException;
 import com.scolere.lms.domain.vo.ClassMasterVo;
+import com.scolere.lms.domain.vo.CourseMasterVo;
 import com.scolere.lms.domain.vo.HomeRoomMasterVo;
 import com.scolere.lms.domain.vo.LmsFeedTxnVO;
 import com.scolere.lms.domain.vo.LmsFeedTypeVO;
+import com.scolere.lms.domain.vo.ModuleMasterVo;
 import com.scolere.lms.domain.vo.SchoolMasterVo;
 import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
@@ -16,10 +18,14 @@ import com.scolere.lms.domain.vo.cross.CourseVO;
 import com.scolere.lms.domain.vo.cross.FeedVO;
 import com.scolere.lms.domain.vo.cross.ResourseVO;
 import com.scolere.lms.domain.vo.cross.UserVO;
+import com.scolere.lms.persistance.dao.iface.AssignmentDao;
 import com.scolere.lms.persistance.dao.iface.ClassMasterDao;
+import com.scolere.lms.persistance.dao.iface.CourseMasterDao;
 import com.scolere.lms.persistance.dao.iface.FeedDao;
 import com.scolere.lms.persistance.dao.iface.HomeRoomMasterDao;
+import com.scolere.lms.persistance.dao.iface.ModuleMasterDao;
 import com.scolere.lms.persistance.dao.iface.SchoolMasterDao;
+
 import com.scolere.lms.persistance.factory.LmsDaoFactory;
 import com.scolere.lms.service.iface.CommonServiceIface;
 import java.util.HashMap;
@@ -216,7 +222,7 @@ public class CommonServiceImpl implements CommonServiceIface{
 
         try {
             ClassMasterDao dao = (ClassMasterDao) LmsDaoFactory.getDAO(ClassMasterDao.class);
-           // list = dao.getClassMasterVoList(clsId);
+            list = dao.getClassMasterVoList(clsId,teacherId);
         } catch (Exception ex) {
             System.out.println("LmsServiceException # getClassVoList = "+ex);
             throw new LmsServiceException(ex.getMessage());
@@ -302,6 +308,20 @@ public class CommonServiceImpl implements CommonServiceIface{
         try {
             HomeRoomMasterDao dao = (HomeRoomMasterDao) LmsDaoFactory.getDAO(HomeRoomMasterDao.class);
             list = dao.getHomeRoomMasterVoList(clsId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getHomeRoomMasterVoList(clsId) = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return list;
+    }
+
+    @Override
+    public List<HomeRoomMasterVo> getHomeRoomMasterVoList(int clsId, int schoolId,int teacherId ) throws LmsServiceException {
+        List<HomeRoomMasterVo> list =null; 
+        try {
+            HomeRoomMasterDao dao = (HomeRoomMasterDao) LmsDaoFactory.getDAO(HomeRoomMasterDao.class);
+            list = dao.getHomeRoomMasterVoList(clsId, schoolId,teacherId);
         } catch (Exception ex) {
             System.out.println("LmsServiceException # getHomeRoomMasterVoList(clsId) = "+ex);
             throw new LmsServiceException(ex.getMessage());
@@ -763,6 +783,62 @@ public class CommonServiceImpl implements CommonServiceIface{
         return count;
 	}
 
-    
+
+
+	public List<ModuleMasterVo> getModuleVoList(int courseId,
+			int homeRoomMstrId, int classId, int schoolId, int teacherId)
+			throws LmsServiceException {
+		 List<ModuleMasterVo>  list=null;
+	        try {
+	            
+	        	ModuleMasterDao dao = (ModuleMasterDao) LmsDaoFactory.getDAO(ModuleMasterDao.class);
+	            list = dao.getModuleList(courseId,homeRoomMstrId,classId,schoolId,teacherId);
+	                    
+	        } catch (Exception ex) {
+	            System.out.println("LmsServiceException # getModuleVoList = "+ex);
+	            throw new LmsServiceException(ex.getMessage());
+	        }
+	        
+	        return list;
+	}
+
+	@Override
+	public List<com.scolere.lms.domain.vo.AssignmentVO> getAssignVoList(
+			int moduleMasterId, int homeRoomMstrId, int classId, int schoolId,
+			int teacherId) throws LmsServiceException {
+		 List<com.scolere.lms.domain.vo.AssignmentVO>  list=null;
+	        try {
+	            
+	        	AssignmentDao dao = (AssignmentDao) LmsDaoFactory.getDAO(AssignmentDao.class);
+	            list = dao.getAssignmentList(moduleMasterId, homeRoomMstrId , classId , schoolId , teacherId);
+	                    
+	        } catch (Exception ex) {
+	            System.out.println("LmsServiceException # getModuleVoList = "+ex);
+	            throw new LmsServiceException(ex.getMessage());
+	        }
+	        
+	        return list;
+	}
+
+	 
+ 
+	@Override
+	public List<CourseMasterVo> getCourseVoList(int homeRoomMstrId,
+			int classId, int schoolId, int teacherId)
+			throws LmsServiceException {
+		 List<CourseMasterVo>  list=null;
+	        try {
+	            
+	        	CourseMasterDao dao = (CourseMasterDao) LmsDaoFactory.getDAO(CourseMasterDao.class);
+	            list = dao.getCourseList(homeRoomMstrId,classId, schoolId, teacherId);
+	                    
+	        } catch (Exception ex) {
+	            System.out.println("LmsServiceException # getCourseVoList = "+ex);
+	            throw new LmsServiceException(ex.getMessage());
+	        }
+	        
+	        return list;
+	}
+ 
     
 }//End of class
