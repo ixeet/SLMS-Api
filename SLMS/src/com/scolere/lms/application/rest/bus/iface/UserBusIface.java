@@ -22,6 +22,7 @@ public interface UserBusIface {
     UserResponse getByFBId(String fbId) throws RestBusException;
     UserResponse forgetPwd(String userId) throws RestBusException;
     UserResponse changePwd(UserRequest req) throws RestBusException;
+    //UserResponse loginApproval(int userId) throws RestBusException;
     
     //Feed users 
     UserResponse getFeedAccessType(int userId) throws RestBusException;

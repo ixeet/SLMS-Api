@@ -13,7 +13,9 @@ import com.scolere.lms.application.rest.vo.response.KeyValTypeVO;
  * @author dell
  */
 public class CourseRequest {
-    
+
+    private int moduleSessionId;
+
     private String userName;
     private int userId;
     private int commentId;
@@ -29,6 +31,7 @@ public class CourseRequest {
     
     private List<KeyValTypeVO> ratingParameters;
     private int assignmentResourceTxnId;
+    
     
     
     
@@ -152,6 +155,14 @@ public class CourseRequest {
 				+ courseId + ", moduleId=" + moduleId + ", resourceId="
 				+ resourceId + ", searchText=" + searchText + ", commentText="
 				+ commentText + ", status=" + status + "]";
+	}
+
+	public int getModuleSessionId() {
+		return moduleSessionId;
+	}
+
+	public void setModuleSessionId(int moduleSessionId) {
+		this.moduleSessionId = moduleSessionId;
 	}
 
         

@@ -7,12 +7,17 @@ package com.scolere.lms.application.rest.bus.iface;
 import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.application.rest.vo.request.CommonRequest;
 import com.scolere.lms.application.rest.vo.response.CommonResponse;
+import com.scolere.lms.application.rest.vo.response.SearchResponse;
 
 /**
  *
  * @author dell
  */
+
 public interface CommonBusIface {
+	SearchResponse search(CommonRequest req) throws RestBusException;
+	SearchResponse search(CommonRequest req,String category) throws RestBusException;
+	
     CommonResponse getSchoolMasterData(int teacherId) throws RestBusException;
     CommonResponse getSchoolMasterData() throws RestBusException;
     CommonResponse getFeedsList(CommonRequest req) throws RestBusException;
@@ -24,7 +29,7 @@ public interface CommonBusIface {
     CommonResponse getModuleDetail(int feedId) throws RestBusException;
     CommonResponse getResourseDetail(int feedId) throws RestBusException;
     CommonResponse getUserDetail(int userId) throws RestBusException;
-    CommonResponse getAssignmentDetail(int assignmentId) throws RestBusException;
+    CommonResponse getAssignmentDetail(int feedId) throws RestBusException;
     
     CommonResponse commentOnFeed(CommonRequest req) throws RestBusException;
     CommonResponse likeOnFeed(String userName,int feedId) throws RestBusException;

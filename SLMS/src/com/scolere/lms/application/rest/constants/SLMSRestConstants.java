@@ -5,11 +5,14 @@
 package com.scolere.lms.application.rest.constants;
 
 /**
- *
+ * 
  * @author dell
  */
 public class SLMSRestConstants {
     
+    public static final String FLAG_DISABLE="0";
+    public static final String FLAG_ENABLE="1";
+
     //Response Status & Message
     public static final int status_failure=1000;
     public static final String message_failure="failure";
@@ -28,6 +31,14 @@ public class SLMSRestConstants {
     public static final int status_fieldRequired=1010;
     public static final String message_fieldRequired="Incompatible input.";
     public static final String message_recordnotfound="No record found.";
+
+    public static final int status_user_need_approval=1011;
+    public static final String message_user_need_approval="Your registration request is in approval process.You will get email once approval completed.";
+    public static final int status_invalid_adminemail=1012;
+    public static final String message_invalid_adminemail="Organization contact email is not correct, please try with a correct email id or contact your Organization admin.";
+    public static final int status_not_access=1013;
+    public static final String message_not_access="Access denied.";
+    
     //Error messages
     public static final String message_pushTitleRequired="Push title is required.";
     public static final String message_pushMessageRequired="Push message is required.";
@@ -62,6 +73,7 @@ public class SLMSRestConstants {
     public static final String message_userIdRequired="User Id is required.";
     public static final String message_facebookIdRequired="Facebook Id is required.";
     public static final String message_moduelStatus_zero="Please start any associated resource,this module will started itself.";
+    public static final String message_courseStatus_all="Please complete all the modules first,this course will complted itself.";
     public static final String message_invalidStatus="Invalid status";
     
 
@@ -78,7 +90,7 @@ public class SLMSRestConstants {
     public static final String FEED_TMPLT_PARAM_MODULE="module";
     public static final String FEED_TMPLT_PARAM_HOMEROOM="homeroom";
     
-    public static final String email_from="mymazda@interrait.com";
+    public static final String email_from="system@ixeet.com";
     
     //Pagination
     public static final int pagination_offset=0;
@@ -92,6 +104,11 @@ public class SLMSRestConstants {
     public static final String DEVICE_TYPE_IPHONE="iPhone";
     public static final String DEVICE_TYPE_ANDROID="Android";
     
+    //Search Constants
+    public static final String SEARCH_CAT_USER="People";
+    public static final String SEARCH_CAT_COURSE="Course";
+    public static final String SEARCH_CAT_FEED="Update";
+    public static final String SEARCH_CAT_ASSIGNMENT="Assignment";
     
     
     

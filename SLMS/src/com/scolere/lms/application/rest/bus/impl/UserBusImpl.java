@@ -43,10 +43,14 @@ public class UserBusImpl implements UserBusIface{
     public UserResponse registration(UserRequest req) throws RestBusException {
 
         UserResponse resp = new UserResponse();
-        
+        LoginServiceIface loginService = new LoginServiceImpl();
+
         try {
+        	//Is admin email valid?
+        	if(loginService.isAdminEmailValid(Integer.parseInt(req.getSchoolId()), req.getAdminEmailId()))
+        	{
+        	 System.out.println("Valid admin email > Go ahead with saving user registration data..");
             //1)Insert into user_login with enable flag 0 
-            LoginServiceIface loginService = new LoginServiceImpl();
             UserLoginVo loginVo = loginService.getUserLoginDetail(req.getUserName());
             
             if(loginVo == null)
@@ -102,7 +106,8 @@ public class UserBusImpl implements UserBusIface{
                 
                 //Email to admin
                 Emailer emailer = new Emailer();
-                emailer.mailto(SLMSRestConstants.email_from, req.getAdminEmailId(), "Registration approval", studentVo.toString());
+                req.setUserid(String.valueOf(loginVo.getUserId()));
+                emailer.mailto(SLMSRestConstants.email_from, req.getAdminEmailId(), "Registration approval", getUserRegistrationEmailContent(req));
                 
                 //setting success into response
                 resp.setUserId(String.valueOf(loginVo.getUserId()));
@@ -121,7 +126,12 @@ public class UserBusImpl implements UserBusIface{
             resp.setStatus(SLMSRestConstants.status_userExist);
             resp.setStatusMessage(SLMSRestConstants.message_userExist);                
             }
-
+         }else{
+        	 //Admin email is not valid
+             System.out.println("invalid admin email.");
+             resp.setStatus(SLMSRestConstants.status_invalid_adminemail);
+             resp.setStatusMessage(SLMSRestConstants.message_invalid_adminemail);          	 
+         }
         } catch (LmsServiceException ex) {
             System.out.println("LmsServiceException # registration "+ex.getMessage());
             resp.setStatus(SLMSRestConstants.status_failure);
@@ -228,13 +238,23 @@ public class UserBusImpl implements UserBusIface{
             
             if(loginVo != null)
             {
-            //verify credential (userName,Password)
-                //UserVO userFromDb = loginService.getUser(req.getUserName(), req.getUserPassword());
-                UserVO userFromDb = loginService.getUser(req.getUserName(), req.getUserPassword(),loginVo.getUserTypeId());
+            	//access to teacher & student only
+            if(loginVo.getUserTypeId()==2 || loginVo.getUserTypeId()==3){
+            		System.out.println("Accessible to teacher or students only.");
+            	
+            	//verify credential (userName,Password)
+               UserVO userFromDb = loginService.getUser(req.getUserName(), req.getUserPassword(),loginVo.getUserTypeId());
                if(userFromDb !=null)
                {
                //Authenticated true
-
+               	//Verify if approved by admin or not
+               	if(loginVo.getEnableFl().equalsIgnoreCase(SLMSRestConstants.FLAG_DISABLE))
+               	{
+                       resp.setStatus(SLMSRestConstants.status_user_need_approval);
+                       resp.setStatusMessage(SLMSRestConstants.message_user_need_approval);                		
+               	}
+               	else
+               	{
                    resp.setUserId(String.valueOf(loginVo.getUserId()));
                    resp.setUserName(loginVo.getUserName());
                    resp.setUserType(String.valueOf(loginVo.getUserTypeId()));
@@ -256,12 +276,21 @@ public class UserBusImpl implements UserBusIface{
                    
                 //setting success into response
                 resp.setStatus(SLMSRestConstants.status_success);
-                resp.setStatusMessage(SLMSRestConstants.message_success);                   
+                resp.setStatusMessage(SLMSRestConstants.message_success);     
+               	}
                }else{
                //Authentication failed
                 resp.setStatus(SLMSRestConstants.status_wrongcredential);
                 resp.setStatusMessage(SLMSRestConstants.message_wrongcredential);                   
                }
+            }//access check
+            else
+            {
+            	//Not access 
+            	System.out.println("System not accessible.");
+                resp.setStatus(SLMSRestConstants.status_not_access);
+                resp.setStatusMessage(SLMSRestConstants.message_not_access);   
+            }
 
             }else{
             //userName not exist
@@ -551,7 +580,6 @@ public class UserBusImpl implements UserBusIface{
         return resp;
     }
 
-
 	@Override
 	public UserResponse getFeedUsers(int userId) throws RestBusException {
         UserResponse resp = new UserResponse();
@@ -593,7 +621,6 @@ public class UserBusImpl implements UserBusIface{
 
         return resp;
     }
-
 
 	@Override
 	public UserResponse updateFollowersStatus(UserRequest req)
@@ -637,6 +664,35 @@ public class UserBusImpl implements UserBusIface{
 
 	        return resp;
 	    }
+
+
+	
+	private String getUserRegistrationEmailContent(UserRequest vo)
+	{
+		String message="";
+		LoginServiceIface loginService = new LoginServiceImpl();
+		try{
+		UserVO user=loginService.getUserOrgDetail(vo.getUserid());
+		
+		StringBuffer temp=new StringBuffer("<font face=\"calibri\">");
+		temp.append("Hello ").append(user.getSchoolName()).append(" Admin user,").append("<br/><br/>");
+		temp.append("<b>").append(vo.getFirstName()).append(" ").append(vo.getLastName()).append("</b> has requested to access Growth Cafe.").append("<br/><br/>");
+		temp.append("<b>Registration Details:</b><br/>");
+		temp.append("Student's Name : ").append(vo.getTitle()).append(" ").append(vo.getFirstName()).append(" ").append(vo.getLastName()).append("<br/>");
+		temp.append("Email id : ").append(vo.getEmailId()).append("<br/>");
+		temp.append("Department : ").append(user.getClassName()).append("<br/>");
+		temp.append("Group : ").append(user.getHomeRoomName());
+		temp.append("<br/><br/>You can activate this user from admin section under user management.<br/><br/>");
+		temp.append("Thanks<br/>Growth Cafe");
+		temp.append("</font>");
+		message=temp.toString();
+		}catch(Exception e){
+			System.out.println("Exception # getUserRegistrationEmailContent - "+e.getMessage());
+		}
+		
+		return message;
+	}
+
 
 	
     

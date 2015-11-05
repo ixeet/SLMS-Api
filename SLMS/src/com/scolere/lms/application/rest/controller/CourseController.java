@@ -47,6 +47,7 @@ public class CourseController {
     }
     
    
+    
     @GET
     @Path("/getCourse/feedId/{feedId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -63,6 +64,26 @@ public class CourseController {
         System.out.println("<< End getCourseDetail # " + resp);
         return resp;
     }    
+    
+    
+    
+    @GET
+    @Path("/getCourse/courseId/{courseId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public CourseResponse getCourseDetailByCourseId(@PathParam("courseId") int courseId) {
+        System.out.println("Start getCourseDetail for courseId >> "+courseId);
+        CourseResponse resp = null;
+
+        try {
+            resp = restService.getCourseDetailsByCourseId(courseId);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # getCourseDetail/courseId - " + ex);
+        }
+
+        System.out.println("<< End getCourseDetail # courseId " + resp);
+        return resp;
+    }    
+    
     
     
     @POST
@@ -117,6 +138,24 @@ public class CourseController {
             System.out.println("CourseController#getUserCoursesTeacher " +ex);
         }
          System.out.println("<< getCourses/teacher "+resp);
+        return resp;
+    }  
+    
+    
+    @POST
+    @Path("/getCourseDetail/teacher")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)     
+    public CourseResponse getUserCourseDatailTeacher(CourseRequest course) {
+        System.out.println(">> getCourseDetail/teacher "+course.getUserId());
+        CourseResponse resp = new CourseResponse();    
+        
+        try {
+            resp = restService.getUserCourseDetailByTeacher(course);
+        } catch (RestBusException ex) {
+            System.out.println("CourseController#getUserCoursesTeacher " +ex);
+        }
+         System.out.println("<< getCourseDetail/teacher "+resp);
         return resp;
     }  
         
@@ -319,6 +358,25 @@ public class CourseController {
     /***ASSIGNMENT SERVICES***/    
     
     
+    @GET
+    @Path("/getAssignmentDetail/assignmentId/{assignmentId}/userId/{userId}")
+    @Produces(MediaType.APPLICATION_JSON)  
+    public CourseResponse getAssignmentDetail(@PathParam("assignmentId") int assignmentId,@PathParam("userId") int userId) {
+        System.out.println("Start getAssignmentDetail >> "+assignmentId);
+        CourseResponse resp = null;
+        
+        try {
+        	//userId | searchText
+            resp = restService.getAssignmentDetail(userId, assignmentId);
+        } catch (RestBusException ex) {
+            System.out.println("Exception # getAssignmentDetail - "+ex);
+        }
+        System.out.println("<< End getAssignmentDetail # "); 
+        
+        return resp;
+    }       
+    
+    
     /**
      * Assignment rating by teacher.
      * @param course
@@ -342,7 +400,7 @@ public class CourseController {
         } catch (RestBusException ex) {
             System.out.println("Exception # rateAssignment - "+ex);
         }
-        System.out.println("<< End rateAssignment # "+resp); 
+        System.out.println("<< End rateAssignment # "); 
         
         return resp;
     }       
@@ -361,7 +419,7 @@ public class CourseController {
         } catch (RestBusException ex) {
             System.out.println("Exception # getAssignmentsForTeacher - "+ex);
         }
-        System.out.println("<< End getAssignmentsForTeacher # "+resp); 
+        System.out.println("<< End getAssignmentsForTeacher # "); 
         
         return resp;
     }      
@@ -381,7 +439,7 @@ public class CourseController {
         } catch (RestBusException ex) {
             System.out.println("Exception # getAssignments - "+ex);
         }
-        System.out.println("<< End getAssignments # "+resp); 
+        System.out.println("<< End getAssignments # "); 
         
         return resp;
     }   

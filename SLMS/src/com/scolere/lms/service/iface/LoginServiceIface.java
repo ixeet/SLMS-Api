@@ -19,6 +19,7 @@ import java.util.List;
  */
 public interface LoginServiceIface {
 
+	boolean isAdminEmailValid(int schoolId,String adminEmail) throws LmsServiceException;
 	//Fee users start
 	int updateFollowersStatus(int userId,List<UserVO> usersList) throws LmsServiceException;
     int getFeedAccessType(int userId) throws LmsServiceException;
@@ -38,6 +39,9 @@ public interface LoginServiceIface {
     UserVO  getUser(String userName,String userPwd,int userType) throws LmsServiceException; 
     
     UserVO  getUser(String facebookId) throws LmsServiceException; 
+    
+    UserVO  getUserOrgDetail(String userId) throws LmsServiceException; 
+
     /**
      *
      * @param vo

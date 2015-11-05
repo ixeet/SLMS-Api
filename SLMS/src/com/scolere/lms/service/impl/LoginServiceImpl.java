@@ -25,6 +25,21 @@ import java.util.List;
  */
 public class LoginServiceImpl implements LoginServiceIface{
 
+	@Override
+	public UserVO getUserOrgDetail(String userId) throws LmsServiceException {
+        UserVO userVO = null;
+        try {
+            UserLoginDao dao = (UserLoginDao) LmsDaoFactory.getDAO(UserLoginDao.class);
+            userVO = dao.getUserOrgDetail(userId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getUserOrgDetail = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return userVO;
+   }
+	
+    	
    @Override
     public UserVO getUser(String userName, String userPwd) throws LmsServiceException {
         UserVO userVO = null;
@@ -476,6 +491,24 @@ public class LoginServiceImpl implements LoginServiceIface{
         }
         
         return count;
-    }    
-    
+    }
+
+
+	@Override
+	public boolean isAdminEmailValid(int schoolId, String adminEmail)
+		throws LmsServiceException 
+		{
+	        boolean status = false;
+	        try {
+	            UserLoginDao dao = (UserLoginDao) LmsDaoFactory.getDAO(UserLoginDao.class);
+	            status = dao.isAdminEmailValid(schoolId,adminEmail);
+	        } catch (Exception ex) {
+	            System.out.println("LmsServiceException # isAdminEmailValid = "+ex);
+	            throw new LmsServiceException(ex.getMessage());
+	        }
+	        
+	        return status;
+	    }
+
+
 }//end of class

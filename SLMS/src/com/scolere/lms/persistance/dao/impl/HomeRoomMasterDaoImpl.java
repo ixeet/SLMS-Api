@@ -187,7 +187,7 @@ public class HomeRoomMasterDaoImpl extends LmsDaoAbstract implements HomeRoomMas
         try {
             conn = getConnection();
 
-            String sql = "SELECT * FROM homeroom_mstr where HRM_ID in (SELECT HRM_ID FROM class_hrm_map where CLASS_ID=?)";
+            String sql = "SELECT * FROM homeroom_mstr where DELETED_FL='0' and HRM_ID in (SELECT HRM_ID FROM class_hrm_map where CLASS_ID=?)";
             stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             
@@ -237,7 +237,7 @@ public class HomeRoomMasterDaoImpl extends LmsDaoAbstract implements HomeRoomMas
         try {
             conn = getConnection();
 
-            String sql = "SELECT * FROM homeroom_mstr where HRM_ID in (SELECT HRM_ID FROM class_hrm_map where CLASS_ID=?)";
+            String sql = "SELECT * FROM homeroom_mstr where DELETED_FL='0' and HRM_ID in (SELECT HRM_ID FROM class_hrm_map where CLASS_ID=?)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, clsId);
             
@@ -283,10 +283,18 @@ public class HomeRoomMasterDaoImpl extends LmsDaoAbstract implements HomeRoomMas
         PreparedStatement stmt = null;
         try {
             conn = getConnection();
-
+            
            /* String sql = "SELECT * FROM homeroom_mstr where HRM_ID in (SELECT HRM_ID FROM class_hrm_map where CLASS_ID=?)";*/
-            String sql = "SELECT * FROM homeroom_mstr where HRM_ID in (SELECT HRM_ID FROM teacher_courses tc,student_dtls td" +
-            		" where tc.CLASS_ID = '"+clsId+"' and  tc.SCHOOL_ID = '"+schoolId+"' and tc.TEACHER_ID=td.EMAIL_ID and td.USER_ID= '"+teacherId+"')";
+            String sql = "SELECT * FROM homeroom_mstr where DELETED_FL='0' and HRM_ID in (SELECT HRM_ID FROM teacher_courses tc,student_dtls td" +
+            		" where tc.TEACHER_ID=td.EMAIL_ID and td.USER_ID= '"+teacherId+"' ";
+            if(clsId>0){
+            	sql=sql+" AND tc.CLASS_ID = '"+clsId+"' ";
+            }
+            if(schoolId>0){
+            	sql=sql+" AND tc.SCHOOL_ID = '"+schoolId+"' )";
+            }
+            
+            
             
             stmt = conn.prepareStatement(sql);
            // stmt.setInt(1, clsId);

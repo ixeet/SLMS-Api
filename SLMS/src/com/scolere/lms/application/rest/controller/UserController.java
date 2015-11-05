@@ -290,7 +290,7 @@ public class UserController {
             System.out.println("Exception # login - "+ex);
         }
         
-        System.out.println("<< End login # "+userResponse); 
+        System.out.println("<< End login # "); 
         
         return userResponse;
     }    
@@ -460,7 +460,7 @@ public class UserController {
             System.out.println("Exception # setFeedAccessType - "+ex);
         }
         
-        System.out.println("<< End setFeedAccessType # "+userResponse); 
+        System.out.println("<< End setFeedAccessType # "); 
         return userResponse;
     } 
     
@@ -479,7 +479,7 @@ public class UserController {
             System.out.println("Exception # getFeedUsers - "+ex);
         }
         
-        System.out.println("<< End getFeedUsers # "+userResponse); 
+        System.out.println("<< End getFeedUsers # "); 
         return userResponse;
     } 
     
@@ -499,7 +499,7 @@ public class UserController {
             System.out.println("Exception # updateFollowersStatus - "+ex);
         }
         
-        System.out.println("<< End updateFollowersStatus # "+userResponse); 
+        System.out.println("<< End updateFollowersStatus # "); 
         
         return userResponse;
     }        

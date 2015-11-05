@@ -33,7 +33,7 @@ public class ResourceMasterDaoImpl extends LmsDaoAbstract implements ResourseMas
         try {
             conn = getConnection();
 
-            String sql = "SELECT * FROM resourse_mstr where RESOURSE_ID=?";
+            String sql = "SELECT * FROM resourse_mstr where DELETED_FL='0' and RESOURSE_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userDtls.getResourceId());
             ResultSet rs = stmt.executeQuery();
@@ -198,7 +198,7 @@ public class ResourceMasterDaoImpl extends LmsDaoAbstract implements ResourseMas
         try {
             conn = getConnection();
 
-            String sql = "SELECT * FROM resourse_mstr ";
+            String sql = "SELECT * FROM resourse_mstr where DELETED_FL='0'";
             stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {

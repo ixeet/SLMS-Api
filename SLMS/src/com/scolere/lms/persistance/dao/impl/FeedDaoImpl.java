@@ -6,11 +6,13 @@ package com.scolere.lms.persistance.dao.impl;
 
 import com.scolere.lms.application.rest.constants.SLMSRestConstants;
 import com.scolere.lms.domain.exception.LmsDaoException;
+import com.scolere.lms.domain.vo.UserClassMapVo;
 import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
 import com.scolere.lms.domain.vo.cross.CourseVO;
 import com.scolere.lms.domain.vo.cross.FeedVO;
 import com.scolere.lms.domain.vo.cross.ResourseVO;
+import com.scolere.lms.domain.vo.cross.SearchVO;
 import com.scolere.lms.domain.vo.cross.UserVO;
 import com.scolere.lms.persistance.dao.iface.FeedDao;
 import com.scolere.lms.persistance.factory.LmsDaoAbstract;
@@ -27,6 +29,235 @@ import java.util.List;
  */
 public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
 
+	private static String tempAllowedFeedUsers=null;
+	
+	@Override
+	public List<SearchVO> getSearchList(int userId, String searchTxt,
+			int offset, int noOfRecords) throws LmsDaoException {
+		List<SearchVO> list = new ArrayList<SearchVO>();
+
+		//Search categories - People,Course,Update,Assignment
+		
+		Connection conn = null;
+		PreparedStatement cstmt = null;
+		ResultSet resultSet = null;
+
+		try {
+			conn = this.getConnection(dataSource);
+			
+			String userTyp=getQueryConcatedResult("SELECT USER_TYPE_ID FROM user_login where USER_ID="+userId+"");
+			
+			String assignmentQuery="";
+			if(userTyp.equalsIgnoreCase("3"))
+			//	assignmentQuery="SELECT 'Assignment',asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME) FROM assignment_resource_txn txn inner join assignment asgnmnt on txn.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' inner join student_dtls sdtl on sdtl.EMAIL_ID=txn.STUDENT_ID where sdtl.USER_ID=? and asgnmnt.ASSIGNMENT_NAME like ? limit ?,?";
+				assignmentQuery="SELECT 'Assignment',asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.ASSIGNMENT_DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME) FROM assignment_resource_txn asgnmnt inner join student_dtls sdtl on sdtl.EMAIL_ID=asgnmnt.STUDENT_ID where sdtl.USER_ID=? and asgnmnt.ASSIGNMENT_NAME like ? limit ?,?"; //DB_UPDT
+			else
+				assignmentQuery="SELECT 'Assignment',asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME) FROM assignment_resource_txn txn inner join assignment asgnmnt on txn.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' inner join student_dtls sdtl on sdtl.EMAIL_ID=txn.STUDENT_ID where sdtl.USER_ID in (SELECT distinct sdtl.USER_ID FROM user_cls_map ucm inner join student_dtls sdtl on sdtl.USER_ID=ucm.USER_ID inner join teacher_courses tc on tc.SCHOOL_ID=ucm.SCHOOL_ID and tc.CLASS_ID=ucm.CLASS_ID and tc.HRM_ID=ucm.HRM_ID inner join student_dtls sdtl2 on tc.TEACHER_ID=sdtl2.EMAIL_ID where sdtl2.USER_ID=?) and asgnmnt.ASSIGNMENT_NAME like ? limit ?,?";
+			
+			//Updated @ 26-10-2015 for deleted_fl
+			String query="(SELECT 'People',USER_ID,CONCAT(FNAME,' ',LNAME), PROFILE_IMG,'','' FROM student_dtls where CONCAT(FNAME,' ',LNAME) like ? limit ?,?) union (SELECT 'Course',COURSE_ID,COURSE_NAME,DESC_TXT,'','' FROM course_mstr where DELETED_FL='0' and COURSE_NAME like ? limit ?,?) union ("+assignmentQuery+")";
+			System.out.println("Query : " + query);
+			cstmt = conn.prepareStatement(query);
+			cstmt.setString(1, "%"+searchTxt+"%");
+			cstmt.setInt(2, offset);
+			cstmt.setInt(3, noOfRecords);
+			cstmt.setString(4, "%"+searchTxt+"%");
+			cstmt.setInt(5, offset);
+			cstmt.setInt(6, noOfRecords);
+			cstmt.setInt(7, userId);
+			cstmt.setString(8, "%"+searchTxt+"%");
+			cstmt.setInt(9, offset);
+			cstmt.setInt(10, noOfRecords);
+			
+			resultSet = cstmt.executeQuery();
+
+			SearchVO vo=null;
+			while (resultSet.next()) {
+				vo = new SearchVO();
+				vo.setSearchCategory(resultSet.getString(1));
+				if(vo.getSearchCategory().equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_USER))
+				{
+					vo.setUserId(resultSet.getString(2));
+					vo.setUserName(resultSet.getString(3));
+					vo.setProfileImage(resultSet.getString(4));
+					
+				}else if(vo.getSearchCategory().equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_COURSE))
+				{
+					vo.setCourseId(resultSet.getString(2));
+					vo.setCourseName(resultSet.getString(3));
+					vo.setCourseDesc(resultSet.getString(4));
+					
+				}else{
+					//Assignments
+					vo.setAssignmentId(resultSet.getInt(2));
+					vo.setAssignmentName(resultSet.getString(3));
+					vo.setAssignmentDesc(resultSet.getString(4));			
+					vo.setUserId(resultSet.getString(5));
+					vo.setUserName(resultSet.getString(6));
+				}
+				
+				list.add(vo);
+			}
+
+			System.out.println("No of Object returned : " + list.size());
+
+		} catch (Exception e) {
+			System.out.println("Error > getSearchList - " + e.getMessage());
+		} finally {
+			closeResources(conn, cstmt, resultSet);
+		}
+
+		return list;
+	}
+
+
+	@Override
+	public int getSearchRecordsCount(int userId, String searchTxt,
+			String category) throws LmsDaoException {
+		int searchRecordsCount=0;
+
+		//Search categories - People,Course,Update,Assignment
+		
+		Connection conn = null;
+		PreparedStatement cstmt = null;
+		ResultSet resultSet = null;
+
+		try {
+			conn = this.getConnection(dataSource);
+			String query=null;
+			if(category.equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_USER))
+			{
+				query="SELECT count(*) FROM student_dtls where CONCAT(FNAME,' ',LNAME) like ?";
+			}else if(category.equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_COURSE))
+			{
+				query="SELECT count(*) FROM course_mstr where  DELETED_FL='0' and COURSE_NAME like ?";
+			}else{
+				
+				String userTyp=getQueryConcatedResult("SELECT USER_TYPE_ID FROM user_login where USER_ID="+userId+"");
+
+				if(userTyp.equalsIgnoreCase("3"))
+					//query="SELECT 'Assignment',asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME) FROM assignment_resource_txn txn inner join assignment asgnmnt on txn.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' inner join student_dtls sdtl on sdtl.EMAIL_ID=txn.STUDENT_ID where sdtl.USER_ID=? and asgnmnt.ASSIGNMENT_NAME like ?";
+					query="SELECT 'Assignment',asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME) FROM assignment_resource_txn asgnmnt inner join student_dtls sdtl on sdtl.EMAIL_ID=asgnmnt.STUDENT_ID where sdtl.USER_ID=? and asgnmnt.ASSIGNMENT_NAME like ?";
+				else
+					query="SELECT 'Assignment',asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME) FROM assignment_resource_txn txn inner join assignment asgnmnt on txn.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' inner join student_dtls sdtl on sdtl.EMAIL_ID=txn.STUDENT_ID where sdtl.USER_ID in (SELECT distinct sdtl.USER_ID FROM user_cls_map ucm inner join student_dtls sdtl on sdtl.USER_ID=ucm.USER_ID inner join teacher_courses tc on tc.SCHOOL_ID=ucm.SCHOOL_ID and tc.CLASS_ID=ucm.CLASS_ID and tc.HRM_ID=ucm.HRM_ID inner join student_dtls sdtl2 on tc.TEACHER_ID=sdtl2.EMAIL_ID where sdtl2.USER_ID=?) and asgnmnt.ASSIGNMENT_NAME like ?";
+
+			}
+			
+			System.out.println("Query : " + query);
+			cstmt = conn.prepareStatement(query);
+			cstmt.setString(1, "%"+searchTxt+"%");
+			if(category.equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_ASSIGNMENT))
+			{
+			cstmt.setInt(2,userId);	
+			}
+			
+			resultSet = cstmt.executeQuery();
+
+			if (resultSet.next()) {
+				searchRecordsCount=resultSet.getInt(1);
+			}
+
+
+		} catch (Exception e) {
+			System.out.println("Error > getSearchRecordsCount#category - " + e.getMessage());
+		} finally {
+			closeResources(conn, cstmt, resultSet);
+		}
+
+		return searchRecordsCount;
+	}
+
+	
+	
+	@Override
+	public List<SearchVO> getSearchList(int userId, String searchTxt,
+			int offset, int noOfRecords,String category) throws LmsDaoException {
+		List<SearchVO> list = new ArrayList<SearchVO>();
+
+		//Search categories - People,Course,Update,Assignment
+		
+		Connection conn = null;
+		PreparedStatement cstmt = null;
+		ResultSet resultSet = null;
+
+		try {
+			conn = this.getConnection(dataSource);
+			String query=null;
+			if(category.equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_USER))
+			{
+				query="SELECT 'People',USER_ID,CONCAT(FNAME,' ',LNAME), PROFILE_IMG FROM student_dtls where CONCAT(FNAME,' ',LNAME) like ? limit ?,?";
+				cstmt = conn.prepareStatement(query);
+				cstmt.setString(1, "%"+searchTxt+"%");
+				cstmt.setInt(2, offset);
+				cstmt.setInt(3, noOfRecords);
+			}else if(category.equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_COURSE))
+			{
+				query="SELECT 'Course',COURSE_ID,COURSE_NAME,DESC_TXT FROM course_mstr where DELETED_FL='0' and COURSE_NAME like ? limit ?,?";
+				cstmt = conn.prepareStatement(query);
+				cstmt.setString(1, "%"+searchTxt+"%");
+				cstmt.setInt(2, offset);
+				cstmt.setInt(3, noOfRecords);
+			}else{
+				String userTyp=getQueryConcatedResult("SELECT USER_TYPE_ID FROM user_login where USER_ID="+userId+"");
+				
+				if(userTyp.equalsIgnoreCase("3"))
+					//query="SELECT 'Assignment',asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME) FROM assignment_resource_txn txn inner join assignment asgnmnt on txn.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' inner join student_dtls sdtl on sdtl.EMAIL_ID=txn.STUDENT_ID where sdtl.USER_ID=? and asgnmnt.ASSIGNMENT_NAME like ? limit ?,?";
+					query="SELECT 'Assignment',asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.ASSIGNMENT_DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME) FROM assignment_resource_txn asgnmnt inner join student_dtls sdtl on sdtl.EMAIL_ID=asgnmnt.STUDENT_ID where sdtl.USER_ID=? and asgnmnt.ASSIGNMENT_NAME like ? limit ?,?";
+				else
+					query="SELECT 'Assignment',asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME) FROM assignment_resource_txn txn inner join assignment asgnmnt on txn.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' inner join student_dtls sdtl on sdtl.EMAIL_ID=txn.STUDENT_ID where sdtl.USER_ID in (SELECT distinct sdtl.USER_ID FROM user_cls_map ucm inner join student_dtls sdtl on sdtl.USER_ID=ucm.USER_ID inner join teacher_courses tc on tc.SCHOOL_ID=ucm.SCHOOL_ID and tc.CLASS_ID=ucm.CLASS_ID and tc.HRM_ID=ucm.HRM_ID inner join student_dtls sdtl2 on tc.TEACHER_ID=sdtl2.EMAIL_ID where sdtl2.USER_ID=?) and asgnmnt.ASSIGNMENT_NAME like ? limit ?,?";
+				
+				//query="SELECT 'Assignment',asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME) FROM assignment_resource_txn txn inner join assignment asgnmnt on txn.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' inner join student_dtls sdtl on sdtl.EMAIL_ID=txn.STUDENT_ID where sdtl.USER_ID=? and asgnmnt.ASSIGNMENT_NAME like ? limit ?,?";
+				cstmt = conn.prepareStatement(query);
+				cstmt.setInt(1, userId);
+				cstmt.setString(2, "%"+searchTxt+"%");
+				cstmt.setInt(3, offset);
+				cstmt.setInt(4, noOfRecords);
+			}
+			System.out.println("Query : " + query);
+
+			
+			resultSet = cstmt.executeQuery();
+
+			SearchVO vo=null;
+			while (resultSet.next()) {
+				vo = new SearchVO();
+				vo.setSearchCategory(resultSet.getString(1));
+				if(vo.getSearchCategory().equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_USER))
+				{
+					vo.setUserId(resultSet.getString(2));
+					vo.setUserName(resultSet.getString(3));
+					vo.setProfileImage(resultSet.getString(4));
+					
+				}else if(vo.getSearchCategory().equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_COURSE))
+				{
+					vo.setCourseId(resultSet.getString(2));
+					vo.setCourseName(resultSet.getString(3));
+					vo.setCourseDesc(resultSet.getString(4));
+					
+				}else{
+					//Assignments
+					vo.setAssignmentId(resultSet.getInt(2));
+					vo.setAssignmentName(resultSet.getString(3));
+					vo.setAssignmentDesc(resultSet.getString(4));	
+					vo.setUserId(resultSet.getString(5));
+					vo.setUserName(resultSet.getString(6));					
+				}
+				
+				list.add(vo);
+			}
+
+			System.out.println("No of Object returned : " + list.size());
+
+		} catch (Exception e) {
+			System.out.println("Error > getSearchList#category - " + e.getMessage());
+		} finally {
+			closeResources(conn, cstmt, resultSet);
+		}
+
+		return list;
+	}
+	
+	
 
 	@Override
 	public FeedVO getFeedDetail(int userId, int feedId) throws LmsDaoException {
@@ -100,15 +331,24 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
       ResultSet rs = null;
 
       try {
-          conn = this.getConnection(dataSource);
+          List<Integer> usersListForSubmittedAssignmentOnly=getStudentTeachers(userId);
+          //usersListForSubmittedAssignmentOnly.add(userId);
           
-          String query = "SELECT lf_typ.FEED_TEMPLATE,lf_typ.TEMP_PARAM,lf_txn.*,(SELECT count(*) FROM notification_status where USER_ID=? and FEED_ID=lf_txn.FEED_ID and STATUS='1') as viewStatus FROM lms_feed_txn lf_txn inner join lms_feed_type lf_typ on lf_typ.FEED_TYPE_ID=lf_txn.FEED_TYPE_ID order by lf_txn.LAST_UPDT_TM desc LIMIT ?,?";
+          String allowedFeedUsers=getFeedUsersStr(userId);
+
+          System.out.println("People allowed for their posts : "+allowedFeedUsers);
+
+          //String query = "SELECT lf_typ.FEED_TEMPLATE,lf_typ.TEMP_PARAM,lf_txn.*,(SELECT count(*) FROM notification_status where USER_ID=? and FEED_ID=lf_txn.FEED_ID and STATUS='1') as viewStatus FROM lms_feed_txn lf_txn inner join lms_feed_type lf_typ on lf_typ.FEED_TYPE_ID=lf_txn.FEED_TYPE_ID where concat(lf_typ.FEED_TEMPLATE,' ',lf_txn.LAST_USERID_CD) like ? and lf_txn.USER_ID in ("+allowedFeedUsers+") order by lf_txn.LAST_UPDT_TM desc LIMIT ?,?";
+          //Introduce view
+          String query = "SELECT lf_typ.FEED_TEMPLATE,lf_typ.TEMP_PARAM,lf_txn.*,(SELECT count(*) FROM notification_status where USER_ID=? and FEED_ID=lf_txn.FEED_ID and STATUS='1') as viewStatus FROM lms_feed_txn lf_txn inner join lms_feed_type lf_typ on lf_typ.FEED_TYPE_ID=lf_txn.FEED_TYPE_ID where lf_txn.HRM_ID in (SELECT HRM_ID FROM user_cls_map where USER_ID="+userId+" union SELECT HRM_ID FROM teacher_courses where TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID="+userId+")) AND lf_txn.FEED_ID in (SELECT FEED_ID FROM feed_search_view where search_content like ?) and lf_txn.USER_ID in ("+allowedFeedUsers+") order by lf_txn.LAST_UPDT_TM desc LIMIT ?,?";
           System.out.println("Query : " + query);
 
+          conn = this.getConnection(dataSource);
           cstmt = conn.prepareStatement(query);
           cstmt.setInt(1, userId);
-          cstmt.setInt(2, offset);
-          cstmt.setInt(3, noOfRecords);
+          cstmt.setString(2, "%"+searchTxt+"%");
+          cstmt.setInt(3, offset);
+          cstmt.setInt(4, noOfRecords);
           
           rs = cstmt.executeQuery();
           //FEED_TEMPLATE,TEMP_PARAM,FEED_ID,FEED_TYPE_ID,REFRENCE_NM,USER_ID,COURSE_ID,RESOURCE_ID,ASSIGNMENT_ID,MODULE_ID,HRM_ID,LAST_USERID_CD, LAST_UPDT_TM,,feed_count,feed_likes,COMMENTED_BY    
@@ -135,13 +375,23 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
               else
             	  vo.setViewStatus("0");
               
-              list.add(vo);
+              //Overriding feed display setting for submitted assignment
+              if(vo.getFeedTypeID()==2)
+              {
+            	  if(usersListForSubmittedAssignmentOnly.contains(userId) || userId==vo.getUserId())
+            		  list.add(vo);
+              }
+              else
+              {
+            	  list.add(vo);
+              }
           }
 
           System.out.println("No of notifications returned : "+list.size());
 
       } catch (Exception e) {
           System.out.println("Error > getNotificationsList - "+e.getMessage());
+          throw new LmsDaoException(e.getMessage());
       } finally {
           closeResources(conn, cstmt, rs);
       }
@@ -162,8 +412,15 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
       try {
           conn = this.getConnection(dataSource);
           
+          List<Integer> usersListForSubmittedAssignmentOnly=getStudentTeachers(userId);
+         // usersListForSubmittedAssignmentOnly.add(userId);
+          
+          String allowedFeedUsers=getFeedUsersStr(userId);
+ 
+          System.out.println("People allowed for their posts : "+allowedFeedUsers);
+          
           //SELECT lf_typ.FEED_TEMPLATE,lf_typ.TEMP_PARAM,lf_txn.*,(SELECT count(*) FROM lms_feed_comments where FEED_ID=lf_txn.FEED_ID and PARENT_COMMENT_ID is null) as feed_counts,(SELECT count(*) FROM lms_feed_likes where FEED_ID=lf_txn.FEED_ID and PARENT_COMMENT_ID is null) as feed_likes,(SELECT count(*) FROM lms_feed_likes where FEED_ID=lf_txn.FEED_ID and LIKE_BY = ulogin.USER_NM)as LIKED_BY FROM lms_feed_txn lf_txn inner join lms_feed_type lf_typ on lf_typ.FEED_TYPE_ID=lf_txn.FEED_TYPE_ID inner join user_login ulogin on lf_txn.LAST_USERID_CD=ulogin.USER_NM inner join user_cls_map ucmap on ucmap.USER_ID=ulogin.USER_ID where ucmap.HRM_ID = (SELECT HRM_ID FROM user_cls_map where USER_ID=?) and ucmap.CLASS_ID = (SELECT CLASS_ID FROM user_cls_map where USER_ID=?)
-          String query = "SELECT lf_typ.FEED_TEMPLATE,lf_typ.TEMP_PARAM,lf_txn.*,(SELECT count(*) FROM lms_feed_comments where FEED_ID=lf_txn.FEED_ID and PARENT_COMMENT_ID is null) as feed_counts,(SELECT count(*) FROM lms_feed_likes where FEED_ID=lf_txn.FEED_ID and PARENT_COMMENT_ID is null) as feed_likes,(SELECT count(*) FROM lms_feed_likes where FEED_ID=lf_txn.FEED_ID and LIKE_BY = (SELECT USER_NM FROM user_login where USER_ID=?) and PARENT_COMMENT_ID is null)as LIKED_BY FROM lms_feed_txn lf_txn inner join lms_feed_type lf_typ on lf_typ.FEED_TYPE_ID=lf_txn.FEED_TYPE_ID order by lf_txn.LAST_UPDT_TM desc LIMIT ?,?";
+          String query = "SELECT lf_typ.FEED_TEMPLATE,lf_typ.TEMP_PARAM,lf_txn.*,(SELECT count(*) FROM lms_feed_comments where FEED_ID=lf_txn.FEED_ID and PARENT_COMMENT_ID is null) as feed_counts,(SELECT count(*) FROM lms_feed_likes where FEED_ID=lf_txn.FEED_ID and PARENT_COMMENT_ID is null) as feed_likes,(SELECT count(*) FROM lms_feed_likes where FEED_ID=lf_txn.FEED_ID and LIKE_BY = (SELECT USER_NM FROM user_login where USER_ID=?) and PARENT_COMMENT_ID is null)as LIKED_BY FROM lms_feed_txn lf_txn inner join lms_feed_type lf_typ on lf_typ.FEED_TYPE_ID=lf_txn.FEED_TYPE_ID where lf_txn.HRM_ID in (SELECT HRM_ID FROM user_cls_map where USER_ID="+userId+" union SELECT HRM_ID FROM teacher_courses where TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID="+userId+")) AND lf_txn.USER_ID in ("+allowedFeedUsers+") order by lf_txn.LAST_UPDT_TM desc LIMIT ?,?";
           System.out.println("Query : " + query);
 
           cstmt = conn.prepareStatement(query);
@@ -201,7 +458,17 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
               {
             	  vo.setIsLiked(false);
               }
-              list.add(vo);
+              
+              //Overriding feed display setting for submitted assignment
+              if(vo.getFeedTypeID()==2)
+              {
+            	  if(usersListForSubmittedAssignmentOnly.contains(userId) || userId==vo.getUserId())
+            		  list.add(vo);
+              }
+              else
+              {
+            	  list.add(vo);
+              }
           }
 
           System.out.println("No of feeds returned : "+list.size());
@@ -425,7 +692,8 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
 
          try {
              // USER_ID,USER_NM,USER_FB_ID,TITLE,FNAME,LNAME,EMAIL_ID,CONTACT_NO,PROFILE_IMG,SCHOOL_ID,SCHOOL_NAME,CLASS_ID,CLASS_NAME,HRM_ID,HRM_NAME    
-             String query="SELECT sdtl.USER_ID,ulogin.USER_NM,ulogin.USER_FB_ID,sdtl.TITLE,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADMIN_EMAIL_ID,sdtl.PROFILE_IMG,smstr.SCHOOL_ID,smstr.SCHOOL_NAME,cmstr.CLASS_ID,cmstr.CLASS_NAME,hmstr.HRM_ID,hmstr.HRM_NAME FROM user_login ulogin inner join student_dtls sdtl on ulogin.USER_ID= sdtl.USER_ID inner join user_cls_map ucm on sdtl.USER_ID=ucm.USER_ID inner join class_mstr cmstr on cmstr.CLASS_ID=ucm.CLASS_ID inner join school_mstr smstr on smstr.SCHOOL_ID=ucm.SCHOOL_ID inner join homeroom_mstr hmstr on hmstr.HRM_ID=ucm.HRM_ID where ulogin.USER_NM=?";
+             //updated@26-10-2015 for deleted_fl
+        	 String query="SELECT sdtl.USER_ID,ulogin.USER_NM,ulogin.USER_FB_ID,sdtl.TITLE,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADMIN_EMAIL_ID,sdtl.PROFILE_IMG,smstr.SCHOOL_ID,smstr.SCHOOL_NAME,cmstr.CLASS_ID,cmstr.CLASS_NAME,hmstr.HRM_ID,hmstr.HRM_NAME FROM user_login ulogin inner join student_dtls sdtl on ulogin.USER_ID= sdtl.USER_ID inner join user_cls_map ucm on sdtl.USER_ID=ucm.USER_ID inner join class_mstr cmstr on cmstr.CLASS_ID=ucm.CLASS_ID and cmstr.DELETED_FL='0' inner join school_mstr smstr on smstr.SCHOOL_ID=ucm.SCHOOL_ID and smstr.DELETED_FL='0' inner join homeroom_mstr hmstr on hmstr.HRM_ID=ucm.HRM_ID and hmstr.DELETED_FL='0' where ulogin.USER_NM=?";
              System.out.println("Query : " + query);
 
              conn = this.getConnection(dataSource);
@@ -472,8 +740,9 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
          ResultSet rs = null;
 
          try {
-             // USER_ID,USER_NM,USER_FB_ID,TITLE,FNAME,LNAME,EMAIL_ID,CONTACT_NO,PROFILE_IMG,SCHOOL_ID,SCHOOL_NAME,CLASS_ID,CLASS_NAME,HRM_ID,HRM_NAME    
-             String query="SELECT sdtl.USER_ID,ulogin.USER_NM,ulogin.USER_FB_ID,sdtl.TITLE,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADMIN_EMAIL_ID,sdtl.PROFILE_IMG,smstr.SCHOOL_ID,smstr.SCHOOL_NAME,cmstr.CLASS_ID,cmstr.CLASS_NAME,hmstr.HRM_ID,hmstr.HRM_NAME FROM user_login ulogin inner join student_dtls sdtl on ulogin.USER_ID= sdtl.USER_ID inner join user_cls_map ucm on sdtl.USER_ID=ucm.USER_ID inner join class_mstr cmstr on cmstr.CLASS_ID=ucm.CLASS_ID inner join school_mstr smstr on smstr.SCHOOL_ID=ucm.SCHOOL_ID inner join homeroom_mstr hmstr on hmstr.HRM_ID=ucm.HRM_ID where sdtl.USER_ID=?";
+             // USER_ID,USER_NM,USER_FB_ID,TITLE,FNAME,LNAME,EMAIL_ID,CONTACT_NO,PROFILE_IMG,SCHOOL_ID,SCHOOL_NAME,CLASS_ID,CLASS_NAME,HRM_ID,HRM_NAME
+        	 //Updated@26-10-2015 for deleted_fl
+             String query="SELECT sdtl.USER_ID,ulogin.USER_NM,ulogin.USER_FB_ID,sdtl.TITLE,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADMIN_EMAIL_ID,sdtl.PROFILE_IMG,smstr.SCHOOL_ID,smstr.SCHOOL_NAME,cmstr.CLASS_ID,cmstr.CLASS_NAME,hmstr.HRM_ID,hmstr.HRM_NAME FROM user_login ulogin inner join student_dtls sdtl on ulogin.USER_ID= sdtl.USER_ID inner join user_cls_map ucm on sdtl.USER_ID=ucm.USER_ID inner join class_mstr cmstr on cmstr.CLASS_ID=ucm.CLASS_ID and cmstr.DELETED_FL='0' inner join school_mstr smstr on smstr.SCHOOL_ID=ucm.SCHOOL_ID and smstr.DELETED_FL='0' inner join homeroom_mstr hmstr on hmstr.HRM_ID=ucm.HRM_ID and hmstr.DELETED_FL='0' where ulogin.USER_ID=?";
              System.out.println("Query : " + query);
 
              conn = this.getConnection(dataSource);
@@ -524,19 +793,19 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
              FeedVO feed = getFeedDetail(feedId);
              if(feed.getResourseId() > 0)
              {
-                query="SELECT * FROM resourse_mstr where RESOURSE_ID ="+feed.getResourseId(); 
+                query="SELECT * FROM resourse_mstr where DELETED_FL='0' and RESOURSE_ID ="+feed.getResourseId(); 
              }
              else if(feed.getAssignmentId() > 0)
              {
-                 query="SELECT * FROM resourse_mstr where RESOURSE_ID = (SELECT txn.UPLODED_RESOURCE_ID FROM assignment_resource_txn txn inner join user_login login on txn.STUDENT_ID=login.USER_NM where login.USER_ID="+feed.getUserId()+" and ASSIGNMENT_ID="+feed.getAssignmentId()+")";
+                 query="SELECT * FROM resourse_mstr where DELETED_FL='0' and RESOURSE_ID = (SELECT txn.UPLODED_RESOURCE_ID FROM assignment_resource_txn txn inner join user_login login on txn.STUDENT_ID=login.USER_NM where login.USER_ID="+feed.getUserId()+" and ASSIGNMENT_ID="+feed.getAssignmentId()+")";
              }             
              else if(feed.getModuleId() > 0)
              {
-                 query="SELECT * FROM resourse_mstr where RESOURSE_ID = (SELECT RESOURCE_ID FROM module_resource_map where MODULE_ID="+feed.getModuleId()+" order by RESOURCE_ID desc limit 1)";
+                 query="SELECT * FROM resourse_mstr where DELETED_FL='0' and RESOURSE_ID = (SELECT RESOURCE_ID FROM module_resource_map where MODULE_ID="+feed.getModuleId()+" order by RESOURCE_ID desc limit 1)";
              }
              else if(feed.getCourseId() > 0)
              {
-                 query="SELECT * FROM resourse_mstr where RESOURSE_ID = (SELECT distinct CONTENT_ID FROM teacher_courses tcourse inner join teacher_course_sessions tcs on tcs.TEACHER_COURSE_ID = tcourse.TEACHER_COURSE_ID inner join teacher_course_session_dtls tcs_dtls on tcs_dtls.COURSE_SESSION_ID=tcs.COURSE_SESSION_ID where COURSE_ID="+feed.getCourseId()+")";
+                 query="SELECT * FROM resourse_mstr where DELETED_FL='0' and RESOURSE_ID = (SELECT distinct mod_dtl.CONTENT_ID FROM teacher_courses tcourse inner join teacher_course_sessions tcs on tcs.TEACHER_COURSE_ID = tcourse.TEACHER_COURSE_ID inner join teacher_course_session_dtls tcs_dtls on tcs_dtls.COURSE_SESSION_ID=tcs.COURSE_SESSION_ID inner join teacher_module_session_dtls mod_dtl on tcs_dtls.COURSE_SESSION_DTLS_ID=mod_dtl.COURSE_SESSION_DTLS_ID where tcourse.COURSE_ID="+feed.getCourseId()+" limit 1)";
              }
              
              //Create sql query
@@ -560,6 +829,7 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
              
          } catch (Exception e) {
              System.out.println("Error > getDefaultResourseDetail - "+e.getMessage());
+             throw new LmsDaoException("Error > getDefaultResourseDetail - "+e.getMessage());
          } finally {
              closeResources(conn, cstmt, rs);
          }
@@ -577,44 +847,6 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
          */
             
          CourseVO vo = null;
-         Connection conn = null;
-         PreparedStatement cstmt = null;
-         ResultSet rs = null;
-
-         try {
-             //COURSE_ID,COURSE_NAME,COURSE_AUTHOR,AUTHOR_IMG,START_SESSION_TM,END_SESSION_TM,STATUS_TXT,COURSE_SESSION_ID
-             String query_course="SELECT tcs.COURSE_ID,cmstr.COURSE_NAME,cmstr.COURSE_AUTHOR,cmstr.AUTHOR_IMG,tcsession.START_SESSION_TM,tcsession.END_SESSION_TM,tcsession.STATUS_TXT,tcsession.COURSE_SESSION_ID  FROM teacher_courses tcs inner join teacher_course_sessions tcsession on tcs.TEACHER_COURSE_ID=tcsession.TEACHER_COURSE_ID inner join course_mstr cmstr on tcs.COURSE_ID=cmstr.COURSE_ID where tcs.COURSE_ID=?";
-             String query_modules="";
-             String query_resources="";
-
-             // Get Feed Details
-             FeedVO feed = getFeedDetail(feedId);
-             int courseId=feed.getCourseId();
-             
-             if(feed.getFeedRefName().equalsIgnoreCase(SLMSRestConstants.FEED_REF_COURSE_TXN))
-             {
-             
-             }
-             
-//             
-//             //Create sql query
-//             System.out.println("Query : " + query);
-//             conn = this.getConnection(dataSource);
-//             cstmt = conn.prepareStatement(query);
-//             rs = cstmt.executeQuery();
-//             if(rs.next())
-//             {
-//
-//                 
-//             }
-//             
-             
-             
-         } catch (Exception e) {
-             System.out.println("Error > getCourseDetail - "+e.getMessage());
-         } finally {
-             closeResources(conn, cstmt, rs);
-         }
 
          return vo;        
      }
@@ -623,8 +855,48 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
     
     @Override
     public AssignmentVO getAssignmentDetail(int feedId) throws LmsDaoException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    	AssignmentVO vo = null;
+        Connection conn = null;
+        PreparedStatement cstmt = null;
+        ResultSet resultSet = null;
+
+        try {
+            // Get Feed Details
+            FeedVO feed = getFeedDetail(feedId);
+           
+            if(feed != null)
+            {
+			String query="SELECT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.ASSIGNMENT_DESC_TXT,sdtl.USER_ID,CONCAT(sdtl.FNAME,' ',sdtl.LNAME),asgnmnt.IS_COMPLETED,TIMESTAMP(asgnmnt.DUE_ON) FROM assignment_resource_txn asgnmnt inner join student_dtls sdtl on sdtl.EMAIL_ID=asgnmnt.STUDENT_ID where sdtl.USER_ID=? and asgnmnt.ASSIGNMENT_ID = ?";
+            System.out.println("Query : " + query);
+            
+            conn = this.getConnection(dataSource);
+            cstmt = conn.prepareStatement(query);
+			cstmt.setInt(1, feed.getUserId());
+			cstmt.setInt(2, feed.getAssignmentId());
+			
+            resultSet = cstmt.executeQuery();
+            if(resultSet.next())
+            {
+            	vo=new AssignmentVO();
+				vo.setAssignmentId(resultSet.getInt(1));
+				vo.setAssignmentName(resultSet.getString(2));
+				vo.setAssignmentDesc(resultSet.getString(3));	
+				vo.setAssignmentSubmittedById(resultSet.getInt(4));
+				vo.setAssignmentSubmittedBy(resultSet.getString(5));	   
+				vo.setAssignmentStatus(resultSet.getString(6));
+				vo.setAssignmentDueDate(resultSet.getString(7));
+            }
+            
+            }
+        } catch (Exception e) {
+            System.out.println("Error > getAssignmentDetail - "+e.getMessage());
+        } finally {
+            closeResources(conn, cstmt, resultSet);
+        }
+
+        return vo;        
     }
+    
     
     
     @Override
@@ -795,14 +1067,50 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
 
         return status;
     }
-
+    
 
 	@Override
+	public long getTotalFeedsCount(int userId,String searchText) throws LmsDaoException {
+		
+        String allowedFeedUsers=getFeedUsersStr(userId);
+
+        System.out.println("People allowed for their posts : "+allowedFeedUsers);
+        
+       // String query = "SELECT count(*) FROM lms_feed_txn lf_txn inner join lms_feed_type lf_typ on lf_typ.FEED_TYPE_ID=lf_txn.FEED_TYPE_ID where concat(lf_typ.FEED_TEMPLATE,' ',lf_txn.LAST_USERID_CD) like '%"+searchText+"%' and lf_txn.USER_ID in ("+allowedFeedUsers+")";-
+        String query = "SELECT count(*) FROM lms_feed_txn lf_txn inner join lms_feed_type lf_typ on lf_typ.FEED_TYPE_ID=lf_txn.FEED_TYPE_ID where lf_txn.HRM_ID in (SELECT HRM_ID FROM user_cls_map where USER_ID="+userId+" union SELECT HRM_ID FROM teacher_courses where TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID="+userId+")) AND lf_txn.FEED_ID in (SELECT FEED_ID FROM feed_search_view where search_content like '%"+searchText+"%') and lf_txn.USER_ID in ("+allowedFeedUsers+")";
+        
+        System.out.println("Query : " + query);
+
+        long count=Long.parseLong(getQueryConcatedResult(query));
+        
+        return count;
+	}
+	
+    
+	@Override
 	public long getTotalFeedsCount(int userId) throws LmsDaoException {
-        String query="SELECT count(*) FROM lms_feed_txn";
+        String allowedFeedUsers=getFeedUsersStr(userId);
+
+        System.out.println("People allowed for their posts : "+allowedFeedUsers);
+        
+        String query = "SELECT count(*) FROM lms_feed_txn lf_txn inner join lms_feed_type lf_typ on lf_typ.FEED_TYPE_ID=lf_txn.FEED_TYPE_ID where lf_txn.HRM_ID in (SELECT HRM_ID FROM user_cls_map where USER_ID="+userId+" union SELECT HRM_ID FROM teacher_courses where TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID="+userId+")) AND lf_txn.USER_ID in ("+allowedFeedUsers+")";
+        System.out.println("Query : " + query);
+
         long count=Long.parseLong(getQueryConcatedResult(query));
         return count;
 	}
+	
+	@Override
+	public int getUnreadFeedsCount(int userId) throws LmsDaoException {
+        String allowedFeedUsers=getFeedUsersStr(userId);
+
+        System.out.println("People allowed for their posts : "+allowedFeedUsers);
+        
+        String query = "SELECT count(FEED_ID) FROM lms_feed_txn where USER_ID in("+allowedFeedUsers+") and LAST_UPDT_TM > (select if((SELECT LAST_UPDATED_TM FROM notification_status where USER_ID="+userId+" order by LAST_UPDATED_TM desc limit 1)!='',(SELECT LAST_UPDATED_TM FROM notification_status where USER_ID="+userId+" order by LAST_UPDATED_TM desc limit 1),'2000-01-01'))";
+        System.out.println("Query : " + query);
+        int count=Integer.parseInt(getQueryConcatedResult(query));
+        return count;
+	}	
 
 	@Override
 	public long getTotalCommentsCount(int feedId)
@@ -855,5 +1163,166 @@ public class FeedDaoImpl extends LmsDaoAbstract implements FeedDao{
         return count;
 	}
 
+	
+	private String getFeedUsersStr(int userId) throws LmsDaoException {
+		String userStr="0";
+		
+		if(tempAllowedFeedUsers != null && tempAllowedFeedUsers.contains(String.valueOf(userId)))
+		{
+			userStr=tempAllowedFeedUsers;
+			System.out.println("Return cached feed users.");
+		}else{
+			userStr=getFeedUsersStrOld(userId);			
+		}
+		
+		return userStr;
+	}	
+	
+	
+	private String getFeedUsersStrOld(int userId) throws LmsDaoException {
+		
+		String userStr="0";
+		Connection conn = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
+		try {
+			
+			//Get access_for_id : 1)school 2)district 3)class 4)home group + userId
+			String accessTypFor=getQueryConcatedResult("SELECT concat(access_type_id,'~',access_for_id) FROM feed_user_access where user_id="+userId);
+			if(accessTypFor != null && !accessTypFor.isEmpty())
+			{
+			String[] accessTypForArr=accessTypFor.split("~");	
+			
+			//Start getting userslist as per access type
+			int accessType=Integer.parseInt(accessTypForArr[0]);
+			UserClassMapVo userCls=getUserClassMapDetail(userId);
+			
+			StringBuffer userListQry=new StringBuffer("SELECT USER_ID FROM user_cls_map where SCHOOL_ID=").append(userCls.getSchoolId()); //Default school
+			if(accessType==1) //School
+			{
+				//No Action
+			}else if(accessType==2) //district
+			{
+				//Not yet implemented
+			}else if(accessType==3) //class
+			{
+				userListQry.append(" AND CLASS_ID=").append(userCls.getClassId());
+				
+			}else if(accessType==4) //Home room
+			{
+				userListQry.append(" AND CLASS_ID=").append(userCls.getClassId());
+				userListQry.append(" AND HRM_ID=").append(userCls.getHomeRoomMasterId());
+			}
+
+			//Appending query for homeroom teachers
+			userListQry.append(" union ");
+			userListQry.append("SELECT USER_ID FROM user_login where USER_NM=(SELECT TEACHER_ID FROM teacher_courses where SCHOOL_ID=").append(userCls.getSchoolId());
+			userListQry.append(" and CLASS_ID=").append(userCls.getClassId()).append(" and HRM_ID=").append(userCls.getHomeRoomMasterId()).append("  limit 1)");
+			
+			conn = getConnection();
+			String sql = "SELECT USER_ID,(SELECT count(*) FROM feed_restricted_users where userId=? and restricted_userId=USER_ID) as usr_count FROM student_dtls where USER_ID in ("+userListQry+")";
+			System.out.println("Query created for feed users - "+sql);
+			
+			stmt = conn.prepareStatement(sql);
+			stmt.setInt(1, userId);
+			
+			rs = stmt.executeQuery();
+			
+			StringBuffer temp=new StringBuffer();
+			while (rs.next()) {
+				int count=rs.getInt(2);
+				if(count==0)
+				{
+					temp.append(",").append(rs.getString(1));//user.setIsFollowUpAllowed("0");
+				}
+			}
+			userStr=temp.substring(1);
+		  }
+		} catch (SQLException se) {
+			System.out.println("getFeedUsersStr # " + se);
+		} catch (Exception e) {
+			System.out.println("getFeedUsersStr # " + e);
+		} finally {
+			closeResources(conn, stmt, rs);
+		}
+
+		tempAllowedFeedUsers=userStr;
+		
+		return userStr;
+	}
+	
+	
+    private UserClassMapVo getUserClassMapDetail(int userId) throws LmsDaoException {
+        System.out.println("Inside getUserClassDetail(?) >>");
+        //Create object to return
+        UserClassMapVo userDtls = new UserClassMapVo();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+
+            String sql = "SELECT USER_ID,SCHOOL_ID,CLASS_ID,HRM_ID FROM user_cls_map where USER_ID=? union SELECT ulogin.USER_ID,tcs.SCHOOL_ID,tcs.CLASS_ID,tcs.HRM_ID FROM teacher_courses tcs inner join user_login ulogin on tcs.TEACHER_ID=ulogin.USER_NM where ulogin.USER_ID=? limit 1";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, userId);
+            
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                userDtls.setUserId(rs.getInt(1));
+                userDtls.setSchoolId(rs.getInt(2));
+                userDtls.setClassId(rs.getInt(3));
+                userDtls.setHomeRoomMasterId(rs.getInt(4));
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getUserClassMapDetail # " + se);
+        } catch (Exception e) {
+            System.out.println("getUserClassMapDetail # " + e);
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+        
+        return userDtls;
+    }
+	
+    
+    /**
+     * This method returns teacher list of student to whom student can submit assignment.
+     * 
+     * @param userId
+     * @return
+     */
+    private List<Integer> getStudentTeachers(int userId)
+    {
+    	List<Integer> teachers=new ArrayList<Integer>();
+    	
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = getConnection();
+
+            String sql = "SELECT distinct (SELECT USER_ID FROM user_login where USER_NM=tcs.TEACHER_ID)as USER_ID FROM teacher_courses tcs inner join user_cls_map ucm on ucm.SCHOOL_ID=tcs.SCHOOL_ID and ucm.CLASS_ID=tcs.CLASS_ID and ucm.HRM_ID=tcs.HRM_ID where ucm.USER_ID=? union SELECT USER_ID FROM user_login where USER_TYPE_ID=2 and USER_ID=?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, userId);
+            
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next()) {
+            	teachers.add(rs.getInt(1));
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getTeacherIdToAssignmentSubmitted # " + se);
+        } catch (Exception e) {
+            System.out.println("getTeacherIdToAssignmentSubmitted # " + e);
+        } finally {
+            closeResources(conn, stmt, null);
+        }
+        
+    	return teachers;
+    }
+    
+    
     
 }//End of class

@@ -4,22 +4,27 @@
  */
 package com.scolere.lms.persistance.dao.iface;
 
+import java.util.List;
+
 import com.scolere.lms.domain.exception.LmsDaoException;
-import com.scolere.lms.domain.vo.CourseMasterVo;
 import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
 import com.scolere.lms.domain.vo.cross.CourseVO;
 import com.scolere.lms.domain.vo.cross.FeedVO;
 import com.scolere.lms.domain.vo.cross.ResourseVO;
+import com.scolere.lms.domain.vo.cross.SearchVO;
 import com.scolere.lms.domain.vo.cross.UserVO;
-import java.util.List;
 
 /**
  *
  * @author dell
  */
 public interface FeedDao {
-    
+	
+	List<SearchVO> getSearchList(int userId,String searchTxt,int offset,int noOfRecords) throws LmsDaoException;
+	List<SearchVO> getSearchList(int userId,String searchTxt,int offset,int noOfRecords,String category) throws LmsDaoException;
+	int getSearchRecordsCount(int userId,String searchTxt,String category) throws LmsDaoException;
+	
 	long updateNotificationStatus(int userId,int feedId,String status) throws LmsDaoException;
 	FeedVO getFeedDetail(int userId,int feedId) throws LmsDaoException;
     List<FeedVO> getNotificationsList(int userId,String searchTxt,int offset,int noOfRecords) throws LmsDaoException;
@@ -36,7 +41,9 @@ public interface FeedDao {
     ResourseVO getResourseDetail(int feedId) throws LmsDaoException;
     AssignmentVO getAssignmentDetail(int feedId) throws LmsDaoException;
     
+    public long getTotalFeedsCount(int userId,String searchText) throws LmsDaoException;
     public long getTotalFeedsCount(int userId) throws LmsDaoException;
+    public int getUnreadFeedsCount(int userId) throws LmsDaoException;
     public long getTotalCommentsCount(int feedId) throws LmsDaoException;
     public long getTotalCommentsCount(int feedId,int commentId) throws LmsDaoException;
     

@@ -33,7 +33,7 @@ public class CourseMasterDaoImpl extends LmsDaoAbstract implements CourseMasterD
         try {
             conn = getConnection();
 
-            String sql = "SELECT * FROM course_mstr where COURSE_ID=?";
+            String sql = "SELECT * FROM course_mstr where DELETED_FL='0' and COURSE_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userDtls.getCourseId());
             ResultSet rs = stmt.executeQuery();
@@ -254,9 +254,7 @@ public class CourseMasterDaoImpl extends LmsDaoAbstract implements CourseMasterD
         try {
             conn = getConnection();
 
-            /*String sql = "SELECT * FROM course_mstr where COURSE_ID in (SELECT CLASS_ID FROM clas_course_map where CLASS_ID in (select CLASS_ID from class_hrm_map where HRM_ID='"+homeRoomMstrId+"'))";
-           */
-            
+                 
             String sql="SELECT cm.COURSE_ID, cm.COURSE_NAME, cm.METADATA ,cm.COURSE_AUTHOR,cm.DESC_TXT,cm.COURSE_DURATION, tcs.START_SESSION_TM, " +
             		"tcs.LAST_UPDT_TM, tcs.IS_COMPLETE, tcs.END_SESSION_TM FROM course_mstr cm, teacher_course_sessions tcs, teacher_courses tc ," +
             		" student_dtls td where cm.COURSE_ID = tc.COURSE_ID and tc.TEACHER_COURSE_ID = tcs.TEACHER_COURSE_ID and" +

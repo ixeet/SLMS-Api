@@ -15,12 +15,23 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 public class CourseResponse extends CommonRespTO{
     private CourseRespTO courseDetail;
     private ModuleRespTO moduleDetail;
+    private AssignmentRespTO assignmentDetail;
     private List<CourseRespTO> courseList;
     private List<ResourceRespTO> resourceList;
     private List<AssignmentRespTO> assignmentList;
-
+    private List<SchoolRespTO> schoolList;
+   
     
-    public ModuleRespTO getModuleDetail() {
+    
+    public AssignmentRespTO getAssignmentDetail() {
+		return assignmentDetail;
+	}
+
+	public void setAssignmentDetail(AssignmentRespTO assignmentDetail) {
+		this.assignmentDetail = assignmentDetail;
+	}
+
+	public ModuleRespTO getModuleDetail() {
         return moduleDetail;
     }
 
@@ -59,6 +70,13 @@ public class CourseResponse extends CommonRespTO{
         this.assignmentList = assignmentList;
     }
 
+	public List<SchoolRespTO> getSchoolList() {
+		return schoolList;
+	}
+
+	public void setSchoolList(List<SchoolRespTO> schoolList) {
+		this.schoolList = schoolList;
+	}
 
     
     

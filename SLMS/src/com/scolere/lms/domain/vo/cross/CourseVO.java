@@ -34,12 +34,32 @@ public class CourseVO {
     
     private String moduleId;
     private String moduleName;
+    private String moduleDesc;
 
+    private String assignmentEnableStatus;
+    private int studentCount;
     private List<CourseVO> modules;
     private List<ResourseVO> resources;
 
     
-    public int getModuleSessionId() {
+    
+    public String getModuleDesc() {
+		return moduleDesc;
+	}
+
+	public void setModuleDesc(String moduleDesc) {
+		this.moduleDesc = moduleDesc;
+	}
+
+	public String getAssignmentEnableStatus() {
+		return assignmentEnableStatus;
+	}
+
+	public void setAssignmentEnableStatus(String assignmentEnableStatus) {
+		this.assignmentEnableStatus = assignmentEnableStatus;
+	}
+
+	public int getModuleSessionId() {
 		return moduleSessionId;
 	}
 
@@ -198,6 +218,14 @@ public class CourseVO {
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
     }
+
+	public int getStudentCount() {
+		return studentCount;
+	}
+
+	public void setStudentCount(int studentCount) {
+		this.studentCount = studentCount;
+	}
     
     
     
