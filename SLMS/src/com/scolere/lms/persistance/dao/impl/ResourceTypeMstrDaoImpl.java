@@ -238,7 +238,9 @@ public class ResourceTypeMstrDaoImpl extends LmsDaoAbstract implements ResourceT
                 System.out.println("Create module-resource mapping ? "+modResMapStatus);     
                 
                 //Update assignment status
-                String updateQuery = "UPDATE assignment_resource_txn SET UPLODED_RESOURCE_ID="+res_id+", UPLOADED_ON=current_date, IS_COMPLETED='2', LAST_USERID_CD='"+userName+"', LAST_UPDT_TM=utc_timestamp WHERE ASSIGNMENT_ID = "+assignmentId+" AND STUDENT_ID='"+userName+"'";
+//                String updateQuery = "UPDATE assignment_resource_txn SET UPLODED_RESOURCE_ID="+res_id+", UPLOADED_ON=current_date, IS_COMPLETED='2', LAST_USERID_CD='"+userName+"', LAST_UPDT_TM=utc_timestamp WHERE ASSIGNMENT_ID = "+assignmentId+" AND STUDENT_ID='"+userName+"'";
+                //DB_UPDT
+                String updateQuery = "UPDATE assignment_resource_txn SET UPLODED_RESOURCE_ID="+res_id+", UPLOADED_ON=current_date, IS_COMPLETED='2', LAST_USERID_CD='"+userName+"', LAST_UPDT_TM=utc_timestamp , RESOURSE_NAME='"+resourceName+"', RESOURCE_AUTHOR='"+resourceAuthor+"', RESOURCE_DURATION=0, DESC_TXT='"+resourceDesc+"', RESOURCE_TYP_ID=1, METADATA='"+resourceDesc+"', RESOURCE_URL='"+url+"', AUTHOR_IMG='"+authorImgUrl+"', THUMB_IMG='"+thumbUrl+"', DELETED_FL='0' WHERE ASSIGNMENT_ID = "+assignmentId+" AND STUDENT_ID='"+userName+"'";
                 boolean updateStatus = deleteOrUpdateByQuery(updateQuery);
                 System.out.println("Uploaded assignment status updated ? "+updateStatus);               
                 

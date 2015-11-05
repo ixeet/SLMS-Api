@@ -482,12 +482,11 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             conn = getConnection();
 
             /**
-             * Student Courses - > user_login + user_cls_map + clas_course_map 
-             * SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN clas_course_map cc_map ON cc_map.CLASS_ID=ucmap.CLASS_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID INNER JOIN user_login ulogin ON ulogin.USER_ID=ucmap.USER_ID where ulogin.USER_NM = ? AND cmstr.METADATA like ?
+             * Student Courses - > user_login + user_cls_map + hrm_course_map 
+             * SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN hrm_course_map cc_map ON cc_map.HRM_ID=ucmap.HRM_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID INNER JOIN user_login ulogin ON ulogin.USER_ID=ucmap.USER_ID where ulogin.USER_NM = ? AND cmstr.METADATA like ?
              */
-            
-            //String sql = "SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_login ulogin INNER JOIN user_course_map ucmap ON ulogin.USER_ID=ucmap.USER_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=ucmap.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= ucmap.COURSE_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where ulogin.USER_NM = ? AND cmstr.METADATA like ?";
-            String sql = "SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN clas_course_map cc_map ON cc_map.CLASS_ID=ucmap.CLASS_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID INNER JOIN user_login ulogin ON ulogin.USER_ID=ucmap.USER_ID where ulogin.USER_NM = ? AND cmstr.METADATA like ?";
+            //Updated@26-10-2015 for delete_fl
+            String sql = "SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN hrm_course_map cc_map ON cc_map.HRM_ID=ucmap.HRM_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID and cmstr.DELETED_FL='0' INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID INNER JOIN user_login ulogin ON ulogin.USER_ID=ucmap.USER_ID where ulogin.USER_NM = ? AND cmstr.METADATA like ?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, userName);
             stmt.setString(2, "%"+searchText+"%");
@@ -530,12 +529,14 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             conn = getConnection();
 
             /**
-             * Student Courses - > user_cls_map + clas_course_map 
+             * Student Courses - > user_cls_map + hrm_course_map 
              * 
-             * Query = SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN clas_course_map cc_map ON cc_map.CLASS_ID=ucmap.CLASS_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where cmstr.COURSE_ID = ?
+             * Query = SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN hrm_course_map cc_map ON cc_map.HRM_ID=ucmap.HRM_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where cmstr.COURSE_ID = ?
              */
-            
-            String sql = "SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN clas_course_map cc_map ON cc_map.CLASS_ID=ucmap.CLASS_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where cmstr.COURSE_ID = ?";
+            //updated on 26-10-2015 foe deleted_fl
+//            String sql = "SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN hrm_course_map cc_map ON cc_map.HRM_ID=ucmap.HRM_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID and cmstr.DELETED_FL='0' INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where cmstr.COURSE_ID = ?";
+            //DB_UPDT
+            String sql = "SELECT tc_sess.COURSE_ID,tc_sess.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM teacher_course_sessions tc_sess where tc_sess.COURSE_ID = ? limit 1";
             
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, courseID);
@@ -574,7 +575,10 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         try {
             conn = getConnection();
 
-            StringBuffer sql = new StringBuffer("SELECT distinct cmstr.COURSE_ID,cmstr.COURSE_NAME,cmstr.COURSE_AUTHOR,cmstr.AUTHOR_IMG,tc_sess.START_SESSION_TM,tc_sess.END_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID,tcourse.SCHOOL_ID,smstr.SCHOOL_NAME,tcourse.CLASS_ID,clsmstr.CLASS_NAME,tcourse.HRM_ID,hmstr.HRM_NAME FROM teacher_courses tcourse INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tm_sess ON tm_sess.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN student_dtls teacher ON teacher.EMAIL_ID=tcourse.TEACHER_ID LEFT JOIN course_mstr cmstr ON  tcourse.COURSE_ID= cmstr.COURSE_ID LEFT JOIN school_mstr smstr on smstr.SCHOOL_ID=tcourse.SCHOOL_ID LEFT JOIN class_mstr clsmstr on clsmstr.CLASS_ID=tcourse.CLASS_ID LEFT JOIN homeroom_mstr hmstr on hmstr.HRM_ID=tcourse.HRM_ID where teacher.USER_ID =").append(userId);
+            //Updated@26-10-2015 For deleted_flag
+           // StringBuffer sql = new StringBuffer("SELECT distinct cmstr.COURSE_ID,cmstr.COURSE_NAME,cmstr.COURSE_AUTHOR,cmstr.AUTHOR_IMG,tc_sess.START_SESSION_TM,tc_sess.END_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID,tcourse.SCHOOL_ID,smstr.SCHOOL_NAME,tcourse.CLASS_ID,clsmstr.CLASS_NAME,tcourse.HRM_ID,hmstr.HRM_NAME FROM teacher_courses tcourse INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tm_sess ON tm_sess.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN student_dtls teacher ON teacher.EMAIL_ID=tcourse.TEACHER_ID INNER JOIN school_mstr smstr on smstr.SCHOOL_ID=tcourse.SCHOOL_ID and smstr.DELETED_FL='0' INNER JOIN course_mstr cmstr ON  tcourse.COURSE_ID= cmstr.COURSE_ID and cmstr.DELETED_FL='0' INNER JOIN class_mstr clsmstr on clsmstr.CLASS_ID=tcourse.CLASS_ID and clsmstr.DELETED_FL='0' INNER JOIN homeroom_mstr hmstr on hmstr.HRM_ID=tcourse.HRM_ID and hmstr.DELETED_FL='0' where teacher.USER_ID =").append(userId);
+           //DB_UPDT 
+            StringBuffer sql = new StringBuffer("SELECT distinct tc_sess.COURSE_ID,tc_sess.COURSE_NAME,tc_sess.COURSE_AUTHOR,tc_sess.AUTHOR_IMG,tc_sess.START_SESSION_TM,tc_sess.END_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID,tcourse.SCHOOL_ID,smstr.SCHOOL_NAME,tcourse.CLASS_ID,clsmstr.CLASS_NAME,tcourse.HRM_ID,hmstr.HRM_NAME FROM teacher_courses tcourse INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tm_sess ON tm_sess.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN student_dtls teacher ON teacher.EMAIL_ID=tcourse.TEACHER_ID INNER JOIN school_mstr smstr on smstr.SCHOOL_ID=tcourse.SCHOOL_ID INNER JOIN class_mstr clsmstr on clsmstr.CLASS_ID=tcourse.CLASS_ID INNER JOIN homeroom_mstr hmstr on hmstr.HRM_ID=tcourse.HRM_ID where teacher.USER_ID =").append(userId);
             if(courseId>0)
             	sql.append(" AND tcourse.COURSE_ID = ").append(courseId);
             if(schoolId>0)
@@ -636,7 +640,10 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         try {
             conn = getConnection();
 
-            StringBuffer sql = new StringBuffer("SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,cmstr.COURSE_AUTHOR,cmstr.AUTHOR_IMG,tc_sess.START_SESSION_TM,tc_sess.END_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID,tcourse.SCHOOL_ID,smstr.SCHOOL_NAME,tcourse.CLASS_ID,clsmstr.CLASS_NAME,tcourse.HRM_ID,hmstr.HRM_NAME FROM teacher_courses tcourse INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID INNER JOIN student_dtls teacher ON teacher.EMAIL_ID=tcourse.TEACHER_ID LEFT JOIN course_mstr cmstr ON  tcourse.COURSE_ID= cmstr.COURSE_ID LEFT JOIN school_mstr smstr on smstr.SCHOOL_ID=tcourse.SCHOOL_ID LEFT JOIN class_mstr clsmstr on clsmstr.CLASS_ID=tcourse.CLASS_ID LEFT JOIN homeroom_mstr hmstr on hmstr.HRM_ID=tcourse.HRM_ID where teacher.USER_ID =").append(userId);
+            //updated @ 26-10-2015 for deleted_fl
+//            StringBuffer sql = new StringBuffer("SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,cmstr.COURSE_AUTHOR,cmstr.AUTHOR_IMG,tc_sess.START_SESSION_TM,tc_sess.END_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID,tcourse.SCHOOL_ID,smstr.SCHOOL_NAME,tcourse.CLASS_ID,clsmstr.CLASS_NAME,tcourse.HRM_ID,hmstr.HRM_NAME,(SELECT count(*) FROM user_cls_map where SCHOOL_ID=tcourse.SCHOOL_ID and CLASS_ID=tcourse.CLASS_ID and HRM_ID=tcourse.HRM_ID) as student_count FROM teacher_courses tcourse INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID INNER JOIN student_dtls teacher ON teacher.EMAIL_ID=tcourse.TEACHER_ID INNER JOIN course_mstr cmstr ON  tcourse.COURSE_ID= cmstr.COURSE_ID and cmstr.DELETED_FL='0' INNER JOIN school_mstr smstr on smstr.SCHOOL_ID=tcourse.SCHOOL_ID and smstr.DELETED_FL='0' INNER JOIN class_mstr clsmstr on clsmstr.CLASS_ID=tcourse.CLASS_ID and clsmstr.DELETED_FL='0' INNER JOIN homeroom_mstr hmstr on hmstr.HRM_ID=tcourse.HRM_ID and hmstr.DELETED_FL='0' where teacher.USER_ID =").append(userId);
+  //DB_UPDT
+            StringBuffer sql = new StringBuffer("SELECT tc_sess.COURSE_ID,tc_sess.COURSE_NAME,tc_sess.COURSE_AUTHOR,tc_sess.AUTHOR_IMG,tc_sess.START_SESSION_TM,tc_sess.END_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID,tcourse.SCHOOL_ID,smstr.SCHOOL_NAME,tcourse.CLASS_ID,clsmstr.CLASS_NAME,tcourse.HRM_ID,hmstr.HRM_NAME,(SELECT count(*) FROM user_cls_map where SCHOOL_ID=tcourse.SCHOOL_ID and CLASS_ID=tcourse.CLASS_ID and HRM_ID=tcourse.HRM_ID) as student_count FROM teacher_courses tcourse INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID INNER JOIN student_dtls teacher ON teacher.EMAIL_ID=tcourse.TEACHER_ID INNER JOIN school_mstr smstr on smstr.SCHOOL_ID=tcourse.SCHOOL_ID and smstr.DELETED_FL='0' INNER JOIN class_mstr clsmstr on clsmstr.CLASS_ID=tcourse.CLASS_ID and clsmstr.DELETED_FL='0' INNER JOIN homeroom_mstr hmstr on hmstr.HRM_ID=tcourse.HRM_ID and hmstr.DELETED_FL='0' where teacher.USER_ID =").append(userId);
             if(courseId>0)
             	sql.append(" AND tcourse.COURSE_ID = ").append(courseId);
             if(schoolId>0)
@@ -666,7 +673,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
                 vo.setClasseName(rs.getString(12));
                 vo.setHrmId(rs.getInt(13));
                 vo.setHrmName(rs.getString(14));
-                
+                vo.setStudentCount(rs.getInt(15));
                 list.add(vo);
             }
 
@@ -696,13 +703,15 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             conn = getConnection();
 
             /**
-             * Student Courses - > user_cls_map + clas_course_map 
+             * Student Courses - > user_cls_map + hrm_course_map 
              * 
-             * Query = SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN clas_course_map cc_map ON cc_map.CLASS_ID=ucmap.CLASS_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where ucmap.USER_ID = ? AND cmstr.METADATA like ?
+             * Query = SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,cmstr.COURSE_AUTHOR,cmstr.AUTHOR_IMG,tc_sess.START_SESSION_TM,tc_sess.END_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN hrm_course_map cc_map ON cc_map.HRM_ID=ucmap.HRM_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where ucmap.USER_ID = ? AND cmstr.METADATA like ?
              */
             
-            //String sql = "SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,tc_sess.START_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_login ulogin INNER JOIN user_course_map ucmap ON ulogin.USER_ID=ucmap.USER_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=ucmap.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= ucmap.COURSE_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where ulogin.USER_ID = ? AND cmstr.METADATA like ?";
-            String sql = "SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,cmstr.COURSE_AUTHOR,cmstr.AUTHOR_IMG,tc_sess.START_SESSION_TM,tc_sess.END_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN clas_course_map cc_map ON cc_map.CLASS_ID=ucmap.CLASS_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where ucmap.USER_ID = ? AND cmstr.METADATA like ?";
+//            String sql = "SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,cmstr.COURSE_AUTHOR,cmstr.AUTHOR_IMG,tc_sess.START_SESSION_TM,tc_sess.END_SESSION_TM,tc_sess.IS_COMPLETE,tc_sess.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN hrm_course_map cc_map ON cc_map.HRM_ID=ucmap.HRM_ID INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID=cc_map.COURSE_ID and cmstr.DELETED_FL='0' INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID AND tcourse.SCHOOL_ID=ucmap.SCHOOL_ID AND tcourse.HRM_ID=ucmap.HRM_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where ucmap.USER_ID = ? AND cmstr.METADATA like ?";
+            //DB_UPDT
+            String sql = "SELECT cmstr.COURSE_ID,cmstr.COURSE_NAME,cmstr.COURSE_AUTHOR,cmstr.AUTHOR_IMG,cmstr.START_SESSION_TM,cmstr.END_SESSION_TM,cmstr.IS_COMPLETE,cmstr.COURSE_SESSION_ID FROM user_cls_map ucmap INNER JOIN hrm_course_map cc_map ON cc_map.HRM_ID=ucmap.HRM_ID INNER JOIN teacher_courses tcourse ON tcourse.COURSE_ID= cc_map.COURSE_ID AND tcourse.CLASS_ID=ucmap.CLASS_ID AND tcourse.SCHOOL_ID=ucmap.SCHOOL_ID AND tcourse.HRM_ID=ucmap.HRM_ID INNER JOIN teacher_course_sessions cmstr ON cmstr.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID where ucmap.USER_ID = ? AND cmstr.METADATA like ?";
+            System.out.println("query : "+sql);
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);
             stmt.setString(2, "%"+searchText+"%");
@@ -748,7 +757,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         try {
             conn = getConnection();
 
-            String sql = "SELECT modul.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,(SELECT COURSE_ID FROM course_module_map where MODULE_ID=modul.MODULE_ID limit 1) as course_id FROM module_mstr modul INNER JOIN teacher_course_session_dtls tcs_dtl ON modul.MODULE_ID=tcs_dtl.MODULE_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tcs_dtl.MODULE_ID = ?";
+            String sql = "SELECT modul.MODULE_ID,modul.MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,(SELECT COURSE_ID FROM course_module_map where MODULE_ID=modul.MODULE_ID limit 1) as course_id FROM module_mstr modul INNER JOIN teacher_course_session_dtls tcs_dtl ON modul.MODULE_ID=tcs_dtl.MODULE_ID and modul.DELETED_FL='0' INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tcs_dtl.MODULE_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, moduleId);
             
@@ -789,7 +798,9 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         try {
             conn = getConnection();
 
-            String sql = "SELECT modul.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.END_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,tcs_dtl.COURSE_SESSION_DTLS_ID FROM module_mstr modul INNER JOIN teacher_course_session_dtls tcs_dtl ON modul.MODULE_ID=tcs_dtl.MODULE_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tc_sess.COURSE_SESSION_ID = ?";
+           // String sql = "SELECT modul.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.END_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,tcs_dtl.COURSE_SESSION_DTLS_ID FROM module_mstr modul INNER JOIN teacher_course_session_dtls tcs_dtl ON modul.MODULE_ID=tcs_dtl.MODULE_ID and modul.DELETED_FL='0' INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tc_sess.COURSE_SESSION_ID = ?";
+            //DB_UPDT
+            String sql = "SELECT tcs_dtl.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.END_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,tcs_dtl.COURSE_SESSION_DTLS_ID FROM teacher_course_session_dtls tcs_dtl INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tc_sess.COURSE_SESSION_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, courseSessionId);
             
@@ -802,7 +813,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
                 vo.setStartedOn(rs.getString(3));
                 vo.setCompletedOn(rs.getString(4));
                 vo.setCompletedStatus(rs.getString(5));
-                vo.setCompletedPercentStatus(String.valueOf(rs.getInt(6)*100));
+                vo.setCompletedPercentStatus(String.valueOf(Math.round(rs.getDouble(6)*100)));
                 vo.setModuleSessionId(rs.getInt(7)); //Teacher module session id
                 
                 list.add(vo);
@@ -832,7 +843,13 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         try {
             conn = getConnection();
 
-            String sql = "SELECT modul.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.END_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,tcs_dtl.COURSE_SESSION_DTLS_ID FROM module_mstr modul RIGHT JOIN teacher_course_session_dtls tcs_dtl ON modul.MODULE_ID=tcs_dtl.MODULE_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tc_sess.COURSE_SESSION_ID = ?";
+           // String sql = "SELECT modul.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.END_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,tcs_dtl.COURSE_SESSION_DTLS_ID FROM module_mstr modul RIGHT JOIN teacher_course_session_dtls tcs_dtl ON modul.MODULE_ID=tcs_dtl.MODULE_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tc_sess.COURSE_SESSION_ID = ?";
+            
+            //Added modules assignment enable status
+            //updated for delet_fl
+            //String sql = "SELECT modul.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.END_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,tcs_dtl.COURSE_SESSION_DTLS_ID,(SELECT astxn.ENABLE_FL FROM teacher_course_session_dtls tcm inner join module_assignment_map mam on mam.MODULE_ID=tcm.MODULE_ID inner join assignment_resource_txn astxn on astxn.ASSIGNMENT_ID=mam.ASSIGNMENT_ID where tcm.COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID limit 1) as enableStatus,modul.DESC_TXT FROM module_mstr modul RIGHT JOIN teacher_course_session_dtls tcs_dtl ON modul.MODULE_ID=tcs_dtl.MODULE_ID and modul.DELETED_FL='0' INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tc_sess.COURSE_SESSION_ID = ?";
+            //DB_UPDT
+            String sql = "SELECT tcs_dtl.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.END_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,tcs_dtl.COURSE_SESSION_DTLS_ID,(SELECT astxn.ENABLE_FL FROM teacher_course_session_dtls tcm inner join module_assignment_map mam on mam.MODULE_ID=tcm.MODULE_ID inner join assignment_resource_txn astxn on astxn.ASSIGNMENT_ID=mam.ASSIGNMENT_ID where tcm.COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID limit 1) as enableStatus,tcs_dtl.DESC_TXT FROM teacher_course_session_dtls tcs_dtl INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tc_sess.COURSE_SESSION_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, courseSessionId);
             
@@ -847,6 +864,14 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
                 vo.setCompletedStatus(rs.getString(5));
                 vo.setCompletedPercentStatus(String.valueOf(rs.getInt(6)*100));
                 vo.setModuleSessionId(rs.getInt(7)); //teacher Module session id
+                String enableStatus=(rs.getString(8)!=null && !rs.getString(8).isEmpty())?rs.getString(8):"0";
+                //module assignment enable status
+                if(enableStatus.equals("1"))
+                	vo.setAssignmentEnableStatus("1");
+                else
+                	vo.setAssignmentEnableStatus("0");
+                
+                vo.setModuleDesc(rs.getString(9)); //module desc
                 
                 list.add(vo);
             }
@@ -875,7 +900,10 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         try {
             conn = getConnection();
 
-            String sql = "SELECT modul.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.END_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,tcs_dtl.COURSE_SESSION_DTLS_ID FROM module_mstr modul RIGHT JOIN teacher_course_session_dtls tcs_dtl ON modul.MODULE_ID=tcs_dtl.MODULE_ID INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tc_sess.COURSE_SESSION_ID = ? AND modul.MODULE_ID=? ";
+            //deleted_fl applied
+           // String sql = "SELECT modul.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.END_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,tcs_dtl.COURSE_SESSION_DTLS_ID FROM module_mstr modul RIGHT JOIN teacher_course_session_dtls tcs_dtl ON modul.MODULE_ID=tcs_dtl.MODULE_ID and modul.DELETED_FL='0' INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tc_sess.COURSE_SESSION_ID = ? AND modul.MODULE_ID=? ";
+           //DB_UPDT 
+            String sql = "SELECT tcs_dtl.MODULE_ID,MODULE_NAME,tcs_dtl.START_SESSION_TM,tcs_dtl.END_SESSION_TM,tcs_dtl.IS_COMPLETED,(SELECT count(*) FROM teacher_module_session_dtls where IS_COMPLETED='1' and COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID)/(SELECT count(*) FROM teacher_module_session_dtls where COURSE_SESSION_DTLS_ID=tcs_dtl.COURSE_SESSION_DTLS_ID) as completedPercent,tcs_dtl.COURSE_SESSION_DTLS_ID FROM teacher_course_session_dtls tcs_dtl INNER JOIN teacher_course_sessions tc_sess ON tc_sess.COURSE_SESSION_ID=tcs_dtl.COURSE_SESSION_ID WHERE tc_sess.COURSE_SESSION_ID = ? AND tcs_dtl.MODULE_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, courseSessionId);
             stmt.setInt(2, moduleId);
@@ -921,9 +949,9 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             conn = getConnection();
             
             /**
-             * SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID INNER JOIN clas_course_map ccm on ccm.CLASS_ID=ucm.CLASS_ID AND tc.COURSE_ID=ccm.COURSE_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID AND tc_sess_dtl.MODULE_ID=mrm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE tc_sess_dtl.MODULE_ID=?
+             * 
              */
-            String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as commentCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as resourceCount FROM resourse_mstr rc_mstr, module_resource_map mrm, teacher_course_session_dtls tc_sess_dtl Where rc_mstr.RESOURSE_ID = mrm.RESOURCE_ID and tc_sess_dtl.MODULE_ID=mrm.MODULE_ID and mrm.MODULE_ID=?";
+            String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as commentCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as resourceCount FROM resourse_mstr rc_mstr, module_resource_map mrm, teacher_course_session_dtls tc_sess_dtl Where rc_mstr.DELETED_FL='0' and rc_mstr.RESOURSE_ID = mrm.RESOURCE_ID and tc_sess_dtl.MODULE_ID=mrm.MODULE_ID and mrm.MODULE_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1,moduleId);
             
@@ -965,7 +993,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
 
     
     @Override
-    public List<ResourseVO> getStudentResources(int userId, int courseId, int moduleId, String searchText) throws LmsDaoException {
+    public List<ResourseVO> getStudentResources(int userId, int courseId, int moduleId, String searchText,int moduleSessionId) throws LmsDaoException {
         List<ResourseVO> list = new ArrayList<ResourseVO>();
 
         Connection conn = null;
@@ -975,15 +1003,32 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             conn = getConnection();
             
             /**
-             * SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID INNER JOIN clas_course_map ccm on ccm.CLASS_ID=ucm.CLASS_ID AND tc.COURSE_ID=ccm.COURSE_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID AND tc_sess_dtl.MODULE_ID=mrm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE ucm.USER_ID =? AND ccm.COURSE_ID = ? AND tc_sess_dtl.MODULE_ID=? AND rc_mstr.METADATA like ?
+             * SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as commentCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as resourceCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null and LIKE_BY=(SELECT USER_NM FROM user_login where USER_ID=2)) AS isliked FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN teacher_module_session_dtls tc_mod_dtl ON tc_mod_dtl.COURSE_SESSION_DTLS_ID=tc_sess_dtl.COURSE_SESSION_DTLS_ID LEFT JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=tc_mod_dtl.CONTENT_ID and rc_mstr.DELETED_FL='0' WHERE tc_sess_dtl.COURSE_SESSION_DTLS_ID=1  AND rc_mstr.METADATA like ?
              */
-            String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as commentCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as resourceCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null and LIKE_BY=(SELECT USER_NM FROM user_login where USER_ID=?)) AS isliked FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN teacher_module_session_dtls tc_mod_dtl ON tc_mod_dtl.COURSE_SESSION_DTLS_ID=tc_sess_dtl.COURSE_SESSION_DTLS_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID AND ucm.HRM_ID=tc.HRM_ID LEFT JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=tc_mod_dtl.CONTENT_ID WHERE ucm.USER_ID =? AND tc.COURSE_ID =? AND tc_sess_dtl.MODULE_ID=? AND rc_mstr.METADATA like ?";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1,userId);
-            stmt.setInt(2,userId);
-            stmt.setInt(3,courseId);
-            stmt.setInt(4,moduleId);
-            stmt.setString(5,"%"+searchText+"%");
+            String sql=null;
+            if(moduleSessionId>0) //Teacher specific
+            {
+               // sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as commentCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as resourceCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null and LIKE_BY=(SELECT USER_NM FROM user_login where USER_ID=?)) AS isliked FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN teacher_module_session_dtls tc_mod_dtl ON tc_mod_dtl.COURSE_SESSION_DTLS_ID=tc_sess_dtl.COURSE_SESSION_DTLS_ID LEFT JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=tc_mod_dtl.CONTENT_ID and rc_mstr.DELETED_FL='0' WHERE tc_sess_dtl.COURSE_SESSION_DTLS_ID=?  AND rc_mstr.METADATA like ?";
+               //DB_UPDT 
+            	sql = "SELECT tc_mod_dtl.CONTENT_ID,tc_mod_dtl.RESOURSE_NAME,tc_mod_dtl.DESC_TXT,tc_mod_dtl.RESOURCE_AUTHOR,tc_mod_dtl.THUMB_IMG,tc_mod_dtl.RESOURCE_URL,tc_mod_dtl.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=tc_mod_dtl.CONTENT_ID and PARENT_COMMENT_ID is null) as commentCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=tc_mod_dtl.CONTENT_ID and PARENT_COMMENT_ID is null) as resourceCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=tc_mod_dtl.CONTENT_ID and PARENT_COMMENT_ID is null and LIKE_BY=(SELECT USER_NM FROM user_login where USER_ID=?)) AS isliked FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN teacher_module_session_dtls tc_mod_dtl ON tc_mod_dtl.COURSE_SESSION_DTLS_ID=tc_sess_dtl.COURSE_SESSION_DTLS_ID WHERE tc_sess_dtl.COURSE_SESSION_DTLS_ID=?  AND tc_mod_dtl.METADATA like ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1,userId);
+                stmt.setInt(2,moduleSessionId);
+                stmt.setString(3,"%"+searchText+"%");                	
+            	
+            }else{
+            	//Student specific	
+                //sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as commentCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null) as resourceCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID and PARENT_COMMENT_ID is null and LIKE_BY=(SELECT USER_NM FROM user_login where USER_ID=?)) AS isliked FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN teacher_module_session_dtls tc_mod_dtl ON tc_mod_dtl.COURSE_SESSION_DTLS_ID=tc_sess_dtl.COURSE_SESSION_DTLS_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID AND ucm.HRM_ID=tc.HRM_ID LEFT JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=tc_mod_dtl.CONTENT_ID and rc_mstr.DELETED_FL='0' WHERE ucm.USER_ID =? AND tc.COURSE_ID =? AND tc_sess_dtl.MODULE_ID=? AND rc_mstr.METADATA like ?";
+                //DB_UPDT
+            	sql = "SELECT tc_mod_dtl.CONTENT_ID,tc_mod_dtl.RESOURSE_NAME,tc_mod_dtl.DESC_TXT,tc_mod_dtl.RESOURCE_AUTHOR,tc_mod_dtl.THUMB_IMG,tc_mod_dtl.RESOURCE_URL,tc_mod_dtl.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=tc_mod_dtl.CONTENT_ID and PARENT_COMMENT_ID is null) as commentCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=tc_mod_dtl.CONTENT_ID and PARENT_COMMENT_ID is null) as resourceCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=tc_mod_dtl.CONTENT_ID and PARENT_COMMENT_ID is null and LIKE_BY=(SELECT USER_NM FROM user_login where USER_ID=?)) AS isliked FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN teacher_module_session_dtls tc_mod_dtl ON tc_mod_dtl.COURSE_SESSION_DTLS_ID=tc_sess_dtl.COURSE_SESSION_DTLS_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID AND ucm.HRM_ID=tc.HRM_ID WHERE ucm.USER_ID =? AND tc.COURSE_ID =? AND tc_sess_dtl.MODULE_ID=? AND tc_mod_dtl.METADATA like ?";
+                stmt = conn.prepareStatement(sql);
+                stmt.setInt(1,userId);
+                stmt.setInt(2,userId);
+                stmt.setInt(3,courseId);
+                stmt.setInt(4,moduleId);
+                stmt.setString(5,"%"+searchText+"%");            	
+            }
+
             
             rs = stmt.executeQuery();
             ResourseVO vo = null;
@@ -1039,9 +1084,11 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             conn = getConnection();
             
             /**
-             * SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID INNER JOIN clas_course_map ccm on ccm.CLASS_ID=ucm.CLASS_ID AND tc.COURSE_ID=ccm.COURSE_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID AND tc_sess_dtl.MODULE_ID=mrm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE ucm.USER_ID =? AND ccm.COURSE_ID = ? AND tc_sess_dtl.MODULE_ID=? AND rc_mstr.METADATA like ?
+             * SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID INNER JOIN hrm_course_map ccm on ccm.HRM_ID=ucm.HRM_ID AND tc.COURSE_ID=ccm.COURSE_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID AND tc_sess_dtl.MODULE_ID=mrm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE ccm.COURSE_ID = ? AND tc_sess_dtl.MODULE_ID=?
              */
-            String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID INNER JOIN clas_course_map ccm on ccm.CLASS_ID=ucm.CLASS_ID AND tc.COURSE_ID=ccm.COURSE_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID AND tc_sess_dtl.MODULE_ID=mrm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE ccm.COURSE_ID = ? AND tc_sess_dtl.MODULE_ID=?";
+          //  String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.RESOURSE_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.RESOURSE_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_cls_map ucm ON tc.CLASS_ID = ucm.CLASS_ID AND ucm.SCHOOL_ID=tc.SCHOOL_ID INNER JOIN hrm_course_map ccm on ccm.HRM_ID=ucm.HRM_ID AND tc.COURSE_ID=ccm.COURSE_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID AND tc_sess_dtl.MODULE_ID=mrm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID and rc_mstr.DELETED_FL='0' WHERE ccm.COURSE_ID = ? AND tc_sess_dtl.MODULE_ID=?";
+            //DB_UPDT
+            String sql = "SELECT distinct rc_mstr.CONTENT_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,tc_sess_dtl.START_SESSION_TM,tc_sess_dtl.END_SESSION_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=rc_mstr.CONTENT_ID),(SELECT count(*) FROM resource_likes where RESOURCE_ID=rc_mstr.CONTENT_ID) FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN teacher_module_session_dtls rc_mstr ON rc_mstr.COURSE_SESSION_DTLS_ID=tc_sess_dtl.COURSE_SESSION_DTLS_ID WHERE tc.COURSE_ID = ? AND tc_sess_dtl.MODULE_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1,courseId);
             stmt.setInt(2,moduleId);
@@ -1094,10 +1141,9 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             conn = getConnection();
             
             /**
-             * SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG FROM user_cls_map ucm INNER JOIN school_cls_map scm on ucm.SCHOOL_ID=scm.SCHOOL_ID and ucm.CLASS_ID=scm.CLASS_ID INNER JOIN clas_course_map ccm on ccm.CLASS_ID=scm.CLASS_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE ucm.USER_ID = ? AND cmm.COURSE_ID = ? AND cmm.MODULE_ID=? AND rc_mstr.METADATA = ?
+             * SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG FROM user_cls_map ucm INNER JOIN hrm_course_map ccm on ccm.HRM_ID=ucm.HRM_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE ucm.USER_ID = ? AND cmm.COURSE_ID = ? AND cmm.MODULE_ID=? AND rc_mstr.METADATA like ?
              */
-           // String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG FROM teacher_courses tc INNER JOIN teacher_course_sessions tc_sess ON tc.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID INNER JOIN teacher_course_session_dtls tc_sess_dtl ON tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID INNER JOIN user_course_map ucm ON ucm.COURSE_ID = tc.COURSE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=tc_sess_dtl.CONTENT_ID WHERE ucm.USER_ID = ? AND ucm.COURSE_ID = ? AND tc_sess_dtl.MODULE_ID=? AND rc_mstr.METADATA like ?";
-            String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG FROM user_cls_map ucm INNER JOIN school_cls_map scm on ucm.SCHOOL_ID=scm.SCHOOL_ID and ucm.CLASS_ID=scm.CLASS_ID INNER JOIN clas_course_map ccm on ccm.CLASS_ID=scm.CLASS_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID WHERE ucm.USER_ID = ? AND cmm.COURSE_ID = ? AND cmm.MODULE_ID=? AND rc_mstr.METADATA like ?";
+            String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG FROM user_cls_map ucm INNER JOIN hrm_course_map ccm on ccm.HRM_ID=ucm.HRM_ID INNER JOIN course_module_map cmm on cmm.COURSE_ID=ccm.COURSE_ID INNER JOIN module_resource_map mrm on mrm.MODULE_ID=cmm.MODULE_ID INNER JOIN resourse_mstr rc_mstr on rc_mstr.RESOURSE_ID=mrm.RESOURCE_ID and rc_mstr.DELETED_FL='0' WHERE ucm.USER_ID = ? AND cmm.COURSE_ID = ? AND cmm.MODULE_ID=? AND rc_mstr.METADATA like ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1,userId);
             stmt.setString(2,courseId);
@@ -1144,7 +1190,10 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         try {
             conn = getConnection();
 
-            String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,msession.START_SESSION_TM,msession.END_SESSION_TM,msession.IS_COMPLETED,msession.MODULE_SESSION_DTLS_ID FROM resourse_mstr rc_mstr RIGHT JOIN teacher_module_session_dtls msession on msession.CONTENT_ID=rc_mstr.RESOURSE_ID where msession.COURSE_SESSION_DTLS_ID = ?";
+           // String sql = "SELECT rc_mstr.RESOURSE_ID,rc_mstr.RESOURSE_NAME,rc_mstr.DESC_TXT,rc_mstr.RESOURCE_AUTHOR,rc_mstr.THUMB_IMG,rc_mstr.RESOURCE_URL,rc_mstr.AUTHOR_IMG,msession.START_SESSION_TM,msession.END_SESSION_TM,msession.IS_COMPLETED,msession.MODULE_SESSION_DTLS_ID FROM resourse_mstr rc_mstr RIGHT JOIN teacher_module_session_dtls msession on msession.CONTENT_ID=rc_mstr.RESOURSE_ID and rc_mstr.DELETED_FL='0' where msession.COURSE_SESSION_DTLS_ID = ?";
+           //DB_UPDT 
+            String sql = "SELECT msession.CONTENT_ID,msession.RESOURSE_NAME,msession.DESC_TXT,msession.RESOURCE_AUTHOR,msession.THUMB_IMG,msession.RESOURCE_URL,msession.AUTHOR_IMG,msession.START_SESSION_TM,msession.END_SESSION_TM,msession.IS_COMPLETED,msession.MODULE_SESSION_DTLS_ID FROM teacher_module_session_dtls msession where msession.COURSE_SESSION_DTLS_ID = ?";
+            
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1,moduleSessionId);
             
@@ -1194,7 +1243,8 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
              /**
               *SELECT RESOURCE_COMMENT_ID,COMMENT_TXT,PARENT_COMMENT_ID,COMMENTED_BY,LAST_UPDT_TM FROM resource_comments where RESOURCE _ID=? 
               */
-             String sql="SELECT temp.RESOURCE_COMMENT_ID,temp.COMMENT_TXT,temp.PARENT_COMMENT_ID,CONCAT(stdl.FNAME,' ',stdl.LNAME)AS USERNAME,stdl.USER_ID,stdl.PROFILE_IMG,temp.LAST_UPDT_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=temp.RESOURCE_ID and PARENT_COMMENT_ID=temp.RESOURCE_COMMENT_ID) as commentCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=temp.RESOURCE_ID and PARENT_COMMENT_ID=temp.RESOURCE_COMMENT_ID) as likeCount,(SELECT COUNT(*) FROM resource_likes INNER JOIN user_login WHERE RESOURCE_ID=temp.RESOURCE_ID and PARENT_COMMENT_ID=temp.RESOURCE_COMMENT_ID AND LIKE_BY=(SELECT USER_NM FROM user_login where USER_ID=?)) AS isliked FROM resource_comments temp INNER JOIN student_dtls stdl  ON temp.COMMENTED_BY=stdl.EMAIL_ID where temp.PARENT_COMMENT_ID=? order by temp.LAST_UPDT_TM desc";             stmt = conn.prepareStatement(sql);
+             String sql="SELECT temp.RESOURCE_COMMENT_ID,temp.COMMENT_TXT,temp.PARENT_COMMENT_ID,CONCAT(stdl.FNAME,' ',stdl.LNAME)AS USERNAME,stdl.USER_ID,stdl.PROFILE_IMG,temp.LAST_UPDT_TM,(SELECT count(*) FROM resource_comments where RESOURCE_ID=temp.RESOURCE_ID and PARENT_COMMENT_ID=temp.RESOURCE_COMMENT_ID) as commentCount,(SELECT count(*) FROM resource_likes where RESOURCE_ID=temp.RESOURCE_ID and PARENT_COMMENT_ID=temp.RESOURCE_COMMENT_ID) as likeCount,(SELECT COUNT(*) FROM resource_likes INNER JOIN user_login WHERE RESOURCE_ID=temp.RESOURCE_ID and PARENT_COMMENT_ID=temp.RESOURCE_COMMENT_ID AND LIKE_BY=(SELECT USER_NM FROM user_login where USER_ID=?)) AS isliked FROM resource_comments temp INNER JOIN student_dtls stdl  ON temp.COMMENTED_BY=stdl.EMAIL_ID where temp.PARENT_COMMENT_ID=? order by temp.LAST_UPDT_TM desc";             
+             stmt = conn.prepareStatement(sql);
              stmt.setInt(1, userId);
              stmt.setInt(2, commentId);
 
@@ -1402,15 +1452,78 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         PreparedStatement stmt = null;
         ResultSet rs =null;
         try {
-            conn = getConnection();
-
+        	String metadata=getQueryConcatedResult("SELECT METADATA FROM resourse_mstr where RESOURSE_ID="+resourceId);
             /**
              * SELECT RESOURSE_ID, RESOURSE_NAME, RESOURCE_AUTHOR, DESC_TXT, LAST_UPDT_TM FROM resourse_mstr where RESOURSE_ID=?
              * 
              */
-            String sql = "SELECT RESOURSE_ID, RESOURSE_NAME, RESOURCE_AUTHOR, DESC_TXT, LAST_UPDT_TM,RESOURCE_URL, AUTHOR_IMG, THUMB_IMG, CREATED_BY FROM resourse_mstr where METADATA =(SELECT METADATA FROM resourse_mstr where RESOURSE_ID=?)";
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, resourceId);
+            StringBuffer sql = new StringBuffer("SELECT RESOURSE_ID, RESOURSE_NAME, RESOURCE_AUTHOR, DESC_TXT, LAST_UPDT_TM,RESOURCE_URL, AUTHOR_IMG, THUMB_IMG, CREATED_BY FROM resourse_mstr where RESOURSE_ID !=").append(resourceId).append(" and (METADATA like '%").append(metadata).append("%' ");
+            String[] temp = metadata.split("\\s+");
+            for(String s:temp)
+            {
+            	sql.append("OR METADATA like '%").append(s).append("%'");
+            }
+            sql.append(")");
+            
+            System.out.println("Generated related resource query - "+sql);
+            
+            conn = getConnection();
+            stmt = conn.prepareStatement(sql.toString());
+            
+            rs = stmt.executeQuery();
+            ResourseVO vo = null;
+            while (rs.next()) {
+                vo = new ResourseVO();
+                vo.setResourceId(rs.getInt(1));
+                vo.setResourceName(rs.getString(2));
+                vo.setAuthorName(rs.getString(3));
+                vo.setResourceDesc(rs.getString(4));
+                vo.setUploadedDate(rs.getString(5));
+                vo.setResourceUrl(rs.getString(6));
+                vo.setAuthorImg(rs.getString(7));
+                vo.setThumbUrl(rs.getString(8));
+                vo.setUploadedBy(rs.getString(9));
+
+                list.add(vo);
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getRelatedResources # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getRelatedResources # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return list;
+    }
+    
+    @Override
+    public List<ResourseVO> getRelatedResources(int resourceId,String metadata) throws LmsDaoException {
+        List<ResourseVO> list = new ArrayList<ResourseVO>();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs =null;
+        try {
+            /**
+             * SELECT RESOURSE_ID, RESOURSE_NAME, RESOURCE_AUTHOR, DESC_TXT, LAST_UPDT_TM FROM resourse_mstr where RESOURSE_ID=?
+             * 
+             */
+            StringBuffer sql = new StringBuffer("SELECT RESOURSE_ID, RESOURSE_NAME, RESOURCE_AUTHOR, DESC_TXT, LAST_UPDT_TM,RESOURCE_URL, AUTHOR_IMG, THUMB_IMG, CREATED_BY FROM resourse_mstr where RESOURSE_ID !=").append(resourceId).append(" and (METADATA like '%").append(metadata).append("%' ");
+            String[] temp = metadata.split("\\s+");
+            for(String s:temp)
+            {
+            	sql.append("OR METADATA like '%").append(s).append("%'");
+            }
+            sql.append(")");
+            
+            System.out.println("Generated query - "+sql);
+            
+            conn = getConnection();
+            stmt = conn.prepareStatement(sql.toString());
             
             rs = stmt.executeQuery();
             ResourseVO vo = null;
@@ -1456,7 +1569,9 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
              * ASSIGNMENT_ID | ASSIGNMENT_NAME | ASSIGNMENT_STATUS | ASSIGNMENT_SUBMITTED_BY | ASSIGNMENT_SUBMITTED_DATE
              */
             
-            String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN assignment asgnmnt ON txn.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID INNER JOIN module_assignment_map mod_assignment ON mod_assignment.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID INNER JOIN user_login ulogin ON ulogin.USER_NM=txn.STUDENT_ID where mod_assignment.MODULE_ID = ? and ulogin.USER_ID=?";
+            //String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,txn.IS_COMPLETED,CONCAT(ulogin.FNAME,' ',ulogin.LNAME),TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN assignment asgnmnt ON txn.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' INNER JOIN module_assignment_map mod_assignment ON mod_assignment.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID INNER JOIN student_dtls ulogin ON ulogin.EMAIL_ID=txn.STUDENT_ID where txn.ENABLE_FL='1' and mod_assignment.MODULE_ID = ? and ulogin.USER_ID=?";
+            //DB_UPDT
+            String sql = "SELECT DISTINCT txn.ASSIGNMENT_ID,txn.ASSIGNMENT_NAME,txn.IS_COMPLETED,CONCAT(ulogin.FNAME,' ',ulogin.LNAME),TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN module_assignment_map mod_assignment ON mod_assignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID INNER JOIN student_dtls ulogin ON ulogin.EMAIL_ID=txn.STUDENT_ID where txn.ENABLE_FL='1' and mod_assignment.MODULE_ID = ? and ulogin.USER_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, moduleId);
             stmt.setInt(2, userId);
@@ -1470,6 +1585,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
                 vo.setAssignmentStatus(rs.getString(3));
                 vo.setAssignmentSubmittedBy(rs.getString(4));
                 vo.setAssignmentSubmittedDate(rs.getString(5));
+                vo.setAssignmentDueDate(rs.getString(6));
 
                 list.add(vo);
             }
@@ -1505,7 +1621,9 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             
             //String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),cmstr.COURSE_ID,cmstr.COURSE_NAME,mmstr.MODULE_ID,mmstr.MODULE_NAME,asgnmnt.DESC_TXT,TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN assignment asgnmnt ON txn.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID INNER JOIN module_assignment_map mam ON mam.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID INNER JOIN teacher_course_session_dtls tcs_dtl ON tcs_dtl.MODULE_ID = mam.MODULE_ID INNER JOIN course_module_map cmm ON cmm.MODULE_ID = tcs_dtl.MODULE_ID  INNER JOIN course_mstr cmstr ON cmstr.COURSE_ID = cmm.COURSE_ID INNEr JOIN module_mstr mmstr ON mmstr.MODULE_ID = tcs_dtl.MODULE_ID where txn.STUDENT_ID = (SELECT USER_NM FROM user_login where USER_ID=?) AND asgnmnt.DESC_TXT like ?";
             //updated on 26-08-2015
-            String sql = "SELECT DISTINCT txn.ASSIGNMENT_ID, txn.RESOURCE_TXN_ID, asignment.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),cmm.COURSE_ID,cmstr.COURSE_NAME,cmm.MODULE_ID,mmstr.MODULE_NAME,asignment.DESC_TXT,TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn inner join module_assignment_map mam on mam.ASSIGNMENT_ID=txn.ASSIGNMENT_ID inner join course_module_map cmm on cmm.MODULE_ID=mam.MODULE_ID inner join teacher_courses tcourse on tcourse.COURSE_ID=cmm.COURSE_ID inner join user_cls_map ucm on ucm.SCHOOL_ID=tcourse.SCHOOL_ID and ucm.CLASS_ID=tcourse.CLASS_ID and ucm.HRM_ID=tcourse.HRM_ID inner join user_login ulogin on ulogin.USER_NM=txn.STUDENT_ID inner join course_mstr cmstr on cmstr.COURSE_ID=cmm.COURSE_ID inner join module_mstr mmstr on mmstr.MODULE_ID=cmm.MODULE_ID inner join assignment asignment on asignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID where ulogin.USER_ID=? AND asignment.DESC_TXT like ?";
+//            String sql = "SELECT DISTINCT txn.ASSIGNMENT_ID, txn.RESOURCE_TXN_ID, asignment.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),tcourse.COURSE_ID,cmstr.COURSE_NAME,mam.MODULE_ID,mmstr.MODULE_NAME,asignment.DESC_TXT,TIMESTAMP(txn.DUE_ON) FROM teacher_courses tcourse inner join teacher_course_sessions tc_sess on tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID inner join teacher_course_session_dtls tc_sess_dtl on tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID inner join module_assignment_map mam on tc_sess_dtl.MODULE_ID=mam.MODULE_ID inner join assignment_resource_txn txn on txn.ASSIGNMENT_ID=mam.ASSIGNMENT_ID inner join user_login ulogin on ulogin.USER_NM=txn.STUDENT_ID inner join user_cls_map ucm on ucm.SCHOOL_ID=tcourse.SCHOOL_ID and ucm.CLASS_ID=tcourse.CLASS_ID and ucm.HRM_ID=tcourse.HRM_ID inner join course_mstr cmstr on cmstr.COURSE_ID=tcourse.COURSE_ID and cmstr.DELETED_FL='0' inner join module_mstr mmstr on mmstr.MODULE_ID=mam.MODULE_ID and mmstr.DELETED_FL='0' inner join assignment asignment on asignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID and asignment.DELETED_FL='0' where txn.ENABLE_FL='1' and ulogin.USER_ID=? AND asignment.DESC_TXT like ?";
+            //DB_UPDT
+            String sql = "SELECT DISTINCT txn.ASSIGNMENT_ID, txn.RESOURCE_TXN_ID, txn.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),tc_sess.COURSE_ID,tc_sess.COURSE_NAME,tc_sess_dtl.MODULE_ID,tc_sess_dtl.MODULE_NAME,txn.ASSIGNMENT_DESC_TXT,TIMESTAMP(txn.DUE_ON) FROM teacher_courses tcourse inner join teacher_course_sessions tc_sess on tc_sess.TEACHER_COURSE_ID=tcourse.TEACHER_COURSE_ID inner join teacher_course_session_dtls tc_sess_dtl on tc_sess_dtl.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID inner join module_assignment_map mam on tc_sess_dtl.MODULE_ID=mam.MODULE_ID inner join assignment_resource_txn txn on txn.ASSIGNMENT_ID=mam.ASSIGNMENT_ID inner join user_login ulogin on ulogin.USER_NM=txn.STUDENT_ID inner join user_cls_map ucm on ucm.SCHOOL_ID=tcourse.SCHOOL_ID and ucm.CLASS_ID=tcourse.CLASS_ID and ucm.HRM_ID=tcourse.HRM_ID where txn.ENABLE_FL='1' and ulogin.USER_ID=? AND txn.ASSIGNMENT_DESC_TXT like ?";
             
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);
@@ -1516,7 +1634,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             while (rs.next()) {
                 vo = new AssignmentVO();
                 vo.setAssignmentId(rs.getInt(1));
-                vo.setAssignmentResourceTxnId(2);
+                vo.setAssignmentResourceTxnId(rs.getInt(2));
                 vo.setAssignmentName(rs.getString(3));
                 vo.setAssignmentStatus(rs.getString(4));
                 vo.setAssignmentSubmittedBy(rs.getString(5));
@@ -1558,7 +1676,10 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
             conn = getConnection();
 
             //SELECT DISTINCT txn.ASSIGNMENT_ID,asignment.ASSIGNMENT_NAME,txn.IS_COMPLETED,sdtls.USER_ID,concat(sdtls.FNAME,' ',sdtls.LNAME),TIMESTAMP(txn.UPLOADED_ON),cmstr.COURSE_ID,cmstr.COURSE_NAME,mmstr.MODULE_ID,mmstr.MODULE_NAME,asignment.DESC_TXT,TIMESTAMP(txn.DUE_ON),txn.RESOURCE_TXN_ID FROM teacher_courses tcourse inner join teacher_course_sessions tc_sess on tcourse.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls tcsd on tcsd.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID inner join module_assignment_map mam on tcsd.MODULE_ID=mam.MODULE_ID inner join assignment_resource_txn txn on mam.ASSIGNMENT_ID=txn.ASSIGNMENT_ID inner join student_dtls sdtls on sdtls.EMAIL_ID=txn.STUDENT_ID left join course_mstr cmstr on cmstr.COURSE_ID=tcourse.COURSE_ID left join module_mstr mmstr on mmstr.MODULE_ID=mam.MODULE_ID left join assignment asignment on asignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID where tcourse.TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID=1) AND asignment.DESC_TXT like '%%' and txn.IS_COMPLETED = '3' and tcourse.SCHOOL_ID=1 and tcourse.CLASS_ID=1 and tcourse.HRM_ID=1 and tcourse.COURSE_ID=1 and tcsd.MODULE_ID=4 
-            StringBuffer sql = new StringBuffer("SELECT DISTINCT txn.ASSIGNMENT_ID,asignment.ASSIGNMENT_NAME,txn.IS_COMPLETED,sdtls.USER_ID,concat(sdtls.FNAME,' ',sdtls.LNAME),TIMESTAMP(txn.UPLOADED_ON),cmstr.COURSE_ID,cmstr.COURSE_NAME,mmstr.MODULE_ID,mmstr.MODULE_NAME,asignment.DESC_TXT,TIMESTAMP(txn.DUE_ON),txn.RESOURCE_TXN_ID,tcourse.SCHOOL_ID FROM teacher_courses tcourse inner join teacher_course_sessions tc_sess on tcourse.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls tcsd on tcsd.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID inner join module_assignment_map mam on tcsd.MODULE_ID=mam.MODULE_ID inner join assignment_resource_txn txn on mam.ASSIGNMENT_ID=txn.ASSIGNMENT_ID inner join student_dtls sdtls on sdtls.EMAIL_ID=txn.STUDENT_ID left join course_mstr cmstr on cmstr.COURSE_ID=tcourse.COURSE_ID left join module_mstr mmstr on mmstr.MODULE_ID=mam.MODULE_ID left join assignment asignment on asignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID where tcourse.TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID=").append(userId).append(") AND asignment.DESC_TXT like '%").append(searchText).append("%'");
+            //Updated@26-10-2015 for delete_fl
+           // StringBuffer sql = new StringBuffer("SELECT DISTINCT txn.ASSIGNMENT_ID,asignment.ASSIGNMENT_NAME,txn.IS_COMPLETED,sdtls.USER_ID,concat(sdtls.FNAME,' ',sdtls.LNAME),TIMESTAMP(txn.UPLOADED_ON),cmstr.COURSE_ID,cmstr.COURSE_NAME,mmstr.MODULE_ID,mmstr.MODULE_NAME,asignment.DESC_TXT,TIMESTAMP(txn.DUE_ON),txn.RESOURCE_TXN_ID,tcourse.SCHOOL_ID FROM teacher_courses tcourse inner join teacher_course_sessions tc_sess on tcourse.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls tcsd on tcsd.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID inner join module_assignment_map mam on tcsd.MODULE_ID=mam.MODULE_ID inner join assignment_resource_txn txn on mam.ASSIGNMENT_ID=txn.ASSIGNMENT_ID inner join student_dtls sdtls on sdtls.EMAIL_ID=txn.STUDENT_ID inner join course_mstr cmstr on cmstr.COURSE_ID=tcourse.COURSE_ID and cmstr.DELETED_FL='0' inner join module_mstr mmstr on mmstr.MODULE_ID=mam.MODULE_ID and mmstr.DELETED_FL='0' inner join assignment asignment on asignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID and asignment.DELETED_FL='0' where tcourse.TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID=").append(userId).append(") AND asignment.DESC_TXT like '%").append(searchText).append("%'");
+            //DB_UPDT
+            StringBuffer sql = new StringBuffer("SELECT DISTINCT txn.ASSIGNMENT_ID,txn.ASSIGNMENT_NAME,txn.IS_COMPLETED,sdtls.USER_ID,concat(sdtls.FNAME,' ',sdtls.LNAME),TIMESTAMP(txn.UPLOADED_ON),tc_sess.COURSE_ID,tc_sess.COURSE_NAME,tcsd.MODULE_ID,tcsd.MODULE_NAME,txn.ASSIGNMENT_DESC_TXT,TIMESTAMP(txn.DUE_ON),txn.RESOURCE_TXN_ID,tcourse.SCHOOL_ID FROM teacher_courses tcourse inner join teacher_course_sessions tc_sess on tcourse.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls tcsd on tcsd.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID inner join module_assignment_map mam on tcsd.MODULE_ID=mam.MODULE_ID inner join assignment_resource_txn txn on mam.ASSIGNMENT_ID=txn.ASSIGNMENT_ID AND txn.ENABLE_FL = '1' inner join student_dtls sdtls on sdtls.EMAIL_ID=txn.STUDENT_ID where tcourse.TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID=").append(userId).append(") AND txn.ASSIGNMENT_DESC_TXT like '%").append(searchText).append("%'");
             
             if(status>0)
             	sql.append(" and txn.IS_COMPLETED = '").append(status).append("'");
@@ -1627,7 +1748,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
              * ASSIGNMENT_ID | ASSIGNMENT_NAME | ASSIGNMENT_STATUS | ASSIGNMENT_SUBMITTED_BY | ASSIGNMENT_SUBMITTED_DATE
              */
             
-            String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN assignment asgnmnt ON txn.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID where txn.STUDENT_ID = (SELECT USER_NM FROM user_login where USER_ID=?)";
+            String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN assignment asgnmnt ON txn.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' where txn.STUDENT_ID = (SELECT USER_NM FROM user_login where USER_ID=?)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);
             
@@ -1658,6 +1779,60 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
         return list;
     }
 
+
+    
+    @Override
+    public AssignmentVO getAssignmentDetail(int userId,int assignmentId) throws LmsDaoException {
+    	AssignmentVO vo = null;
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs =null;
+        
+        try {
+            conn = getConnection();
+            /**
+             * ASSIGNMENT_ID | ASSIGNMENT_NAME | ASSIGNMENT_STATUS | ASSIGNMENT_SUBMITTED_BY | ASSIGNMENT_SUBMITTED_DATE
+             */
+           //Updated@26-10-2015 for deleted_fl
+           // String sql = "SELECT DISTINCT txn.ASSIGNMENT_ID, txn.RESOURCE_TXN_ID, asignment.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),cmstr.COURSE_ID,cmstr.COURSE_NAME,mmstr.MODULE_ID,mmstr.MODULE_NAME,asignment.DESC_TXT,TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn inner join module_assignment_map mam on mam.ASSIGNMENT_ID=txn.ASSIGNMENT_ID inner join course_module_map cmm on cmm.MODULE_ID=mam.MODULE_ID inner join user_login ulogin on ulogin.USER_NM=txn.STUDENT_ID inner join course_mstr cmstr on cmstr.COURSE_ID=cmm.COURSE_ID and cmstr.DELETED_FL='0' inner join module_mstr mmstr on mmstr.MODULE_ID=cmm.MODULE_ID and mmstr.DELETED_FL='0' inner join assignment asignment on asignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID and asignment.DELETED_FL='0' where ulogin.USER_ID=? AND txn.ASSIGNMENT_ID =?";
+            //DB_UPDT
+            String sql = "SELECT DISTINCT txn.ASSIGNMENT_ID, txn.RESOURCE_TXN_ID, asignment.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),cmstr.COURSE_ID,cmstr.COURSE_NAME,mmstr.MODULE_ID,mmstr.MODULE_NAME,asignment.DESC_TXT,TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn inner join module_assignment_map mam on mam.ASSIGNMENT_ID=txn.ASSIGNMENT_ID inner join course_module_map cmm on cmm.MODULE_ID=mam.MODULE_ID inner join user_login ulogin on ulogin.USER_NM=txn.STUDENT_ID inner join course_mstr cmstr on cmstr.COURSE_ID=cmm.COURSE_ID and cmstr.DELETED_FL='0' inner join module_mstr mmstr on mmstr.MODULE_ID=cmm.MODULE_ID and mmstr.DELETED_FL='0' inner join assignment asignment on asignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID and asignment.DELETED_FL='0' where ulogin.USER_ID=? AND txn.ASSIGNMENT_ID =?";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, assignmentId);
+            
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                vo = new AssignmentVO();
+                vo.setAssignmentId(rs.getInt(1));
+                vo.setAssignmentResourceTxnId(2);
+                vo.setAssignmentName(rs.getString(3));
+                vo.setAssignmentStatus(rs.getString(4));
+                vo.setAssignmentSubmittedBy(rs.getString(5));
+                vo.setAssignmentSubmittedDate(rs.getString(6));
+                vo.setCourseId(rs.getInt(7));
+                vo.setCourseName(rs.getString(8));
+                vo.setModuleId(rs.getInt(9));
+                vo.setModuleName(rs.getString(10));
+                vo.setAssignmentDesc(rs.getString(11));
+                vo.setAssignmentDueDate(rs.getString(12));
+
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getAssignmentDetail # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getAssignmentDetail # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return vo;
+    }
+
     
 
     @Override
@@ -1674,7 +1849,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
              * ASSIGNMENT_ID | ASSIGNMENT_NAME | ASSIGNMENT_STATUS | ASSIGNMENT_SUBMITTED_BY | ASSIGNMENT_SUBMITTED_DATE
              */
             
-            String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.RESOURCE_TXN_ID, (SELECT concat(USER_ID,'-',FNAME,' ',LNAME) FROM student_dtls where EMAIL_ID=txn.STUDENT_ID) as student_nm,TIMESTAMP(txn.UPLOADED_ON),asgnmnt.DESC_TXT,TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN assignment asgnmnt ON txn.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID INNER JOIN module_assignment_map mod_assignment ON mod_assignment.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID where mod_assignment.MODULE_ID = ?";
+            String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.RESOURCE_TXN_ID, (SELECT concat(USER_ID,'-',FNAME,' ',LNAME) FROM student_dtls where EMAIL_ID=txn.STUDENT_ID) as student_nm,TIMESTAMP(txn.UPLOADED_ON),asgnmnt.DESC_TXT,TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN assignment asgnmnt ON txn.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' INNER JOIN module_assignment_map mod_assignment ON mod_assignment.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID where mod_assignment.MODULE_ID = ?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, moduleId);
             
@@ -1722,7 +1897,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
              * ASSIGNMENT_ID | ASSIGNMENT_NAME | ASSIGNMENT_STATUS | ASSIGNMENT_SUBMITTED_BY | ASSIGNMENT_SUBMITTED_DATE
              */
             
-            String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,txn.IS_COMPLETED,txn.STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN assignment asgnmnt ON txn.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID INNER JOIN module_assignment_map mod_assignment ON mod_assignment.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID where mod_assignment.MODULE_ID = ? and txn.LAST_USERID_CD=?";
+            String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,txn.IS_COMPLETED,(SELECT CONCAT(ulogin.FNAME,' ',ulogin.LNAME) FROM student_dtls ulogin where ulogin.EMAIL_ID=txn.STUDENT_ID limit 1) as STUDENT_ID,TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN assignment asgnmnt ON txn.ASSIGNMENT_ID = asgnmnt.ASSIGNMENT_ID and asgnmnt.DELETED_FL='0' INNER JOIN module_assignment_map mod_assignment ON mod_assignment.ASSIGNMENT_ID=asgnmnt.ASSIGNMENT_ID where mod_assignment.MODULE_ID = ? and txn.LAST_USERID_CD=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, moduleId);
             stmt.setString(2, userName);
@@ -1771,7 +1946,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
              * 
              * SELECT DISTINCT rsm.RESOURSE_ID,rsm.DESC_TXT,rsm.RESOURSE_NAME,TIMESTAMP(txn.UPLOADED_ON) FROM assignment_resource_txn txn INNER JOIN resourse_mstr rsm ON txn.UPLODED_RESOURCE_ID = rsm.RESOURSE_ID WHERE txn.STUDENT_ID=?
              */
-            String sql = "SELECT DISTINCT rsm.RESOURSE_ID,rsm.RESOURSE_NAME,rsm.DESC_TXT,rsm.RESOURCE_AUTHOR,rsm.AUTHOR_IMG,rsm.RESOURCE_URL,rsm.THUMB_IMG,TIMESTAMP(txn.UPLOADED_ON),txn.STUDENT_ID FROM assignment_resource_txn txn INNER JOIN resourse_mstr rsm ON txn.UPLODED_RESOURCE_ID = rsm.RESOURSE_ID WHERE txn.ASSIGNMENT_ID=?";
+            String sql = "SELECT DISTINCT rsm.RESOURSE_ID,rsm.RESOURSE_NAME,rsm.DESC_TXT,rsm.RESOURCE_AUTHOR,rsm.AUTHOR_IMG,rsm.RESOURCE_URL,rsm.THUMB_IMG,TIMESTAMP(txn.UPLOADED_ON),txn.STUDENT_ID FROM assignment_resource_txn txn INNER JOIN resourse_mstr rsm ON txn.UPLODED_RESOURCE_ID = rsm.RESOURSE_ID and rsm.DELETED_FL='0' WHERE txn.ASSIGNMENT_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, assignmentId);
             
@@ -1822,7 +1997,9 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
              * 
              * SELECT DISTINCT rsm.RESOURSE_ID,rsm.DESC_TXT,rsm.RESOURSE_NAME,TIMESTAMP(txn.UPLOADED_ON) FROM assignment_resource_txn txn INNER JOIN resourse_mstr rsm ON txn.UPLODED_RESOURCE_ID = rsm.RESOURSE_ID WHERE txn.STUDENT_ID=?
              */
-            String sql = "SELECT DISTINCT rsm.RESOURSE_ID,rsm.RESOURSE_NAME,rsm.RESOURCE_AUTHOR,rsm.DESC_TXT,rsm.RESOURCE_URL,rsm.AUTHOR_IMG, rsm.THUMB_IMG,TIMESTAMP(txn.UPLOADED_ON) FROM assignment_resource_txn txn INNER JOIN resourse_mstr rsm ON txn.UPLODED_RESOURCE_ID = rsm.RESOURSE_ID WHERE txn.STUDENT_ID=(SELECT USER_NM FROM user_login where USER_ID=?) and txn.ASSIGNMENT_ID=?";
+           // String sql = "SELECT DISTINCT rsm.RESOURSE_ID,rsm.RESOURSE_NAME,rsm.RESOURCE_AUTHOR,rsm.DESC_TXT,rsm.RESOURCE_URL,rsm.AUTHOR_IMG, rsm.THUMB_IMG,TIMESTAMP(txn.UPLOADED_ON) FROM assignment_resource_txn txn INNER JOIN resourse_mstr rsm ON txn.UPLODED_RESOURCE_ID = rsm.RESOURSE_ID and rsm.DELETED_FL='0' WHERE txn.STUDENT_ID=(SELECT USER_NM FROM user_login where USER_ID=?) and txn.ASSIGNMENT_ID=?";
+            //D_UPDT
+            String sql = "SELECT DISTINCT rsm.UPLODED_RESOURCE_ID,rsm.RESOURSE_NAME,rsm.RESOURCE_AUTHOR,rsm.DESC_TXT,rsm.RESOURCE_URL,rsm.AUTHOR_IMG, rsm.THUMB_IMG,TIMESTAMP(rsm.UPLOADED_ON) FROM assignment_resource_txn rsm WHERE rsm.STUDENT_ID=(SELECT USER_NM FROM user_login where USER_ID=?) and rsm.ASSIGNMENT_ID=? and rsm.UPLOADED_ON is not null";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);
             stmt.setInt(2, assignmentId);
@@ -1871,7 +2048,9 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
              * ASSIGNMENT_ID | ASSIGNMENT_NAME | ASSIGNMENT_STATUS | ASSIGNMENT_SUBMITTED_BY | ASSIGNMENT_SUBMITTED_DATE
              */
             
-            String sql = "SELECT DISTINCT asgnmnt.ASSIGNMENT_ID,asgnmnt.ASSIGNMENT_NAME,asgnmnt.DESC_TXT FROM assignment asgnmnt, module_assignment_map mod_assignment WHERE asgnmnt.ASSIGNMENT_ID=mod_assignment.MODULE_ID and mod_assignment.MODULE_ID =?";
+            //String sql = "SELECT asign.ASSIGNMENT_ID, asign.ASSIGNMENT_NAME, asign.DESC_TXT, asign.ENABLE_FL from assignment asign, module_assignment_map mapassign where asign.DELETED_FL='0' and mapassign.ASSIGNMENT_ID=asign.ASSIGNMENT_ID and mapassign.MODULE_ID=?";
+            
+            String sql = "SELECT asign.ASSIGNMENT_ID, asign.ASSIGNMENT_NAME, asign.DESC_TXT, asign.ENABLE_FL from assignment asign, module_assignment_map mapassign where asign.DELETED_FL='0' and mapassign.ASSIGNMENT_ID=asign.ASSIGNMENT_ID and mapassign.MODULE_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, moduleId);
             
@@ -1882,6 +2061,7 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
                 vo.setAssignmentId(rs.getInt(1));
                 vo.setAssignmentName(rs.getString(2));
                 vo.setAssignmentDesc(rs.getString(3));
+                vo.setEnableStatus(rs.getString(4));
                 list.add(vo);
             }
 
@@ -1914,7 +2094,8 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
              * ASSIGNMENT_ID | ASSIGNMENT_NAME | ASSIGNMENT_STATUS | ASSIGNMENT_SUBMITTED_BY | ASSIGNMENT_SUBMITTED_DATE
              */
             
-            String sql = "SELECT DISTINCT txn.IS_COMPLETED,txn.RESOURCE_TXN_ID,(SELECT concat(USER_ID,'-',FNAME,' ',LNAME) FROM student_dtls where EMAIL_ID=txn.STUDENT_ID) as student_nm,TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN module_assignment_map mod_assignment ON mod_assignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID where mod_assignment.ASSIGNMENT_ID = ?";
+            //String sql = "SELECT DISTINCT txn.IS_COMPLETED,txn.RESOURCE_TXN_ID,(SELECT concat(USER_ID,'-',FNAME,' ',LNAME) FROM student_dtls where EMAIL_ID=txn.STUDENT_ID) as student_nm,TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn INNER JOIN module_assignment_map mod_assignment ON mod_assignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID where mod_assignment.ASSIGNMENT_ID = ?";
+            String sql = "SELECT DISTINCT txn.IS_COMPLETED,txn.RESOURCE_TXN_ID, concat(s.USER_ID,'-',s.FNAME,' ',s.LNAME) as student_nm,TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM  student_dtls s,assignment_resource_txn txn INNER JOIN module_assignment_map mod_assignment ON mod_assignment.ASSIGNMENT_ID=txn.ASSIGNMENT_ID where s.EMAIL_ID=txn.STUDENT_ID and mod_assignment.ASSIGNMENT_ID =?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, assignmentId);
             
@@ -1944,5 +2125,112 @@ public class TeacherCourseSessionDaoImpl extends LmsDaoAbstract implements Teach
 	}
 
 
+	@Override
+	public List<AssignmentVO> getStudentsByAssignmentId(int schoolId,
+			int classId, int hrmId, int courseId, int moduleId, int userId,
+			int assignmentId) throws LmsDaoException {
+		List<AssignmentVO> list = new ArrayList<AssignmentVO>();
 
-}//end of class
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs =null;
+        try {
+            conn = getConnection();
+
+            /**
+             * ASSIGNMENT_ID | ASSIGNMENT_NAME | ASSIGNMENT_STATUS | ASSIGNMENT_SUBMITTED_BY | ASSIGNMENT_SUBMITTED_DATE
+             */
+            
+            String sql = "SELECT DISTINCT txn.IS_COMPLETED,txn.RESOURCE_TXN_ID, (SELECT CONCAT(s.USER_ID,'-',s.FNAME,' ',s.LNAME) FROM student_dtls s where s.EMAIL_ID=txn.STUDENT_ID) as student_nm,TIMESTAMP(txn.UPLOADED_ON),TIMESTAMP(txn.DUE_ON) FROM assignment_resource_txn txn where txn.ASSIGNMENT_ID=? and txn.STUDENT_ID in (SELECT USER_NM FROM user_cls_map ucm inner join user_login ul on ucm.USER_ID=ul.USER_ID where SCHOOL_ID=? and CLASS_ID=? and HRM_ID=?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, assignmentId);
+            stmt.setInt(2, schoolId);
+            stmt.setInt(3, classId);
+            stmt.setInt(4, hrmId);
+
+            
+            rs = stmt.executeQuery();
+            AssignmentVO vo = null;
+            while (rs.next()) {
+                vo = new AssignmentVO();
+                vo.setAssignmentStatus(rs.getString(1));
+                vo.setAssignmentResourceTxnId(rs.getInt(2));
+                vo.setAssignmentSubmittedBy(rs.getString(3));
+                vo.setAssignmentSubmittedDate(rs.getString(4));
+                vo.setAssignmentDueDate(rs.getString(5));
+                list.add(vo);
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getStudentAssignmentsByModuleId # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getStudentAssignmentsByModuleId # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return list;
+	}
+
+
+	@Override
+	public List<AssignmentVO> getAssignments(int schoolId, int classId,
+			int hrmId, int courseId, int moduleId, int userId)
+			throws LmsDaoException {
+        List<AssignmentVO> list = new ArrayList<AssignmentVO>();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs =null;
+        try {
+            conn = getConnection();
+
+            //DB_UPDT
+            StringBuffer sql = new StringBuffer("SELECT DISTINCT txn.ASSIGNMENT_ID,txn.ASSIGNMENT_NAME,txn.ASSIGNMENT_DESC_TXT,txn.ENABLE_FL FROM teacher_courses tcourse inner join teacher_course_sessions tc_sess on tcourse.TEACHER_COURSE_ID=tc_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls tcsd on tcsd.COURSE_SESSION_ID=tc_sess.COURSE_SESSION_ID inner join module_assignment_map mam on tcsd.MODULE_ID=mam.MODULE_ID inner join assignment_resource_txn txn on mam.ASSIGNMENT_ID=txn.ASSIGNMENT_ID inner join student_dtls sdtls on sdtls.EMAIL_ID=txn.STUDENT_ID where tcourse.TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID=").append(userId).append(")");
+            
+            if(schoolId>0)
+            	sql.append(" and tcourse.SCHOOL_ID=").append(schoolId);
+            if(classId>0)
+            	sql.append(" and tcourse.CLASS_ID=").append(classId);
+            if(hrmId>0)
+            	sql.append(" and tcourse.HRM_ID=").append(hrmId);
+            if(courseId>0)
+            	sql.append(" and tcourse.COURSE_ID=").append(courseId);
+            if(moduleId>0)
+            	sql.append(" and tcsd.MODULE_ID=").append(moduleId);
+            
+            System.out.println("query - "+sql);
+            stmt = conn.prepareStatement(sql.toString());
+             
+            rs = stmt.executeQuery();
+            AssignmentVO vo = null;
+            while (rs.next()) {
+            	
+                vo = new AssignmentVO();
+                vo.setAssignmentId(rs.getInt(1));
+                vo.setAssignmentName(rs.getString(2));
+                vo.setAssignmentDesc(rs.getString(3));
+                vo.setEnableStatus(rs.getString(4));
+                list.add(vo);
+
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getTeacherAssignments(.....) # " + se);
+            throw new LmsDaoException(se.getMessage());
+        } catch (Exception e) {
+            System.out.println("getTeacherAssignments(.....) # " + e);
+            throw new LmsDaoException(e.getMessage());
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+
+        return list;
+    }
+
+
+
+
+}//end of class 

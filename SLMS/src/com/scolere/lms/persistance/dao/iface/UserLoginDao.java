@@ -86,4 +86,8 @@ public interface UserLoginDao {
 
     List<UserLoginVo > getUserLoginVoList() throws LmsDaoException;
     
+	UserVO getUserOrgDetail(String userId) throws LmsDaoException;
+	
+	boolean isAdminEmailValid(int schoolId, String adminEmail) throws LmsDaoException;
+    
 }

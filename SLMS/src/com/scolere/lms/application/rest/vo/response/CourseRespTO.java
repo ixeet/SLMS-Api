@@ -11,7 +11,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  *
  * @author dell
  */
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class CourseRespTO extends CompletedStatusTO{
     private int courseSessionId;
 	private int schoolId;
@@ -22,10 +22,12 @@ public class CourseRespTO extends CompletedStatusTO{
     private String hrmName;
     private String courseId;
     private String courseName;
+    private String courseDesc;
     private String authorName;
     private String authorImg;
     private List<ModuleRespTO> moduleList;
 
+    private int studentCount;
     
     
     public CourseRespTO() {
@@ -41,7 +43,16 @@ public class CourseRespTO extends CompletedStatusTO{
         return "CourseRespTO{" + "courseId=" + courseId + ", courseName=" + courseName + '}';
     }
     
-    public int getCourseSessionId() {
+    
+    public String getCourseDesc() {
+		return courseDesc;
+	}
+
+	public void setCourseDesc(String courseDesc) {
+		this.courseDesc = courseDesc;
+	}
+
+	public int getCourseSessionId() {
 		return courseSessionId;
 	}
 
@@ -136,6 +147,14 @@ public class CourseRespTO extends CompletedStatusTO{
     public void setModuleList(List<ModuleRespTO> moduleList) {
         this.moduleList = moduleList;
     }
+
+	public int getStudentCount() {
+		return studentCount;
+	}
+
+	public void setStudentCount(int studentCount) {
+		this.studentCount = studentCount;
+	}
     
     
     

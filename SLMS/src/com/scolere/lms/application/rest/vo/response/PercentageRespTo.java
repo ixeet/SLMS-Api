@@ -9,49 +9,53 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 @JsonSerialize(include=JsonSerialize.Inclusion.NON_DEFAULT)
 public class PercentageRespTo {
-	private int courseComplete;
-	private int courseProgress;
-	private int courseNotStarted;
-	private int assNotSubmit;
-	private int assSubmitted;
-	private int assReviewed;
+	private String courseComplete;
+	private String courseProgress;
+	private String courseNotStarted;
+	private String assNotSubmit;
+	private String assSubmitted;
+	private String assReviewed;
 	
 	
-	public int getCourseComplete() {
+	public String getCourseComplete() {
 		return courseComplete;
 	}
-	public void setCourseComplete(int courseComplete) {
+	public void setCourseComplete(String courseComplete) {
 		this.courseComplete = courseComplete;
 	}
-	public int getCourseProgress() {
+	public String getCourseProgress() {
 		return courseProgress;
 	}
-	public void setCourseProgress(int courseProgress) {
+	public void setCourseProgress(String courseProgress) {
 		this.courseProgress = courseProgress;
 	}
-	public int getCourseNotStarted() {
+	public String getCourseNotStarted() {
 		return courseNotStarted;
 	}
-	public void setCourseNotStarted(int courseNotStarted) {
+	public void setCourseNotStarted(String courseNotStarted) {
 		this.courseNotStarted = courseNotStarted;
 	}
-	public int getAssNotSubmit() {
+	public String getAssNotSubmit() {
 		return assNotSubmit;
 	}
-	public void setAssNotSubmit(int assNotSubmit) {
+	public void setAssNotSubmit(String assNotSubmit) {
 		this.assNotSubmit = assNotSubmit;
 	}
-	public int getAssSubmitted() {
+	public String getAssSubmitted() {
 		return assSubmitted;
 	}
-	public void setAssSubmitted(int assSubmitted) {
+	public void setAssSubmitted(String assSubmitted) {
 		this.assSubmitted = assSubmitted;
 	}
-	public int getAssReviewed() {
+	public String getAssReviewed() {
 		return assReviewed;
 	}
-	public void setAssReviewed(int assReviewed) {
+	public void setAssReviewed(String assReviewed) {
 		this.assReviewed = assReviewed;
 	}
+	
+	
+	
+	
 	
 }

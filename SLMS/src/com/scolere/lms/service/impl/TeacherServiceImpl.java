@@ -2,7 +2,7 @@ package com.scolere.lms.service.impl;
 
 import java.util.List;
 
-import com.scolere.lms.application.rest.vo.response.PercentageRespTo;
+
 import com.scolere.lms.domain.exception.LmsServiceException;
 import com.scolere.lms.persistance.dao.iface.TeacherDao;
 import com.scolere.lms.persistance.factory.LmsDaoFactory;
@@ -12,13 +12,13 @@ import com.scolere.lms.service.iface.TeacherServiceIface;
 public class TeacherServiceImpl implements TeacherServiceIface {
 
 	@Override
-	public int updateCourseStatus(int courseSessionId)
+	public int updateCourseStatus(int courseSessionId,int statusCode)
 			throws LmsServiceException {
         int updateCount = 0;
         
         try {
             TeacherDao dao = (TeacherDao) LmsDaoFactory.getDAO(TeacherDao.class);
-            updateCount = dao.updateCourseStatus(courseSessionId);
+            updateCount = dao.updateCourseStatus(courseSessionId,statusCode);
         } catch (Exception ex) {
             System.out.println("LmsServiceException # updateCourseStatus = "+ex);
             throw new LmsServiceException(ex.getMessage());
@@ -91,6 +91,23 @@ public class TeacherServiceImpl implements TeacherServiceIface {
 	        }
 	        
 	        return list;
+	}
+
+
+	@Override
+	public int updateAssignmentStatus(int schoolId, int classId, int hrmId,int courseId, int moduleId, int statusCode, String userNm,
+			String dueDate)throws LmsServiceException {
+        int updateCount = 0;
+        
+        try {
+            TeacherDao dao = (TeacherDao) LmsDaoFactory.getDAO(TeacherDao.class);
+            updateCount = dao.updateAssignmentStatus(schoolId, classId, hrmId, courseId,moduleId,statusCode,userNm,dueDate);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # updateAssignmentStatus = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }
+        
+        return updateCount;
 	}
 	
 	

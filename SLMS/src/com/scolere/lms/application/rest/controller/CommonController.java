@@ -18,6 +18,7 @@ import com.scolere.lms.application.rest.constants.SLMSRestConstants;
 import com.scolere.lms.application.rest.exceptions.RestBusException;
 import com.scolere.lms.application.rest.vo.request.CommonRequest;
 import com.scolere.lms.application.rest.vo.response.CommonResponse;
+import com.scolere.lms.application.rest.vo.response.SearchResponse;
 import com.scolere.lms.common.utils.PropertyManager;
 
 /**
@@ -39,6 +40,80 @@ public class CommonController {
         
         return message;
     }
+    
+    
+    
+    /**
+     * Global search    
+     * @param req [userId | searchText | offset | noOfRecords]
+     * @return
+     */
+    @POST
+    @Path("/search")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)     
+    public SearchResponse search(CommonRequest req) {
+        System.out.println(">> search "+req);
+        SearchResponse resp = new SearchResponse();    
+        
+    try {
+    	
+    	if(req.getNoOfRecords() <= 0)
+    	{
+    		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+    		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+    		resp.setErrorMessage(SLMSRestConstants.message_noOfRecordsRequired);    //noOfRecords validation
+    	}
+    	else
+    	{
+          resp = restService.search(req); 
+    	}
+    	
+        }catch (Exception ex){
+            System.out.println("CommonController#search " +ex);
+        }
+        System.out.println("<< search ");
+         
+        return resp;
+    } 
+    
+    
+    
+    /**
+     * Search by category    
+     * @param req [userId | searchText | offset | noOfRecords]
+     * @return
+     */
+    @POST
+    @Path("/search/{category}")
+    @Consumes(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)     
+    public SearchResponse searchByCategory(CommonRequest req,@PathParam("category") String category) {
+        System.out.println(">> searchByCategory "+req);
+        SearchResponse resp = new SearchResponse();    
+        
+    try {
+    	
+    	if(req.getNoOfRecords() <= 0)
+    	{
+    		resp.setStatus(SLMSRestConstants.status_fieldRequired);
+    		resp.setStatusMessage(SLMSRestConstants.message_fieldRequired);
+    		resp.setErrorMessage(SLMSRestConstants.message_noOfRecordsRequired);    //noOfRecords validation
+    	}
+    	else
+    	{
+          resp = restService.search(req,category); 
+    	}
+    	
+        }catch (Exception ex){
+            System.out.println("CommonController#searchByCategory " +ex);
+        }
+        System.out.println("<< searchByCategory ");
+         
+        return resp;
+    } 
+    
+    
     
     
     @POST
@@ -396,7 +471,7 @@ public class CommonController {
 
     
     @GET
-    @Path("/getAssignment/feedId/{feedId}")  //NOT YET IMPLEMENTED
+    @Path("/getAssignment/feedId/{feedId}")
     @Produces(MediaType.APPLICATION_JSON)
     public CommonResponse getAssignmentDetail(@PathParam("feedId") int feedId) {
         System.out.println("Start getAssignmentDetail for feedId >> "+feedId);
@@ -411,6 +486,7 @@ public class CommonController {
         System.out.println("<< End getAssignmentDetail # " + commonResponse);
         return commonResponse;
     }    
+    
     
     /**
      * Master data service - returns school-class-home room mapping details.

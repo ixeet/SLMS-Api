@@ -32,7 +32,7 @@ public class SchoolMasterDaoImpl extends LmsDaoAbstract implements SchoolMasterD
         try {
             conn = getConnection();
 
-            String sql = "SELECT * FROM school_mstr where SCHOOL_ID=?";
+            String sql = "SELECT * FROM school_mstr where DELETED_FL='0' and SCHOOL_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, schoolMasterVo.getSchoolId());
             ResultSet rs = stmt.executeQuery();
@@ -200,7 +200,7 @@ public class SchoolMasterDaoImpl extends LmsDaoAbstract implements SchoolMasterD
         try {
             conn = getConnection();
 
-            String sql = "SELECT * FROM school_mstr ";
+            String sql = "SELECT * FROM school_mstr where DELETED_FL='0' order by DISPLAY_NO";
             stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -252,7 +252,7 @@ public class SchoolMasterDaoImpl extends LmsDaoAbstract implements SchoolMasterD
         try {
             conn = getConnection();
 
-            String sql = "SELECT SCHOOL_ID,SCHOOL_NAME FROM school_mstr where SCHOOL_ID in (SELECT distinct SCHOOL_ID FROM teacher_courses where TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID=?))";
+            String sql = "SELECT SCHOOL_ID,SCHOOL_NAME FROM school_mstr where DELETED_FL='0' and SCHOOL_ID in (SELECT distinct SCHOOL_ID FROM teacher_courses where TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID=?))";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, teacherId);
             
@@ -279,6 +279,54 @@ public class SchoolMasterDaoImpl extends LmsDaoAbstract implements SchoolMasterD
 
         return distList;
     }
+
+	@Override
+	public List<SchoolMasterVo> getSchoolMasterVoList(int schoolId,
+			int teacherId) {
+		 List<SchoolMasterVo> distList = new ArrayList<SchoolMasterVo>();
+
+	        Connection conn = null;
+	        PreparedStatement stmt = null;
+	        try {
+	            conn = getConnection();
+
+	            String sql = "SELECT SCHOOL_ID,SCHOOL_NAME FROM school_mstr where DELETED_FL='0' and SCHOOL_ID in (SELECT distinct SCHOOL_ID FROM teacher_courses tc where tc.TEACHER_ID=(SELECT USER_NM FROM user_login where USER_ID=?) ";
+	            
+	            if(schoolId>0){
+	            	sql=sql+" AND tc.SCHOOL_ID='"+schoolId+"' )";
+	            	
+	            }
+	            else{
+	            	sql=sql+" )";
+	            	
+	            }
+	            
+	            stmt = conn.prepareStatement(sql);
+	            stmt.setInt(1, teacherId);
+	            
+	            ResultSet rs = stmt.executeQuery();
+	            while (rs.next()) {
+	                SchoolMasterVo schoolMasterVo = new SchoolMasterVo();
+	                schoolMasterVo.setSchoolId(rs.getInt(1));
+	                schoolMasterVo.setSchoolName(rs.getString(2));
+
+	                //Add into list
+	                distList.add(schoolMasterVo);
+	            }
+
+
+	        } catch (SQLException se) {
+	            System.out.println("getSchoolMasterVoList(?) # " + se);
+	            se.printStackTrace();
+	        } catch (Exception e) {
+	            System.out.println("getSchoolMasterVoList(?) # " + e);
+	            e.printStackTrace();
+	        } finally {
+	            closeResources(conn, stmt, null);
+	        }
+
+	        return distList;
+	}
     
     
 }//end of class

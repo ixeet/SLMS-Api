@@ -27,7 +27,7 @@ public class AppUtils {
 	 * @param uploadedFileLocation
 	 */
     public static void writeToFile(InputStream uploadedInputStream,
-            String uploadedFileLocation) {
+            String uploadedFileLocation) throws Exception{
 
         try {
             OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
@@ -42,6 +42,7 @@ public class AppUtils {
             out.close();
         } catch (Exception e) {
             System.out.println("File upload exception #2 "+e.getMessage());
+            throw new Exception("File upload exception #2 "+e.getMessage());
         }
 
     }

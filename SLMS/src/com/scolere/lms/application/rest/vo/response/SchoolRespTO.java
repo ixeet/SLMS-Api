@@ -14,6 +14,8 @@ public class SchoolRespTO {
     private String schoolId;
     private String schoolName;
     private List<ClassRespTO> classList; 
+    private List<HomeRoomRespTO> homeRoomList;   
+    
 
     public SchoolRespTO() {
     }
@@ -52,8 +54,17 @@ public class SchoolRespTO {
     public String toString() {
         return "SchoolRespTO{" + "schoolId=" + schoolId + ", schoolName=" + schoolName + ", size of classList=" + classList.size() + '}';
     }
-    
-    
+
+	public List<HomeRoomRespTO> getHomeRoomList() {
+		return homeRoomList;
+	}
+
+	public void setHomeRoomList(List<HomeRoomRespTO> homeRoomList) {
+		this.homeRoomList = homeRoomList;
+	}
+
+	 
+	 
     
     
 }//End of class

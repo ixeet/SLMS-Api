@@ -22,11 +22,15 @@ public interface CourseBusIface {
      */
     CourseResponse getCourseDetailsByFeedId(int feedId) throws RestBusException;
 
+    CourseResponse getCourseDetailsByCourseId(int courseId) throws RestBusException;
+
     CourseResponse getUserCourses(CourseRequest req) throws RestBusException;
 
     CourseResponse getUserCoursesWeb(CourseRequest req) throws RestBusException;
 
     CourseResponse getUserCoursesTeacher(CourseRequest req) throws RestBusException;
+    
+    CourseResponse getUserCourseDetailByTeacher(CourseRequest course) throws RestBusException;
 
     CourseResponse getTeacherAssignments(CourseRequest req) throws RestBusException;
 
@@ -50,9 +54,12 @@ public interface CourseBusIface {
     /*****Assignment services*****/
     CourseResponse getAssignmentsForTeacher(CourseRequest req) throws RestBusException;
     CourseResponse getAssignments(CourseRequest req) throws RestBusException;
+    CourseResponse getAssignmentDetail(int userId,int assignmentId) throws RestBusException;
 
     int uploadAssignment(int assignmentId,String resourceName,String resourceAuthor, String resourceDesc,String userName, String descTxt, String url, String thumbUrl, String authorImgUrl) throws RestBusException;
 
 	CourseResponse rateAssignment(CourseRequest course) throws RestBusException;
+
+	
 
 }

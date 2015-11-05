@@ -36,7 +36,7 @@ public interface TeacherCourseSessionDao
     //Get module details service -Resources & Comments
     List<ResourseVO> getStudentResources(int moduleId) throws LmsDaoException;
     List<ResourseVO> getStudentResources(int courseId,int moduleId) throws LmsDaoException;
-    List<ResourseVO> getStudentResources(int userId,int courseId,int moduleId,String searchText) throws LmsDaoException;
+    List<ResourseVO> getStudentResources(int userId,int courseId,int moduleId,String searchText,int moduleSessionId) throws LmsDaoException;
     List<ResourseVO> getStudentResourcesWeb(int userId,String courseId,String moduleId,String searchText) throws LmsDaoException;
     List<ResourseVO> getTeacherModuleResources(int moduleSessionId) throws LmsDaoException;
     
@@ -45,10 +45,13 @@ public interface TeacherCourseSessionDao
 	List<CommentVO> getResourceChildCommentsList(int commentId)throws LmsDaoException;
 	List<CommentVO> getResourceChildCommentsList(int userId, int commentId)throws LmsDaoException;
     List<ResourseVO> getRelatedResources(int resourceId) throws LmsDaoException;
+	List<ResourseVO> getRelatedResources(int resourceId, String metaData) throws LmsDaoException;
+
     //Get assignments service -Resources & Comments
     List<AssignmentVO> getStudentAssignments(int courseId,int moduleId,int userId) throws LmsDaoException;
 
     List<AssignmentVO> getStudentAssignments(int userId) throws LmsDaoException;
+    AssignmentVO getAssignmentDetail(int userId,int assignmentId) throws LmsDaoException;
 
     List<AssignmentVO> getStudentAssignments(int userId,String searchText) throws LmsDaoException;
     
@@ -106,7 +109,8 @@ public interface TeacherCourseSessionDao
 	List<AssignmentVO> getStudentsByAssignmentId(int assignmentId) throws LmsDaoException;
 
 
-
-
+	List<AssignmentVO> getStudentsByAssignmentId(int schoolId ,int classId ,int hrmId ,int courseId ,int moduleId ,int userId,int assignmentId) throws LmsDaoException;
+	
+	List<AssignmentVO> getAssignments(int schoolId, int classId, int hrmId,int courseId, int moduleId, int userId) throws LmsDaoException;
     
 }

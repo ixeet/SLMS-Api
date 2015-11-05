@@ -20,6 +20,7 @@ import com.scolere.lms.domain.vo.cross.CommentVO;
 import com.scolere.lms.domain.vo.cross.CourseVO;
 import com.scolere.lms.domain.vo.cross.FeedVO;
 import com.scolere.lms.domain.vo.cross.ResourseVO;
+import com.scolere.lms.domain.vo.cross.SearchVO;
 import com.scolere.lms.domain.vo.cross.UserVO;
 
 
@@ -29,6 +30,12 @@ import com.scolere.lms.domain.vo.cross.UserVO;
  */
 public interface CommonServiceIface {
     
+	/*Search methods*/
+    List<SearchVO> getSearchList(int userId,String searchTxt,int offset,int noOfRecords) throws LmsServiceException;
+    List<SearchVO> getSearchList(int userId,String searchTxt,int offset,int noOfRecords,String category) throws LmsServiceException;
+    int getSearchRecordsCount(int userId,String searchTxt,String category) throws LmsServiceException;
+
+	
     /*FEED RELATED SERVICES*/
     
 	long updateNotificationStatus(int userId,int feedId,String status) throws LmsServiceException;
@@ -49,7 +56,9 @@ public interface CommonServiceIface {
     ResourseVO getDefaultResourseDetail(int feedId) throws LmsServiceException;
     
     //total record counts
+    long getTotalFeedsCount(int userId,String searchText) throws LmsServiceException;
     long getTotalFeedsCount(int userId) throws LmsServiceException;
+    int getUnreadFeedCount(int userId) throws LmsServiceException;
     long getTotalCommentsCount(int feedId) throws LmsServiceException;
     long getTotalCommentsCount(int feedId,int commentId) throws LmsServiceException;
     
@@ -79,6 +88,7 @@ public interface CommonServiceIface {
     SchoolMasterVo getSchoolMasterDetail(int id) throws LmsServiceException;
     List<SchoolMasterVo> getSchoolMasterVoList(int teacherId) throws LmsServiceException;
     List<SchoolMasterVo> getSchoolMasterVoList() throws LmsServiceException;
+    List<SchoolMasterVo> getSchoolMasterVoList(int schoolId, int teacherId) throws LmsServiceException;
     
     /* CLASS RELATED METHODS */
     boolean updateClassDetail(ClassMasterVo  vo) throws LmsServiceException;
@@ -102,6 +112,7 @@ public interface CommonServiceIface {
     List<CourseMasterVo> getCourseVoList(int homeRoomMstrId, int classId,int schoolId, int teacherId)throws LmsServiceException;
 	List<ModuleMasterVo> getModuleVoList(int courseId, int homeRoomMstrId,int classId, int schoolId, int teacherId)throws LmsServiceException;
 	List<com.scolere.lms.domain.vo.AssignmentVO> getAssignVoList(int moduleMasterId, int homeRoomMstrId, int classId, int schoolId,int teacherId) throws LmsServiceException;
+	
 	
 	
 

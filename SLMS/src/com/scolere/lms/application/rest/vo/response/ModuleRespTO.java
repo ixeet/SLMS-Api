@@ -12,12 +12,16 @@ import java.util.List;
  */
 public class ModuleRespTO extends CompletedStatusTO{
     private int moduleSessionId;
-
+    
 	private String courseId;
     private String moduleId;
     private String moduleName;
+    private String moduleDesc;
     List<ResourceRespTO> resourceList;
     private List<AssignmentRespTO> assignmentList;
+    
+    //For modules assignments enable status
+    private String assignmentEnableStatus;
     
     
     public ModuleRespTO(String moduleId, String moduleName) {
@@ -33,9 +37,25 @@ public class ModuleRespTO extends CompletedStatusTO{
     	return "ModuleRespTO{"+" moduleId="+moduleId+", moduleName="+moduleName+'}';
     }
     
+   
     
-    
-    public int getModuleSessionId() {
+    public String getModuleDesc() {
+		return moduleDesc;
+	}
+
+	public void setModuleDesc(String moduleDesc) {
+		this.moduleDesc = moduleDesc;
+	}
+
+	public String getAssignmentEnableStatus() {
+		return assignmentEnableStatus;
+	}
+
+	public void setAssignmentEnableStatus(String assignmentEnableStatus) {
+		this.assignmentEnableStatus = assignmentEnableStatus;
+	}
+
+	public int getModuleSessionId() {
 		return moduleSessionId;
 	}
 

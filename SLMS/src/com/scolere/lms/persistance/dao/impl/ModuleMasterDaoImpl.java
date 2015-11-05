@@ -248,7 +248,7 @@ public class ModuleMasterDaoImpl extends LmsDaoAbstract implements ModuleMasterD
 
 	            String sql = "SELECT mm.MODULE_ID, mm.MODULE_NAME,tcsd.IS_COMPLETED, tcsd.START_SESSION_TM, tcsd.END_SESSION_TM, " +
 	            		"tcsd.LAST_UPDT_TM FROM module_mstr mm, teacher_course_sessions tcs, teacher_courses tc , student_dtls td ," +
-	            		"teacher_course_session_dtls tcsd where tc.TEACHER_COURSE_ID = tcs.TEACHER_COURSE_ID and" +
+	            		"teacher_course_session_dtls tcsd where mm.DELETED_FL='0' and tc.TEACHER_COURSE_ID = tcs.TEACHER_COURSE_ID and" +
 	            		" tc.SCHOOL_ID = '"+schoolId+"' and tc.CLASS_ID = '"+classId+"' and tc.HRM_ID='"+homeRoomMstrId+"' and tc.TEACHER_ID=td.EMAIL_ID and td.USER_ID='"+teacherId+"'" +
 	            				" and tc.COURSE_ID='"+courseId+"' and tcsd.COURSE_SESSION_ID=tcs.COURSE_SESSION_ID and mm.MODULE_ID=tcsd.MODULE_ID";
 	           

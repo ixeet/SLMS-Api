@@ -21,7 +21,7 @@ import java.util.List;
  * @author dell
  */
 public interface CourseServiceIface {
-
+	
 	//Assignment rating methods
 	List<CommonKeyValueVO> getRatingMasterData(int schoolId) throws LmsServiceException;
 	List<CommonKeyValueVO> getRatingValuesMasterData(int gradeParamId) throws LmsServiceException;
@@ -47,7 +47,7 @@ public interface CourseServiceIface {
     //Get module details service -Resources & Comments
     List<ResourseVO> getStudentResources(int moduleId) throws LmsServiceException;
     List<ResourseVO> getStudentResources(int courseId,int moduleId) throws LmsServiceException;
-    List<ResourseVO> getStudentResources(int userId,int courseId,int moduleId,String searchText) throws LmsServiceException;
+    List<ResourseVO> getStudentResources(int userId,int courseId,int moduleId,String searchText,int moduleSessionId) throws LmsServiceException;
     List<ResourseVO> getStudentResourcesWeb(int userId,String courseId,String moduleId,String searchText) throws LmsServiceException;
     List<ResourseVO> getTeacherModuleResources(int moduleSessionId) throws LmsServiceException;
     
@@ -56,6 +56,7 @@ public interface CourseServiceIface {
 	List<CommentVO> getResourceChildComments(int commentId)throws LmsServiceException;
 	List<CommentVO> getResourceChildComments(int userId, int commentId)throws LmsServiceException;
 
+    List<ResourseVO> getRelatedResources(int resourceId,String metadata) throws LmsServiceException;
     List<ResourseVO> getRelatedResources(int resourceId) throws LmsServiceException;
     //Get assignments service -Resources & Comments
     List<AssignmentVO> getStudentAssignments(int courseId,int moduleId,int userId) throws LmsServiceException;
@@ -63,6 +64,7 @@ public interface CourseServiceIface {
     List<AssignmentVO> getStudentAssignmentsByModuleId(String userName,int moduleId) throws LmsServiceException;
     
     List<AssignmentVO> getStudentAssignments(int userId) throws LmsServiceException;
+    AssignmentVO getAssignmentDetail(int userId,int assignmentId) throws LmsServiceException;
 
     List<AssignmentVO> getStudentAssignments(int userId,String searchText) throws LmsServiceException;
     List<AssignmentVO> getTeacherAssignments(int schoolId ,int classId ,int hrmId ,int courseId ,int moduleId ,int status,int userId,String searchText) throws LmsServiceException;
@@ -106,7 +108,9 @@ public interface CourseServiceIface {
 
     int uploadAssignment(int assignmentId,String resourceName,String resourceAuthor, String resourceDesc,String userName, String descTxt, String url, String thumbUrl, String authorImgUrl) throws LmsServiceException;
 	List<AssignmentVO> getAssignmentsByModuleId(int moduleId)throws LmsServiceException;
+	List<AssignmentVO> getAssignments(int schoolId ,int classId ,int hrmId ,int courseId ,int moduleId ,int userId)throws LmsServiceException;
 	List<AssignmentVO> getStudentsByAssignmentId(int assignmentId)throws LmsServiceException;
+	List<AssignmentVO> getStudentsByAssignmentId(int schoolId ,int classId ,int hrmId ,int courseId ,int moduleId ,int userId,int assignmentId)throws LmsServiceException;
 	
 
     

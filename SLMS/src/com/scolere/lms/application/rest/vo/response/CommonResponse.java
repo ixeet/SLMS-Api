@@ -26,7 +26,9 @@ public class CommonResponse extends CommonRespTO{
     
     private long totalRecords; //pagination parameter
     private List<CommentRespTO> commentsList;
-    
+    //Unread feed counts
+    private long unreadNotificationCount; //pagination parameter
+
     
     //Getter-setters
     
@@ -34,6 +36,12 @@ public class CommonResponse extends CommonRespTO{
     public UserResponse getUserDetail() {
         return userDetail;
     }
+	public long getUnreadNotificationCount() {
+		return unreadNotificationCount;
+	}
+	public void setUnreadNotificationCount(long unreadNotificationCount) {
+		this.unreadNotificationCount = unreadNotificationCount;
+	}
 	public FeedRespTO getFeedDetail() {
 		return feedDetail;
 	}

@@ -18,6 +18,7 @@ public class AssignmentVO {
     private int assignmentSubmittedById;
     private String assignmentSubmittedBy;
     private String assignmentDueDate;
+    private String enableStatus;
     
     //These parameter has been aded for Assignment uses- 
     private int courseId;
@@ -140,6 +141,14 @@ public class AssignmentVO {
     public void setAssignmentSubmittedBy(String assignmentSubmittedBy) {
         this.assignmentSubmittedBy = assignmentSubmittedBy;
     }
+
+	public String getEnableStatus() {
+		return enableStatus;
+	}
+
+	public void setEnableStatus(String enableStatus) {
+		this.enableStatus = enableStatus;
+	}
     
     
     

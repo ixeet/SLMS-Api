@@ -5,9 +5,8 @@
 package com.scolere.lms.application.rest.vo.response;
 
 import java.util.List;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 
-import com.scolere.lms.domain.vo.cross.AssignmentVO;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  *
@@ -25,6 +24,7 @@ public class AssignmentRespTO {
     private String assignmentSubmittedBy;
     private String assignmentSubmittedById;
     private String assignmentDueDate;
+    private String enableStatus;
 
     private int courseId;
     private String courseName;
@@ -162,6 +162,14 @@ public class AssignmentRespTO {
 
 	public void setStudentList(List<AssignmentRespTO> studentList) {
 		this.studentList = studentList;
+	}
+
+	public String getEnableStatus() {
+		return enableStatus;
+	}
+
+	public void setEnableStatus(String enableStatus) {
+		this.enableStatus = enableStatus;
 	}
     
     

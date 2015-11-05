@@ -17,6 +17,7 @@ import com.scolere.lms.domain.vo.cross.CommentVO;
 import com.scolere.lms.domain.vo.cross.CourseVO;
 import com.scolere.lms.domain.vo.cross.FeedVO;
 import com.scolere.lms.domain.vo.cross.ResourseVO;
+import com.scolere.lms.domain.vo.cross.SearchVO;
 import com.scolere.lms.domain.vo.cross.UserVO;
 import com.scolere.lms.persistance.dao.iface.AssignmentDao;
 import com.scolere.lms.persistance.dao.iface.ClassMasterDao;
@@ -731,6 +732,42 @@ public class CommonServiceImpl implements CommonServiceIface{
         return count;
         		
 	}
+
+	@Override
+	public int getUnreadFeedCount(int userId) throws LmsServiceException {
+        
+		int count=0;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            count = dao.getUnreadFeedsCount(userId);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getUnreadFeedCount = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return count;
+        		
+	}
+
+	@Override
+	public long getTotalFeedsCount(int userId,String searchText) throws LmsServiceException {
+        
+		long count=0;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            count = dao.getTotalFeedsCount(userId,searchText);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getTotalFeedsCount = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return count;
+        		
+	}	
 	
 	@Override
 	public long getTotalCommentsCount(int feedId)
@@ -839,6 +876,72 @@ public class CommonServiceImpl implements CommonServiceIface{
 	        
 	        return list;
 	}
+
+	@Override
+	public List<SchoolMasterVo> getSchoolMasterVoList(int schoolId,
+			int teacherId) throws LmsServiceException {
+		List<SchoolMasterVo> list = null; 
+
+        try {
+            SchoolMasterDao dao = (SchoolMasterDao) LmsDaoFactory.getDAO(SchoolMasterDao.class);
+            list = dao.getSchoolMasterVoList(schoolId, teacherId);
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getSchoolMasterVoList = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }       
+       
+       return list;
+	}
+
+	
+	@Override
+	public List<SearchVO> getSearchList(int userId, String searchTxt,
+			int offset, int noOfRecords) throws LmsServiceException {
+		List<SearchVO> searchList=null;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            searchList = dao.getSearchList(userId, searchTxt, offset, noOfRecords);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getSearchList = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return searchList;
+	}
  
-    
+	@Override
+	public List<SearchVO> getSearchList(int userId, String searchTxt,
+			int offset, int noOfRecords,String category) throws LmsServiceException {
+		List<SearchVO> searchList=null;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            searchList = dao.getSearchList(userId, searchTxt, offset, noOfRecords,category);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getSearchList#Category = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return searchList;
+	}
+
+	@Override
+	public int getSearchRecordsCount(int userId, String searchTxt,String category) throws LmsServiceException {
+		int searchCount = 0;
+        try {
+            
+            FeedDao dao = (FeedDao) LmsDaoFactory.getDAO(FeedDao.class);
+            searchCount = dao.getSearchRecordsCount(userId, searchTxt, category);
+                    
+        } catch (Exception ex) {
+            System.out.println("LmsServiceException # getSearchRecordsCount#Category = "+ex);
+            throw new LmsServiceException(ex.getMessage());
+        }        
+        
+        return searchCount;
+	}
+	
 }//End of class

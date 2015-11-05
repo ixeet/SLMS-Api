@@ -14,6 +14,8 @@ public class HomeRoomRespTO {
     
     private String homeRoomId;
     private String homeRoomName;  
+    private String classId;
+    private String className;  
     
     private List<CourseRespTO> courseList;
 
@@ -55,6 +57,23 @@ public class HomeRoomRespTO {
 	public void setCourseList(List<CourseRespTO> courseList) {
 		this.courseList = courseList;
 	}
+
+	public String getClassId() {
+		return classId;
+	}
+
+	public void setClassId(String classId) {
+		this.classId = classId;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+ 
     
     
 }

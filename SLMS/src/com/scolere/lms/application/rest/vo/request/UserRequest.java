@@ -12,7 +12,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  *
  * @author dell
  */
-@JsonSerialize(include=JsonSerialize.Inclusion.NON_EMPTY)
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 public class UserRequest {
 
     private String userid;

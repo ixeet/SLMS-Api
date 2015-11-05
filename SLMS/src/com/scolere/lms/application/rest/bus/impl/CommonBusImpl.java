@@ -22,23 +22,27 @@ import com.scolere.lms.application.rest.vo.response.KeyValTypeVO;
 import com.scolere.lms.application.rest.vo.response.ModuleRespTO;
 import com.scolere.lms.application.rest.vo.response.ResourceRespTO;
 import com.scolere.lms.application.rest.vo.response.SchoolRespTO;
+import com.scolere.lms.application.rest.vo.response.SearchResponse;
 import com.scolere.lms.application.rest.vo.response.UserResponse;
 import com.scolere.lms.common.utils.PropertyManager;
 import com.scolere.lms.domain.exception.LmsServiceException;
-import com.scolere.lms.domain.vo.AssignmentVO;
 import com.scolere.lms.domain.vo.ClassMasterVo;
 import com.scolere.lms.domain.vo.CourseMasterVo;
 import com.scolere.lms.domain.vo.HomeRoomMasterVo;
 import com.scolere.lms.domain.vo.ModuleMasterVo;
 import com.scolere.lms.domain.vo.SchoolMasterVo;
 import com.scolere.lms.domain.vo.UserLoginVo;
+import com.scolere.lms.domain.vo.cross.AssignmentVO;
 import com.scolere.lms.domain.vo.cross.CommentVO;
 import com.scolere.lms.domain.vo.cross.FeedVO;
 import com.scolere.lms.domain.vo.cross.ResourseVO;
+import com.scolere.lms.domain.vo.cross.SearchVO;
 import com.scolere.lms.domain.vo.cross.UserVO;
 import com.scolere.lms.service.iface.CommonServiceIface;
+import com.scolere.lms.service.iface.CourseServiceIface;
 import com.scolere.lms.service.iface.LoginServiceIface;
 import com.scolere.lms.service.impl.CommonServiceImpl;
+import com.scolere.lms.service.impl.CourseServiceImpl;
 import com.scolere.lms.service.impl.LoginServiceImpl;
 
 
@@ -48,6 +52,253 @@ import com.scolere.lms.service.impl.LoginServiceImpl;
  */
 public class CommonBusImpl implements CommonBusIface{
     
+
+    /**
+     * Global search (People/Course/Assignment/Updates)    
+     * @param req [userId | searchText | offset | noOfRecords]
+     * @return
+     */
+	@Override
+	public SearchResponse search(CommonRequest req) throws RestBusException {
+		
+			SearchResponse resp = new SearchResponse();
+	        CommonServiceIface service = new CommonServiceImpl();
+	        
+	        try{
+	        
+	        List<SearchResponse> searchList = new ArrayList<SearchResponse>(5);
+	        	
+	        //Search for People/Course/Assignment	
+	        List<SearchVO> searchListFromDb = service.getSearchList(req.getUserId(), req.getSearchText(),req.getOffset(),req.getNoOfRecords());   
+	    	 List<CourseRespTO> courseList = new ArrayList<CourseRespTO>(req.getNoOfRecords());
+	    	 List<UserResponse> usersList = new ArrayList<UserResponse>(req.getNoOfRecords());
+	    	 List<FeedRespTO> feedList = null;
+	         List<AssignmentRespTO> assignmentList = new ArrayList<AssignmentRespTO>(req.getNoOfRecords());
+	        	
+	         CourseRespTO course=null;
+	         UserResponse user=null;
+	         AssignmentRespTO assignment=null;
+	         for(SearchVO vo : searchListFromDb)
+	         {
+	        	 if(vo.getSearchCategory().equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_USER))
+	        	 {
+	        		 user = new UserResponse();
+	        		 user.setUserId(String.valueOf(vo.getUserId()));
+	        		 user.setUserName(vo.getUserName());
+	        		 user.setProfileImage(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+vo.getProfileImage());
+	        		 
+	        		 usersList.add(user);
+	        	 }
+	        	 else if(vo.getSearchCategory().equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_COURSE))
+	        	 {
+	        		 course = new CourseRespTO();
+	        		 course.setCourseId(vo.getCourseId());
+	        		 course.setCourseName(vo.getCourseName());
+	        		 course.setCourseDesc(vo.getCourseDesc());
+	        		 
+	        		 courseList.add(course);
+	        	 }
+	        	 else
+	        	 {
+	        		 assignment = new AssignmentRespTO();
+	        		 assignment.setAssignmentId(vo.getAssignmentId()); 
+	        		 assignment.setAssignmentName(vo.getAssignmentName());
+	        		 assignment.setAssignmentDesc(vo.getAssignmentDesc());
+	        		 assignment.setAssignmentSubmittedById(vo.getUserId());
+	        		 assignment.setAssignmentSubmittedBy(vo.getUserName());
+	        		 
+	        		 assignmentList.add(assignment);
+	        	 }
+	        	 
+	         }
+	        	
+	         //Search for feeds
+	         CommonResponse feedResp=getNotificationsList(req);
+	         feedList=feedResp.getFeedList();
+	         
+	         //Setting & Formatting response
+	         SearchResponse userSearchResp=new SearchResponse();
+	         userSearchResp.setCategory(SLMSRestConstants.SEARCH_CAT_USER);
+	         userSearchResp.setUsersList(usersList);
+	         if(usersList.size()<req.getNoOfRecords())
+	         {
+	        	 userSearchResp.setTotalUsersCount(""+usersList.size());
+	         }else{
+	        	 userSearchResp.setTotalUsersCount(""+service.getSearchRecordsCount(req.getUserId(), req.getSearchText(), SLMSRestConstants.SEARCH_CAT_USER));
+	         }	         
+	         searchList.add(userSearchResp);
+	         
+	         SearchResponse courseSearchResp=new SearchResponse();
+	         courseSearchResp.setCategory(SLMSRestConstants.SEARCH_CAT_COURSE);
+	         courseSearchResp.setCourseList(courseList);
+	         if(courseList.size()<req.getNoOfRecords())
+	         {
+	        	 courseSearchResp.setTotalCoursesCount(""+courseList.size());
+	         }else{
+	        	 courseSearchResp.setTotalCoursesCount(""+service.getSearchRecordsCount(req.getUserId(), req.getSearchText(), SLMSRestConstants.SEARCH_CAT_COURSE));
+	         }
+	         searchList.add(courseSearchResp);	        	
+	         
+	         SearchResponse assignmentSearchResp=new SearchResponse();
+	         assignmentSearchResp.setCategory(SLMSRestConstants.SEARCH_CAT_ASSIGNMENT);
+	         assignmentSearchResp.setAssignmentList(assignmentList);
+	         if(assignmentList.size()<req.getNoOfRecords())
+	         {
+	        	 assignmentSearchResp.setTotalAssignmentsCount(""+assignmentList.size());
+	         }else{
+	        	 assignmentSearchResp.setTotalAssignmentsCount(""+service.getSearchRecordsCount(req.getUserId(), req.getSearchText(), SLMSRestConstants.SEARCH_CAT_ASSIGNMENT));
+	         }
+	         searchList.add(assignmentSearchResp);	
+	         
+	         SearchResponse feedSearchResp=new SearchResponse();
+	         feedSearchResp.setCategory(SLMSRestConstants.SEARCH_CAT_FEED);
+	         feedSearchResp.setFeedList(feedList);
+	         feedSearchResp.setTotalFeedsCount(""+feedResp.getTotalRecords());
+	         searchList.add(feedSearchResp);	
+	         
+	         resp.setSearchList(searchList);
+	        //--------------common---    
+	        resp.setStatus(SLMSRestConstants.status_success);
+	        resp.setStatusMessage(SLMSRestConstants.message_success); 
+	        }catch(Exception e){
+	            System.out.println("Exception # search "+e.getMessage());
+	            resp.setStatus(SLMSRestConstants.status_failure);
+	            resp.setStatusMessage(SLMSRestConstants.message_failure);
+	            resp.setErrorMessage(e.getMessage());            
+	        }
+	        
+	        return resp;
+	  }
+
+
+	
+    /**
+     * Search by category    
+     * @param req [userId | searchText | offset | noOfRecords]
+     * @return
+     */
+	@Override
+	public SearchResponse search(CommonRequest req, String category)
+			throws RestBusException {
+		SearchResponse resp = new SearchResponse();
+        CommonServiceIface service = new CommonServiceImpl();
+        
+        try{
+        
+        List<SearchResponse> searchList = new ArrayList<SearchResponse>(2);
+        	
+        if(category.equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_FEED))
+        {
+        List<FeedRespTO> feedList = null;
+        //Search for feeds
+        CommonResponse feedResp=getNotificationsList(req);
+        feedList=feedResp.getFeedList();
+        SearchResponse feedSearchResp=new SearchResponse();
+        feedSearchResp.setCategory(SLMSRestConstants.SEARCH_CAT_FEED);
+        feedSearchResp.setFeedList(feedList);
+        feedSearchResp.setTotalFeedsCount(""+feedResp.getTotalRecords());
+        searchList.add(feedSearchResp);	
+        }else{
+        //Search for People/Course/Assignment	
+         List<SearchVO> searchListFromDb = service.getSearchList(req.getUserId(), req.getSearchText(),req.getOffset(),req.getNoOfRecords(),category);   
+    	 List<CourseRespTO> courseList = new ArrayList<CourseRespTO>(req.getNoOfRecords());
+    	 List<UserResponse> usersList = new ArrayList<UserResponse>(req.getNoOfRecords());
+         List<AssignmentRespTO> assignmentList = new ArrayList<AssignmentRespTO>(req.getNoOfRecords());
+        	
+         CourseRespTO course=null;
+         UserResponse user=null;
+         AssignmentRespTO assignment=null;
+         for(SearchVO vo : searchListFromDb)
+         {
+        	 if(vo.getSearchCategory().equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_USER))
+        	 {
+        		 user = new UserResponse();
+        		 user.setUserId(String.valueOf(vo.getUserId()));
+        		 user.setUserName(vo.getUserName());
+        		 user.setProfileImage(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+vo.getProfileImage());
+        		 
+        		 usersList.add(user);
+        	 }
+        	 else if(vo.getSearchCategory().equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_COURSE))
+        	 {
+        		 course = new CourseRespTO();
+        		 course.setCourseId(vo.getCourseId());
+        		 course.setCourseName(vo.getCourseName());
+        		 course.setCourseDesc(vo.getCourseDesc());
+        		 
+        		 courseList.add(course);
+        	 }
+        	 else
+        	 {
+        		 
+        		 assignment = new AssignmentRespTO();
+        		 assignment.setAssignmentId(vo.getAssignmentId()); 
+        		 assignment.setAssignmentName(vo.getAssignmentName());
+        		 assignment.setAssignmentDesc(vo.getAssignmentDesc());
+        		 assignment.setAssignmentSubmittedById(vo.getUserId());
+        		 assignment.setAssignmentSubmittedBy(vo.getUserName());
+        		         		 
+        		 assignmentList.add(assignment);
+        	 }
+        	 
+         }
+        	
+         //Setting & Formatting response
+         if(category.equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_USER))
+         {
+         SearchResponse userSearchResp=new SearchResponse();
+         userSearchResp.setCategory(SLMSRestConstants.SEARCH_CAT_USER);
+         userSearchResp.setUsersList(usersList);
+         if(usersList.size()<req.getNoOfRecords())
+         {
+        	 userSearchResp.setTotalUsersCount(""+usersList.size());
+         }else{
+        	 userSearchResp.setTotalUsersCount(""+service.getSearchRecordsCount(req.getUserId(), req.getSearchText(), SLMSRestConstants.SEARCH_CAT_USER));
+         }         
+         searchList.add(userSearchResp);
+         }else if(category.equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_COURSE))
+         {
+         SearchResponse courseSearchResp=new SearchResponse();
+         courseSearchResp.setCategory(SLMSRestConstants.SEARCH_CAT_COURSE);
+         courseSearchResp.setCourseList(courseList);
+         if(courseList.size()<req.getNoOfRecords())
+         {
+        	 courseSearchResp.setTotalCoursesCount(""+courseList.size());
+         }else{
+        	 courseSearchResp.setTotalCoursesCount(""+service.getSearchRecordsCount(req.getUserId(), req.getSearchText(), SLMSRestConstants.SEARCH_CAT_COURSE));
+         }         
+         searchList.add(courseSearchResp);	        	
+         }else if(category.equalsIgnoreCase(SLMSRestConstants.SEARCH_CAT_ASSIGNMENT))
+         {
+         SearchResponse assignmentSearchResp=new SearchResponse();
+         assignmentSearchResp.setCategory(SLMSRestConstants.SEARCH_CAT_ASSIGNMENT);
+         assignmentSearchResp.setAssignmentList(assignmentList);
+         if(assignmentList.size()<req.getNoOfRecords())
+         {
+        	 assignmentSearchResp.setTotalAssignmentsCount(""+assignmentList.size());
+         }else{
+        	 assignmentSearchResp.setTotalAssignmentsCount(""+service.getSearchRecordsCount(req.getUserId(), req.getSearchText(), SLMSRestConstants.SEARCH_CAT_ASSIGNMENT));
+         }         
+         searchList.add(assignmentSearchResp);	
+         }else{
+        	System.out.println("INVALID SEARCH CATEGORY."); 
+         }
+        }
+         resp.setSearchList(searchList);
+        //--------------common---    
+        resp.setStatus(SLMSRestConstants.status_success);
+        resp.setStatusMessage(SLMSRestConstants.message_success); 
+        }catch(Exception e){
+            System.out.println("Exception # search "+e.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(e.getMessage());            
+        }
+        
+        return resp;
+  }
+
+     	
 	
 	@Override
 	public CommonResponse getFeedDetail(int userId, int feedId)
@@ -375,8 +626,9 @@ public class CommonBusImpl implements CommonBusIface{
         try{
         
          //Total feed records for pagination
-         resp.setTotalRecords(service.getTotalFeedsCount(req.getUserId()));
-         
+         resp.setTotalRecords(service.getTotalFeedsCount(req.getUserId(),req.getSearchText()));
+         //set total unread notifications
+         resp.setUnreadNotificationCount(service.getUnreadFeedCount(req.getUserId()));
          //Setting feed list	
          List<FeedVO> feedListFromDb = service.getNotificationsList(req.getUserId(), req.getSearchText(),req.getOffset(),req.getNoOfRecords());   
          List<FeedRespTO> feedList = new ArrayList<FeedRespTO>(feedListFromDb.size());
@@ -663,7 +915,9 @@ public class CommonBusImpl implements CommonBusIface{
                    resp.setUserType(String.valueOf(loginVo.getUserTypeId()));
             	   resp.setAddress(userFromDb.getAddress());
             	   
-            	   if(loginVo.getUserTypeId() == 3)
+            	   //if(loginVo.getUserTypeId() == 3)
+            		
+            	   if(!userFromDb.getProfileImage().startsWith("http:"))
                    resp.setProfileImage(PropertyManager.getProperty(SLMSRestConstants.baseUrl_userprofile)+userFromDb.getProfileImage());
             	   else
                    resp.setProfileImage(userFromDb.getProfileImage());
@@ -718,9 +972,131 @@ public class CommonBusImpl implements CommonBusIface{
 
     @Override
     public CommonResponse getAssignmentDetail(int feedId) throws RestBusException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        CommonResponse resp = new CommonResponse();
+        CourseServiceIface service = new CourseServiceImpl();
+         CommonServiceIface commonService = new CommonServiceImpl();
+
+        try {
+		     FeedVO feed = commonService.getFeedDetail(feedId);
+		     AssignmentVO asignment = null;
+            //Assignment start
+		     if(feed!= null && feed.getUserId()>0 && feed.getAssignmentId()>0)
+        	 asignment = service.getAssignmentDetail(feed.getUserId(), feed.getAssignmentId());
+		     
+            if(asignment != null)
+            {
+        	   AssignmentRespTO assign = new AssignmentRespTO();
+            	assign.setAssignmentId(asignment.getAssignmentId());
+            	assign.setAssignmentName(asignment.getAssignmentName());
+            	assign.setAssignmentDesc(asignment.getAssignmentDesc());
+            	assign.setAssignmentSubmittedDate(asignment.getAssignmentSubmittedDate());
+            	assign.setAssignmentStatus(asignment.getAssignmentStatus());
+            	assign.setAssignmentDueDate(asignment.getAssignmentDueDate());
+            	assign.setCourseId(asignment.getCourseId());
+            	assign.setCourseName(asignment.getCourseName());
+            	assign.setModuleId(asignment.getModuleId());
+            	assign.setModuleName(asignment.getModuleName());
+            	assign.setAssignmentResourceTxnId(asignment.getAssignmentResourceTxnId());
+            	
+            	//Start - Assignment Resources
+                List<ResourseVO> attachedResourcesFromDB=service.getAssignmentsResources(feed.getUserId(), assign.getAssignmentId());
+                List<ResourceRespTO> attachedResources = new ArrayList<ResourceRespTO>(attachedResourcesFromDB.size());
+                ResourceRespTO resourceRespTO = null;
+                for(ResourseVO vo5 : attachedResourcesFromDB)
+                {
+                resourceRespTO = new ResourceRespTO();
+                resourceRespTO.setResourceId(String.valueOf(vo5.getResourceId()));
+                resourceRespTO.setResourceName(vo5.getResourceName());
+                resourceRespTO.setResourceDesc(vo5.getResourceDesc());
+                resourceRespTO.setResourceUrl(vo5.getResourceUrl());
+                resourceRespTO.setThumbImg(vo5.getThumbUrl());
+                resourceRespTO.setUploadedDate(vo5.getUploadedDate());
+                resourceRespTO.setAuthorName(vo5.getAuthorName());
+                resourceRespTO.setAuthorImg(vo5.getAuthorImg());
+                
+                attachedResources.add(resourceRespTO);
+                }
+                
+                assign.setAttachedResources(attachedResources);
+            	//End - Assignment Resources
+
+                //Assignment end
+                resp.setAssignmentDetail(assign);   
+                resp.setStatus(SLMSRestConstants.status_success);
+                resp.setStatusMessage(SLMSRestConstants.message_success); 
+             }else{
+                 resp.setStatus(SLMSRestConstants.status_success);
+                 resp.setStatusMessage(SLMSRestConstants.message_recordnotfound);                 	 
+             }
+
+    }catch(Exception e){
+        System.out.println("Exception # getAssignmentDetail "+e.getMessage());
+        resp.setStatus(SLMSRestConstants.status_failure);
+        resp.setStatusMessage(SLMSRestConstants.message_failure);
+        resp.setErrorMessage(e.getMessage());            
     }
+        
+    return resp;
+    }
+    
        
+    public CommonResponse getAssignmentDetail_x(int feedId) throws RestBusException {
+        CommonResponse resp = new CommonResponse();
+        CommonServiceIface service = new CommonServiceImpl();
+        
+        try{
+        	
+        	AssignmentVO vo = service.getAssignmentDetail(feedId);
+        	if(vo != null)
+        	{
+        		AssignmentRespTO assignmentDetail = new AssignmentRespTO();
+        		assignmentDetail.setAssignmentId(vo.getAssignmentId());
+        		assignmentDetail.setAssignmentName(vo.getAssignmentName());
+        		assignmentDetail.setAssignmentDesc(vo.getAssignmentDesc());
+        		assignmentDetail.setAssignmentSubmittedById(""+vo.getAssignmentSubmittedById());
+        		assignmentDetail.setAssignmentSubmittedBy(vo.getAssignmentSubmittedBy());
+        		assignmentDetail.setAssignmentStatus(vo.getAssignmentStatus());
+        		assignmentDetail.setAssignmentDueDate(vo.getAssignmentDueDate());
+
+           		//Assignment uploaded resource
+        		if(vo.getAssignmentStatus() != null && !vo.getAssignmentStatus().equalsIgnoreCase("1")) //Assignment not uploaded/reviwed
+        		{
+             		List<ResourceRespTO> attachedResources = new ArrayList<ResourceRespTO>();
+          	         ResourseVO defaultRes = service.getResourseDetail(feedId);
+        	         if(defaultRes != null)
+        	         {
+        	         ResourceRespTO rsto = new ResourceRespTO();
+        	         rsto.setResourceId(String.valueOf(defaultRes.getResourceId()));
+        	         rsto.setResourceName(defaultRes.getResourceName());
+        	         rsto.setResourceDesc(defaultRes.getResourceDesc());
+        	         rsto.setResourceUrl(defaultRes.getResourceUrl());
+        	         rsto.setThumbImg(defaultRes.getThumbUrl());
+        	         rsto.setAuthorName(defaultRes.getAuthorName());
+        	         rsto.setAuthorImg(defaultRes.getAuthorImg());
+        	         attachedResources.add(rsto);
+        	         }       
+        	        assignmentDetail.setAttachedResources(attachedResources);
+        		}
+        		//Assignment upload resource
+        		
+        		resp.setAssignmentDetail(assignmentDetail);
+		        resp.setStatus(SLMSRestConstants.status_success);
+		        resp.setStatusMessage(SLMSRestConstants.message_success); 
+        	}else{
+                resp.setStatus(SLMSRestConstants.status_success);
+                resp.setStatusMessage(SLMSRestConstants.message_recordnotfound); 
+        	}
+        
+        }catch(Exception e){
+            System.out.println("Exception # getAssignmentDetail "+e.getMessage());
+            resp.setStatus(SLMSRestConstants.status_failure);
+            resp.setStatusMessage(SLMSRestConstants.message_failure);
+            resp.setErrorMessage(e.getMessage());            
+        }
+        
+        return resp;
+        
+    }
     
     
     /*
@@ -1004,6 +1380,6 @@ public class CommonBusImpl implements CommonBusIface{
 	       return resp;
 	}
 
-       
+  
     
 }//End of class

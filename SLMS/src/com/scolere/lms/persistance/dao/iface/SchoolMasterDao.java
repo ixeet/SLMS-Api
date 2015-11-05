@@ -50,5 +50,7 @@ public interface SchoolMasterDao {
     
     List<SchoolMasterVo> getSchoolMasterVoList(int teacherId);
 
+	List<SchoolMasterVo> getSchoolMasterVoList(int schoolId, int teacherId);
+
 
 }

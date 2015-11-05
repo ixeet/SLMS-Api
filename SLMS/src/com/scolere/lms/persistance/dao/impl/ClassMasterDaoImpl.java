@@ -184,7 +184,7 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
         try {
             conn = getConnection();
 
-            String sql = "SELECT * FROM class_mstr ";
+            String sql = "SELECT * FROM class_mstr where DELETED_FL='0'";
             stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             
@@ -233,7 +233,7 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
         try {
             conn = getConnection();
 
-            String sql = "SELECT * FROM class_mstr where CLASS_ID in (SELECT CLASS_ID FROM school_cls_map where SCHOOL_ID = ?)";
+            String sql = "SELECT * FROM class_mstr where DELETED_FL='0' and CLASS_ID in (SELECT CLASS_ID FROM school_cls_map where SCHOOL_ID = ?)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, schoolId);
             
@@ -285,7 +285,7 @@ public class ClassMasterDaoImpl extends LmsDaoAbstract implements ClassMasterDao
 
 	           /* String sql = "SELECT * FROM class_mstr where CLASS_ID in (SELECT CLASS_ID FROM school_cls_map where SCHOOL_ID = ?)";*/
 	            
-	            String sql = "SELECT * FROM class_mstr where CLASS_ID in (SELECT tc.CLASS_ID FROM teacher_courses tc,student_dtls td where " +
+	            String sql = "SELECT * FROM class_mstr where DELETED_FL='0' and CLASS_ID in (SELECT tc.CLASS_ID FROM teacher_courses tc,student_dtls td where " +
 	            		"tc.SCHOOL_ID = '"+schoolId+"' and tc.TEACHER_ID=td.EMAIL_ID and td.USER_ID='"+teacher+"')";
 	            
 	            stmt = conn.prepareStatement(sql);

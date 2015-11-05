@@ -44,11 +44,12 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
             conn = getConnection();
 
             //String sql = "SELECT ul.USER_ID,ul.USER_NM,ul.USER_FB_ID,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADDRESS,ucm.SCHOOL_ID,ucm.CLASS_ID,ucm.HRM_ID FROM user_login ul inner join student_dtls sdtl on ul.user_id = sdtl.user_id inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID where ul.USER_NM=? and ul.USER_PWD=?";
+            //Updated@26-10-2015 for deleted_fl
             String sql = "SELECT ul.USER_ID,ul.USER_NM,ul.USER_FB_ID,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADDRESS,sdtl.PROFILE_IMG," +
             		"ucm.SCHOOL_ID,ucm.CLASS_ID,ucm.HRM_ID,schol.SCHOOL_NAME,clas.CLASS_NAME,hrm.HRM_NAME,sdtl.TITLE " +
             		"FROM user_login ul inner join student_dtls sdtl on ul.user_id = sdtl.user_id " +
-            		"inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID inner join school_mstr schol on schol.SCHOOL_ID=ucm.SCHOOL_ID" +
-            		" inner join class_mstr clas on clas.CLASS_ID=ucm.CLASS_ID inner join homeroom_mstr hrm on hrm.HRM_ID=ucm.HRM_ID " +
+            		"inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID inner join school_mstr schol on schol.SCHOOL_ID=ucm.SCHOOL_ID and schol.DELETED_FL='0' " +
+            		" inner join class_mstr clas on clas.CLASS_ID=ucm.CLASS_ID and clas.DELETED_FL='0' inner join homeroom_mstr hrm on hrm.HRM_ID=ucm.HRM_ID and hrm.DELETED_FL='0' " +
             		"where ul.USER_NM=? and ul.USER_PWD=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, userName);
@@ -104,11 +105,12 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
             {
              System.out.println("Student login.");
             //String sql = "SELECT ul.USER_ID,ul.USER_NM,ul.USER_FB_ID,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADDRESS,ucm.SCHOOL_ID,ucm.CLASS_ID,ucm.HRM_ID FROM user_login ul inner join student_dtls sdtl on ul.user_id = sdtl.user_id inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID where ul.USER_NM=? and ul.USER_PWD=?";
+            //Updated @ 26-10-2015 for deleted_fl
             String sql = "SELECT ul.USER_ID,ul.USER_NM,ul.USER_FB_ID,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADDRESS,sdtl.PROFILE_IMG," +
             		"ucm.SCHOOL_ID,ucm.CLASS_ID,ucm.HRM_ID,schol.SCHOOL_NAME,clas.CLASS_NAME,hrm.HRM_NAME,sdtl.TITLE " +
             		"FROM user_login ul inner join student_dtls sdtl on ul.user_id = sdtl.user_id " +
-            		"inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID inner join school_mstr schol on schol.SCHOOL_ID=ucm.SCHOOL_ID" +
-            		" inner join class_mstr clas on clas.CLASS_ID=ucm.CLASS_ID inner join homeroom_mstr hrm on hrm.HRM_ID=ucm.HRM_ID " +
+            		"inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID inner join school_mstr schol on schol.SCHOOL_ID=ucm.SCHOOL_ID and schol.DELETED_FL='0'" +
+            		" inner join class_mstr clas on clas.CLASS_ID=ucm.CLASS_ID and clas.DELETED_FL='0' inner join homeroom_mstr hrm on hrm.HRM_ID=ucm.HRM_ID and hrm.DELETED_FL='0' " +
             		"where ul.USER_NM=? and ul.USER_PWD=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, userName);
@@ -138,7 +140,7 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
             {
             	
             	System.out.println("Teacher login.");
-                String sql = "SELECT usr.USER_ID,usr.USER_NM,usr.USER_FB_ID,teachr.FNAME,teachr.LNAME,teachr.EMAIL_ID,teachr.ADDRESS FROM student_dtls teachr INNER JOIN user_login usr ON teachr.USER_ID=usr.USER_ID where usr.USER_NM=? AND usr.USER_PWD=?";
+                String sql = "SELECT usr.USER_ID,usr.USER_NM,usr.USER_FB_ID,teachr.FNAME,teachr.LNAME,teachr.EMAIL_ID,teachr.ADDRESS,teachr.PROFILE_IMG,teachr.TITLE FROM student_dtls teachr INNER JOIN user_login usr ON teachr.USER_ID=usr.USER_ID where usr.USER_NM=? AND usr.USER_PWD=?";
                 stmt = conn.prepareStatement(sql);
                 stmt.setString(1, userName);
                 stmt.setString(2, userPwd);
@@ -154,12 +156,15 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
                     user.setLastName(rs.getString(5));
                     user.setEmailId(rs.getString(6));
                     user.setAddress(rs.getString(7));
-                    user.setProfileImage(rs.getString(7));
+                    user.setProfileImage(rs.getString(8));
+                    user.setTitle(rs.getString(9));
+                    
                    
                 }
             	
             }else{
-            	throw new LmsDaoException("Unknown user type.");
+            	//throw new LmsDaoException("Unknown user type.");
+            	System.out.println("Other user types are not allowed to access."+userType);
             }
 
         } catch (SQLException se) {
@@ -187,11 +192,12 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
         try {
             conn = getConnection();
 
+            //Updated@26-10-2015 for deleted_fl
             String sql = "SELECT ul.USER_ID,ul.USER_NM,ul.USER_FB_ID,sdtl.FNAME,sdtl.LNAME,sdtl.EMAIL_ID,sdtl.ADDRESS,sdtl.PROFILE_IMG," +
             		"ucm.SCHOOL_ID,ucm.CLASS_ID,ucm.HRM_ID,schol.SCHOOL_NAME,clas.CLASS_NAME,hrm.HRM_NAME,sdtl.TITLE " +
             		"FROM user_login ul inner join student_dtls sdtl on ul.user_id = sdtl.user_id " +
-            		"inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID inner join school_mstr schol on schol.SCHOOL_ID=ucm.SCHOOL_ID" +
-            		" inner join class_mstr clas on clas.CLASS_ID=ucm.CLASS_ID inner join homeroom_mstr hrm on hrm.HRM_ID=ucm.HRM_ID" +
+            		"inner join user_cls_map ucm on ucm.USER_ID = ul.USER_ID inner join school_mstr schol on schol.SCHOOL_ID=ucm.SCHOOL_ID and schol.DELETED_FL='0'" +
+            		" inner join class_mstr clas on clas.CLASS_ID=ucm.CLASS_ID and clas.DELETED_FL='0' inner join homeroom_mstr hrm on hrm.HRM_ID=ucm.HRM_ID and hrm.DELETED_FL='0' " +
             		" where ul.USER_FB_ID=?";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, facebookId);
@@ -485,7 +491,7 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
             stmt.setInt(3, vo.getUserTypeId());
             stmt.setString(4, vo.getDeletedFl());
             stmt.setString(5, vo.getEnableFl());
-            stmt.setString(6, vo.getLastUserIdCd());
+            stmt.setString(6, vo.getUserName());
 
             int t=stmt.executeUpdate();
             System.out.println("No of inserted row = "+t);
@@ -599,7 +605,9 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
 			int classId, int hrmId) throws LmsDaoException {
 		
 		//SELECT mam.ASSIGNMENT_ID,'usernm',56,current_date,'1','usernm',current_timestamp,date(mod_sess.END_SESSION_TM) FROM teacher_courses course inner join teacher_course_sessions course_sess on course.TEACHER_COURSE_ID=course_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls mod_sess on course_sess.COURSE_SESSION_ID=mod_sess.COURSE_SESSION_ID inner join module_assignment_map mam on mam.MODULE_ID=mod_sess.MODULE_ID where course.SCHOOL_ID=1 and course.CLASS_ID=1 and course.HRM_ID=1
-        String defaultAssignment="INSERT INTO assignment_resource_txn(ASSIGNMENT_ID, STUDENT_ID, UPLODED_RESOURCE_ID, UPLOADED_ON, IS_COMPLETED, LAST_USERID_CD, LAST_UPDT_TM, DUE_ON) SELECT mam.ASSIGNMENT_ID,'"+userName+"',null,null,'1','"+userName+"',current_timestamp,date(mod_sess.END_SESSION_TM) FROM teacher_courses course inner join teacher_course_sessions course_sess on course.TEACHER_COURSE_ID=course_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls mod_sess on course_sess.COURSE_SESSION_ID=mod_sess.COURSE_SESSION_ID inner join module_assignment_map mam on mam.MODULE_ID=mod_sess.MODULE_ID where course.SCHOOL_ID="+schoolId+" and course.CLASS_ID="+classId+" and course.HRM_ID="+hrmId+"";
+       // String defaultAssignment="INSERT INTO assignment_resource_txn(ASSIGNMENT_ID, STUDENT_ID, UPLODED_RESOURCE_ID, UPLOADED_ON, IS_COMPLETED, LAST_USERID_CD, LAST_UPDT_TM, DUE_ON,ENABLE_FL) SELECT mam.ASSIGNMENT_ID,'"+userName+"',null,null,'1','"+userName+"',current_timestamp,date(mod_sess.END_SESSION_TM),mod_sess.IS_COMPLETED FROM teacher_courses course inner join teacher_course_sessions course_sess on course.TEACHER_COURSE_ID=course_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls mod_sess on course_sess.COURSE_SESSION_ID=mod_sess.COURSE_SESSION_ID inner join module_assignment_map mam on mam.MODULE_ID=mod_sess.MODULE_ID where course.SCHOOL_ID="+schoolId+" and course.CLASS_ID="+classId+" and course.HRM_ID="+hrmId+"";
+        //DB_UPDT
+		String defaultAssignment="INSERT INTO assignment_resource_txn(ASSIGNMENT_ID, STUDENT_ID, UPLODED_RESOURCE_ID, UPLOADED_ON, IS_COMPLETED, LAST_USERID_CD, LAST_UPDT_TM, DUE_ON,ENABLE_FL,RESOURSE_NAME, RESOURCE_AUTHOR, RESOURCE_DURATION, DESC_TXT, RESOURCE_TYP_ID, METADATA, RESOURCE_URL, AUTHOR_IMG, THUMB_IMG, DELETED_FL, ASSIGNMENT_NAME, ASSIGNMENT_DESC_TXT) SELECT mam.ASSIGNMENT_ID,'"+userName+"',null,null,'1','"+userName+"',current_timestamp,date(mod_sess.END_SESSION_TM),mod_sess.IS_COMPLETED ,'','',0,'',0,'','','','','0',asmnt.ASSIGNMENT_NAME,asmnt.DESC_TXT FROM teacher_courses course inner join teacher_course_sessions course_sess on course.TEACHER_COURSE_ID=course_sess.TEACHER_COURSE_ID inner join teacher_course_session_dtls mod_sess on course_sess.COURSE_SESSION_ID=mod_sess.COURSE_SESSION_ID inner join module_assignment_map mam on mam.MODULE_ID=mod_sess.MODULE_ID inner join assignment asmnt on asmnt.ASSIGNMENT_ID=mam.ASSIGNMENT_ID where course.SCHOOL_ID="+schoolId+" and course.CLASS_ID="+classId+" and course.HRM_ID="+hrmId;
         boolean assignmentStatus = deleteOrUpdateByQuery(defaultAssignment);
         System.out.println("assignmentStatus ? "+assignmentStatus);
         
@@ -657,7 +665,7 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
 				accessForIdQuery="HRM_ID";
 
 		
-			String query = "update feed_user_access set access_type_id="+accesTypeId+",access_for_id=(SELECT "+accessForIdQuery+" FROM user_cls_map where USER_ID="+userId+") where user_id="+userId;
+			String query = "update feed_user_access set access_type_id="+accesTypeId+",access_for_id=(SELECT "+accessForIdQuery+" FROM user_cls_map where USER_ID="+userId+" union SELECT "+accessForIdQuery+" FROM teacher_courses where TEACHER_ID=(select USER_NM from user_login where USER_ID="+userId+") limit 1) where user_id="+userId;
 			System.out.println("Query : " + query);
 			cstmt = conn.prepareStatement(query);
 			
@@ -693,6 +701,7 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
 			UserClassMapVo userCls=getUserClassMapDetail(userId);
 			
 			StringBuffer userListQry=new StringBuffer("SELECT USER_ID FROM user_cls_map where SCHOOL_ID=").append(userCls.getSchoolId()); //Default school
+			StringBuffer teacherListQry=new StringBuffer(" union ").append("SELECT distinct ul.USER_ID FROM teacher_courses tc inner join user_login ul on ul.USER_NM=tc.TEACHER_ID where tc.SCHOOL_ID=").append(userCls.getSchoolId());
 			if(accessType==1) //School
 			{
 				//No Action
@@ -702,13 +711,18 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
 			}else if(accessType==3) //class
 			{
 				userListQry.append(" AND CLASS_ID=").append(userCls.getClassId());
+				teacherListQry.append(" AND tc.CLASS_ID=").append(userCls.getClassId());
 				
 			}else if(accessType==4) //Home room
 			{
 				userListQry.append(" AND CLASS_ID=").append(userCls.getClassId());
 				userListQry.append(" AND HRM_ID=").append(userCls.getHomeRoomMasterId());
+				teacherListQry.append(" AND tc.CLASS_ID=").append(userCls.getClassId());
+				teacherListQry.append(" AND tc.HRM_ID=").append(userCls.getHomeRoomMasterId());
 			}
 
+			userListQry.append(teacherListQry);
+			
 			conn = getConnection();
 			//String sql = "SELECT USER_ID,EMAIL_ID,CONCAT(FNAME,' ',LNAME) as USERNM,PROFILE_IMG,(SELECT count(*) FROM feed_restricted_users where userId=? and restricted_userId=sdtl.USER_ID) as usr_count FROM student_dtls sdtl where USER_ID in (SELECT user_id FROM feed_user_access where access_type_id="+accessTypForArr[0]+" and access_for_id="+accessTypForArr[1]+" and user_id !="+userId+")";
 			String sql = "SELECT USER_ID,EMAIL_ID,CONCAT(FNAME,' ',LNAME) as USERNM,PROFILE_IMG,(SELECT count(*) FROM feed_restricted_users where userId=? and restricted_userId=sdtl.USER_ID) as usr_count FROM student_dtls sdtl where USER_ID != ? AND USER_ID in ("+userListQry+")";
@@ -812,9 +826,10 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
         try {
             conn = getConnection();
 
-            String sql = "SELECT USER_ID,SCHOOL_ID,CLASS_ID,HRM_ID FROM user_cls_map where USER_ID=?";
+            String sql = "SELECT USER_ID,SCHOOL_ID,CLASS_ID,HRM_ID FROM user_cls_map where USER_ID=? union SELECT ulogin.USER_ID,tcs.SCHOOL_ID,tcs.CLASS_ID,tcs.HRM_ID FROM teacher_courses tcs inner join user_login ulogin on tcs.TEACHER_ID=ulogin.USER_NM where ulogin.USER_ID=? limit 1";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, userId);
+            stmt.setInt(2, userId);
             
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -835,6 +850,81 @@ public class UserLoginDaoImpl extends LmsDaoAbstract implements UserLoginDao {
         
         return userDtls;
     }
+
+
+	@Override
+	public UserVO getUserOrgDetail(String userId) throws LmsDaoException {
+        System.out.println("Inside getUserOrgDetail(?) >>");
+        //Create object to return
+        UserVO userDtls = null;
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = getConnection();
+
+            //Updated@26-10-2015 for deleted_fl
+            String sql = "SELECT ucm.USER_ID,smstr.SCHOOL_NAME,cmstr.CLASS_NAME,hmstr.HRM_NAME FROM user_cls_map ucm inner join school_mstr smstr on ucm.SCHOOL_ID=smstr.SCHOOL_ID and smstr.DELETED_FL='0' inner join class_mstr cmstr on ucm.CLASS_ID=cmstr.CLASS_ID and cmstr.DELETED_FL='0' inner join homeroom_mstr hmstr on hmstr.HRM_ID=ucm.HRM_ID and hmstr.DELETED_FL='0' where ucm.USER_ID="+userId;
+            System.out.println(sql);
+            stmt = conn.prepareStatement(sql);
+
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+            	userDtls = new UserVO();
+            	userDtls.setUserId(rs.getInt(1));
+            	userDtls.setSchoolName(rs.getString(2));
+            	userDtls.setClassName(rs.getString(3));
+            	userDtls.setHomeRoomName(rs.getString(4));
+            }
+
+        } catch (SQLException se) {
+            System.out.println("getUserOrgDetail # " + se);
+        } catch (Exception e) {
+            System.out.println("getUserOrgDetail # " + e);
+        } finally {
+            closeResources(conn, stmt, rs);
+        }
+        
+        return userDtls;
+    }
+
+
+	@Override
+	public boolean isAdminEmailValid(int schoolId, String adminEmail)
+			throws LmsDaoException {
+		boolean result = false;
+
+		Connection conn = null;
+		PreparedStatement cstmt = null;
+		ResultSet resultSet = null;
+
+		try {
+			
+			String query="SELECT ul.USER_ID FROM user_login ul inner join school_user_map sm on sm.USER_ID=ul.USER_ID where sm.SCHOOL_ID=? and ul.USER_NM=?";
+			System.out.println("Query : " + query);
+			conn = this.getConnection(dataSource);
+			cstmt = conn.prepareStatement(query);
+			cstmt.setInt(1, schoolId);
+			cstmt.setString(2, adminEmail);
+			
+			resultSet = cstmt.executeQuery();
+			if (resultSet.next()) {
+				result = true;
+			}
+
+			System.out.println("Is valid Admin email - "+result);
+
+		} catch (Exception e) {
+			System.out.println("Error > isAdminEmailValid - "
+					+ e.getMessage());
+		} finally {
+			closeResources(conn, cstmt, resultSet);
+		}
+
+		return result;
+	}
+
 	
 	
     
